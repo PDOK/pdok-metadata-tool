@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/urfave/cli/v3"
+	"pdok-metadata-tool/pkg/model"
 )
 
 func init() {
@@ -15,6 +16,7 @@ func init() {
 				Name:  "list",
 				Usage: "List inspire themes or layers. Usage: pmt inspire list <themes|layers>",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
+
 					fmt.Println("list inspire: ", cmd.Args().First())
 					return nil
 				},
@@ -23,7 +25,7 @@ func init() {
 					if cmd.NArg() > 0 {
 						return
 					}
-					for _, t := range GetInspireSourceNames() {
+					for _, t := range model.InspireRegisterKinds {
 						fmt.Println(t)
 					}
 				},
