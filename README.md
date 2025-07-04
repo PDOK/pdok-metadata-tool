@@ -2,6 +2,23 @@
 This tool is set up to handle various metadata related tasks.
 The scope for this toolset is internal usage for [PDOK](pdok.nl).
 
+## Building the Project
+
+You can build the project using the `generate.go` script:
+
+```bash
+cd cmd/generate
+go run generate.go
+```
+
+This will:
+1. Generate CLI documentation in `docs/README.md`
+2. Build the `pmt` executable in the project root
+
+## CLI Usage
+
+For detailed information about the CLI commands and options, please refer to the [CLI documentation](docs/README.md).
+
 ## License
 
 ```
