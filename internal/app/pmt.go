@@ -5,6 +5,7 @@ import (
 )
 
 var PDOKMetadataToolCLI = &cli.Command{
-	Name:  "pmt",
-	Usage: "PDOK Metadata Tool - This tool is set up to handle various metadata related tasks.",
+	Name:                  "pmt",
+	Usage:                 "PDOK Metadata Tool - This tool is set up to handle various metadata related tasks.",
+	EnableShellCompletion: true,
 }

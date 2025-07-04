@@ -9,21 +9,23 @@ import (
 func init() {
 	command := &cli.Command{
 		Name:  "inspire",
-		Usage: "The metadata toolchain is used to generate service metadata",
+		Usage: "The metadata toolchain is used to generate service metadata.",
 		Commands: []*cli.Command{
 			{
 				Name:  "list",
-				Usage: "Bumps revision date to today or provided date in NGR metadata record.",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:  "k",
-						Value: "theme",
-						Usage: "Inspire resource kind, choose between (theme, layer)",
-					},
-				},
+				Usage: "List inspire themes or layers. Usage: pmt inspire list <themes|layers>",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					fmt.Printf("Hello %q", cmd.Args().Get(0))
+					fmt.Println("list inspire: ", cmd.Args().First())
 					return nil
+				},
+				ShellComplete: func(ctx context.Context, cmd *cli.Command) {
+					// This will complete if no args are passed
+					if cmd.NArg() > 0 {
+						return
+					}
+					for _, t := range GetInspireSourceNames() {
+						fmt.Println(t)
+					}
 				},
 			},
 		},

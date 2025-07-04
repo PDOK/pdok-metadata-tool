@@ -17,13 +17,13 @@ func init() {
 			&cli.StringFlag{
 				Name:        "url",
 				DefaultText: "eu-thesaurus-url",
-				Value:       HvdCategoriesXmlRemote,
+				Value:       HvdEndpoint,
 				Usage:       "HVD Thesaurus endpoint which should contain the HVD categories as RDF format.",
 			},
 			&cli.StringFlag{
 				Name:  "local-path",
 				Value: HvdLocalPath,
-				Usage: "HVD Thesaurus endpoint which should contain the HVD categories as RDF format.",
+				Usage: "Local path where the HVD Thesaurus is cached.",
 			},
 		},
 		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {

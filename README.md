@@ -19,6 +19,54 @@ This will:
 
 For detailed information about the CLI commands and options, please refer to the [CLI documentation](docs/README.md).
 
+
+### Shell Completion
+
+The PDOK metadata tool supports shell completion for bash, zsh, fish, and pwsh shells. This feature helps you quickly navigate through commands and options by pressing the Tab key.
+
+#### Bash Completion
+
+To enable bash completion, run:
+
+```bash
+# Add to your .bashrc or run in your terminal
+source <(./pmt completion bash)
+```
+
+For a permanent setup, you can add the completion script to your bash completion directory:
+
+```bash
+./pmt completion bash > /etc/bash_completion.d/pmt
+# or
+./pmt completion bash > ~/.bash_completion.d/pmt
+```
+
+#### Zsh Completion
+
+To enable zsh completion, run:
+
+```zsh
+# Add to your .zshrc or run in your terminal
+source <(./pmt completion zsh)
+```
+
+For a permanent setup, you can add the completion script to your zsh completion directory:
+
+```zsh
+mkdir ~/.pmt/completion
+./pmt completion zsh > "~/.pmt/completion/_pmt"
+```
+
+Add this to your `.zshrc` and resource or reload terminal.
+
+```zsh
+FPATH=$FPATH:~/.pmt/completion
+autoload -Uz compinit
+compinit
+```
+
+After setting up completion, you can use the Tab key to autocomplete commands, subcommands, and options when using the PDOK metadata tool.
+
 ## License
 
 ```

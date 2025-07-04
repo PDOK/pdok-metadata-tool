@@ -8,8 +8,8 @@ import (
 
 func init() {
 	command := &cli.Command{
-		Name:  "metadata",
-		Usage: "The metadata toolchain is used to generate service metadata",
+		Name:  "store",
+		Usage: "The store is used to interact with metadata CSW store service.",
 		Commands: []*cli.Command{
 			{
 				Name:  "bump-revision-date",

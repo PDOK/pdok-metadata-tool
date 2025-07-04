@@ -9,15 +9,16 @@ import (
 func init() {
 	command := &cli.Command{
 		Name:  "generate",
-		Usage: "The metadata toolchain is used to generate service metadata",
+		Usage: "Used to generate metadata records.",
 		Commands: []*cli.Command{
 			{
 				Name:  "service",
 				Usage: "Generates service metadata in \"Nederlands profiel ISO 19119\" version 2.1.0.",
-				Arguments: []cli.Argument{
-					&cli.StringArg{
-						Name:      "input_file_service_specifics",
-						UsageText: "",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "input_file_service_specifics",
+						Required: true,
+						Usage:    "Path to input file containing service specifics in json, yml or yaml format. See config-example for an example of the input file.",
 					},
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
