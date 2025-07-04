@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/urfave/cli/v3"
+	"pdok-metadata-tool/internal/common"
 	"pdok-metadata-tool/pkg/repository"
+	"strings"
 )
 
 func init() {
@@ -27,30 +29,23 @@ func init() {
 		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
 			url := cmd.String("url")
 			localPath := cmd.String("local-path")
-			hvdrepo := repository.NewHVDRepository(url, localPath)
-			// Store hvdrepo in context
-			return context.WithValue(ctx, "HVDRepoKey", hvdrepo), nil
+			repo := repository.NewHVDRepository(url, localPath)
+			return context.WithValue(ctx, "HVDRepoKey", repo), nil
 		},
 		Commands: []*cli.Command{
 			{
 				Name:  "download",
 				Usage: "Downloads the RDF Thesaurus containing the HVD categories at local-path.",
-				Action: func(ctx context.Context, cmd *cli.Command) error {
-					fmt.Println("pmt hvd download invoked")
+				Action: func(ctx context.Context, cmd *cli.Command) (err error) {
+					fmt.Println("Downloading HVD Thesaurus from " + cmd.String("url") + " to " + cmd.String("local-path"))
 
-					// Get the HVDRepository from context
-					hvdrepo, ok := ctx.Value("HVDRepoKey").(*repository.HVDRepository)
+					repo, ok := ctx.Value("HVDRepoKey").(*repository.HVDRepository)
 					if !ok {
 						return fmt.Errorf("failed to get HVDRepository from context")
 					}
 
-					// Call the Download method
-					err := hvdrepo.Download()
-					if err != nil {
-						return fmt.Errorf("failed to download HVD: %w", err)
-					}
-
-					return nil
+					err = repo.Download()
+					return err
 				},
 			},
 			{
@@ -59,25 +54,30 @@ func init() {
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fmt.Println("pmt hvd list invoked")
 
-					// Get the HVDRepository from context
 					hvdrepo, ok := ctx.Value("HVDRepoKey").(*repository.HVDRepository)
 					if !ok {
 						return fmt.Errorf("failed to get HVDRepository from context")
 					}
 
-					// Call the GetAllHVDCategories method
 					categories, err := hvdrepo.GetAllHVDCategories()
 					if err != nil {
 						return fmt.Errorf("failed to get HVD categories: %w", err)
 					}
 
-					// Print the categories
 					fmt.Printf("Found %d HVD categories\n", len(categories))
+
+					// Print table header
+					fmt.Printf("%-10s %-10s %-6s %-30s %-30s\n", "ID", "PARENT", "ORDER", "DUTCH", "ENGLISH")
+					fmt.Println(strings.Repeat("-", 90))
+
+					// Print each category as a row
 					for _, category := range categories {
-						fmt.Printf("ID: %s, Parent: %s, Order: %s\n", category.Id, category.Parent, category.Order)
-						fmt.Printf("  Dutch: %s\n", category.LabelDutch)
-						fmt.Printf("  English: %s\n", category.LabelEnglish)
-						fmt.Println()
+						fmt.Printf("%-10s %-10s %-6s %-30s %-30s\n",
+							category.Id,
+							category.Parent,
+							category.Order,
+							common.TruncateString(category.LabelDutch, 30),
+							common.TruncateString(category.LabelEnglish, 30))
 					}
 
 					return nil

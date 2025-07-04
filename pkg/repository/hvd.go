@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"pdok-metadata-tool/pkg/model"
+	"sort"
 	"strings"
 	"time"
 )
@@ -147,6 +148,10 @@ func (hvd *HVDRepository) GetAllHVDCategories() (result []model.HVDCategory, err
 
 		result = append(result, category)
 	}
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Order < result[j].Order
+	})
 
 	return result, nil
 }
