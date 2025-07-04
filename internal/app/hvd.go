@@ -2,8 +2,10 @@ package app
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"github.com/urfave/cli/v3"
+	"os"
 	"pdok-metadata-tool/internal/common"
 	"pdok-metadata-tool/pkg/repository"
 	"strings"
@@ -22,7 +24,7 @@ func init() {
 			},
 			&cli.StringFlag{
 				Name:  "local-path",
-				Value: HvdLocalPath,
+				Value: HvdLocalRDFPath,
 				Usage: "Local path where the HVD Thesaurus is cached.",
 			},
 		},
@@ -80,6 +82,66 @@ func init() {
 							common.TruncateString(category.LabelEnglish, 30))
 					}
 
+					return nil
+				},
+			},
+			{
+				Name:  "csv",
+				Usage: "Exports HVD categories to a CSV file.",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "o",
+						Value: HvdLocalCSVPath,
+						Usage: "Output file path for the CSV file.",
+					},
+				},
+				Action: func(ctx context.Context, cmd *cli.Command) error {
+					fmt.Println("pmt hvd csv invoked")
+
+					hvdrepo, ok := ctx.Value("HVDRepoKey").(*repository.HVDRepository)
+					if !ok {
+						return fmt.Errorf("failed to get HVDRepository from context")
+					}
+
+					categories, err := hvdrepo.GetAllHVDCategories()
+					if err != nil {
+						return fmt.Errorf("failed to get HVD categories: %w", err)
+					}
+
+					outputPath := cmd.String("o")
+					fmt.Printf("Exporting %d HVD categories to %s\n", len(categories), outputPath)
+
+					// Create the CSV file
+					file, err := os.Create(outputPath)
+					if err != nil {
+						return fmt.Errorf("failed to create CSV file: %w", err)
+					}
+					defer file.Close()
+
+					writer := csv.NewWriter(file)
+					defer writer.Flush()
+
+					// Write header
+					header := []string{"ID", "Parent", "Order", "LabelDutch", "LabelEnglish"}
+					if err := writer.Write(header); err != nil {
+						return fmt.Errorf("failed to write CSV header: %w", err)
+					}
+
+					// Write data
+					for _, category := range categories {
+						row := []string{
+							category.Id,
+							category.Parent,
+							category.Order,
+							category.LabelDutch,
+							category.LabelEnglish,
+						}
+						if err := writer.Write(row); err != nil {
+							return fmt.Errorf("failed to write CSV row: %w", err)
+						}
+					}
+
+					fmt.Printf("Successfully exported HVD categories to %s\n", outputPath)
 					return nil
 				},
 			},
