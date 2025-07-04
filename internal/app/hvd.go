@@ -13,9 +13,10 @@ func init() {
 		Usage: "Used to retrieve and inspect high value dataset categories from the HVD Thesaurus.",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "url",
-				Value: HvdCategoriesXmlRemote,
-				Usage: "HVD Thesaurus endpoint which should contain the HVD categories as RDF format.",
+				Name:        "url",
+				DefaultText: "eu-thesaurus-url",
+				Value:       HvdCategoriesXmlRemote,
+				Usage:       "HVD Thesaurus endpoint which should contain the HVD categories as RDF format.",
 			},
 			&cli.StringFlag{
 				Name:  "local-path",
@@ -33,7 +34,7 @@ func init() {
 		Commands: []*cli.Command{
 			{
 				Name:  "download",
-				Usage: "Download HVD",
+				Usage: "Downloads the RDF Thesaurus containing the HVD categories at local-path.",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fmt.Println("pmt hvd download invoked")
 
@@ -54,7 +55,7 @@ func init() {
 			},
 			{
 				Name:  "list",
-				Usage: "List HVDs",
+				Usage: "Displays list of HVD categories.",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fmt.Println("pmt hvd list invoked")
 
@@ -65,9 +66,18 @@ func init() {
 					}
 
 					// Call the GetAllHVDCategories method
-					err := hvdrepo.GetAllHVDCategories()
+					categories, err := hvdrepo.GetAllHVDCategories()
 					if err != nil {
 						return fmt.Errorf("failed to get HVD categories: %w", err)
+					}
+
+					// Print the categories
+					fmt.Printf("Found %d HVD categories\n", len(categories))
+					for _, category := range categories {
+						fmt.Printf("ID: %s, Parent: %s, Order: %s\n", category.Id, category.Parent, category.Order)
+						fmt.Printf("  Dutch: %s\n", category.LabelDutch)
+						fmt.Printf("  English: %s\n", category.LabelEnglish)
+						fmt.Println()
 					}
 
 					return nil
