@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
-	"pdok-metadata-tool/pkg/model"
+	"pdok-metadata-tool/pkg/model/inspire"
 	"time"
 )
 
@@ -22,14 +21,14 @@ func NewInspireRepository(localCachePath string) *InspireRepository {
 	}
 }
 
-func (ir *InspireRepository) Download(kind model.InspireRegisterKind) error {
+func (ir *InspireRepository) Download(kind inspire.InspireRegisterKind) error {
 	// Get Dutch and English URLs
-	dutchURL := model.GetInspireEndpoint(kind, model.InspireDutch)
-	englishURL := model.GetInspireEndpoint(kind, model.InspireEnglish)
+	dutchURL := inspire.GetInspireEndpoint(kind, inspire.InspireDutch)
+	englishURL := inspire.GetInspireEndpoint(kind, inspire.InspireEnglish)
 
 	// Get Dutch and English file paths
-	dutchFilePath := model.GetInspirePath(kind, model.InspireDutch)
-	englishFilePath := model.GetInspirePath(kind, model.InspireEnglish)
+	dutchFilePath := inspire.GetInspirePath(kind, inspire.InspireDutch)
+	englishFilePath := inspire.GetInspirePath(kind, inspire.InspireEnglish)
 
 	// Create full paths for storing files
 	dutchFullPath := filepath.Join(ir.localCachePath, dutchFilePath)
@@ -79,10 +78,10 @@ func downloadFile(url string, filepath string) error {
 	return err
 }
 
-func (ir *InspireRepository) getKind(kind model.InspireRegisterKind) ([]byte, []byte, error) {
+func (ir *InspireRepository) getKind(kind inspire.InspireRegisterKind) ([]byte, []byte, error) {
 	// Get Dutch and English file paths
-	dutchFilePath := model.GetInspirePath(kind, model.InspireDutch)
-	englishFilePath := model.GetInspirePath(kind, model.InspireEnglish)
+	dutchFilePath := inspire.GetInspirePath(kind, inspire.InspireDutch)
+	englishFilePath := inspire.GetInspirePath(kind, inspire.InspireEnglish)
 
 	// Create full paths for storing files
 	dutchFullPath := filepath.Join(ir.localCachePath, dutchFilePath)
@@ -113,7 +112,7 @@ func (ir *InspireRepository) getKind(kind model.InspireRegisterKind) ([]byte, []
 
 	// Download Dutch file if needed
 	if dutchNeedsDownload {
-		dutchURL := model.GetInspireEndpoint(kind, model.InspireDutch)
+		dutchURL := inspire.GetInspireEndpoint(kind, inspire.InspireDutch)
 		if err := downloadFile(dutchURL, dutchFullPath); err != nil {
 			return nil, nil, fmt.Errorf("failed to download Dutch file: %w", err)
 		}
@@ -121,20 +120,20 @@ func (ir *InspireRepository) getKind(kind model.InspireRegisterKind) ([]byte, []
 
 	// Download English file if needed
 	if englishNeedsDownload {
-		englishURL := model.GetInspireEndpoint(kind, model.InspireEnglish)
+		englishURL := inspire.GetInspireEndpoint(kind, inspire.InspireEnglish)
 		if err := downloadFile(englishURL, englishFullPath); err != nil {
 			return nil, nil, fmt.Errorf("failed to download English file: %w", err)
 		}
 	}
 
 	// Read Dutch file
-	dutchData, err := ioutil.ReadFile(dutchFullPath)
+	dutchData, err := os.ReadFile(dutchFullPath)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to read Dutch file: %w", err)
 	}
 
 	// Read English file
-	englishData, err := ioutil.ReadFile(englishFullPath)
+	englishData, err := os.ReadFile(englishFullPath)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to read English file: %w", err)
 	}
@@ -142,27 +141,7 @@ func (ir *InspireRepository) getKind(kind model.InspireRegisterKind) ([]byte, []
 	return englishData, dutchData, nil
 }
 
-func (ir *InspireRepository) parseKind(kind model.InspireRegisterKind) ([]interface{}, error) {
-	// todo: use generic types
-
-	// Get English and Dutch data
-	englishData, dutchData, err := ir.getKind(kind)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get kind data: %w", err)
-	}
-
-	// Parse based on kind
-	switch kind {
-	case model.InspireKindTheme:
-		return ir.parseThemes(englishData, dutchData)
-	case model.InspireKindLayer:
-		return ir.parseLayers(englishData, dutchData)
-	default:
-		return nil, fmt.Errorf("unknown kind: %s", kind)
-	}
-}
-
-func (ir *InspireRepository) parseThemes(englishData, dutchData []byte) ([]interface{}, error) {
+func (ir *InspireRepository) parseThemes(englishData, dutchData []byte) ([]inspire.InspireTheme, error) {
 
 	// todo: add raw Struct to model
 	var englishThemes []struct {
@@ -189,7 +168,7 @@ func (ir *InspireRepository) parseThemes(englishData, dutchData []byte) ([]inter
 	}
 
 	// Create combined themes
-	var themes []interface{}
+	var themes []inspire.InspireTheme
 	for _, englishTheme := range englishThemes {
 		// Find matching Dutch theme
 		var dutchLabel string
@@ -201,7 +180,7 @@ func (ir *InspireRepository) parseThemes(englishData, dutchData []byte) ([]inter
 		}
 
 		// Create combined theme
-		theme := model.InspireTheme{
+		theme := inspire.InspireTheme{
 			Id:           englishTheme.Id,
 			Order:        englishTheme.Order,
 			LabelDutch:   dutchLabel,
@@ -214,7 +193,7 @@ func (ir *InspireRepository) parseThemes(englishData, dutchData []byte) ([]inter
 	return themes, nil
 }
 
-func (ir *InspireRepository) parseLayers(englishData, dutchData []byte) ([]interface{}, error) {
+func (ir *InspireRepository) parseLayers(englishData, dutchData []byte) ([]inspire.InspireLayer, error) {
 	var englishLayers []struct {
 		Id    string `json:"id"`
 		Label string `json:"label"`
@@ -235,7 +214,7 @@ func (ir *InspireRepository) parseLayers(englishData, dutchData []byte) ([]inter
 	}
 
 	// Create combined layers
-	var layers []interface{}
+	var layers []inspire.InspireLayer
 	for _, englishLayer := range englishLayers {
 		// Find matching Dutch layer
 		var dutchLabel string
@@ -247,7 +226,7 @@ func (ir *InspireRepository) parseLayers(englishData, dutchData []byte) ([]inter
 		}
 
 		// Create combined layer
-		layer := model.InspireLayer{
+		layer := inspire.InspireLayer{
 			Id:           englishLayer.Id,
 			LabelDutch:   dutchLabel,
 			LabelEnglish: englishLayer.Label,
@@ -258,14 +237,20 @@ func (ir *InspireRepository) parseLayers(englishData, dutchData []byte) ([]inter
 	return layers, nil
 }
 
-func (ir *InspireRepository) GetAllThemes() ([]interface{}, error) {
-	// todo: use generic types
-	// Call parseKind to retrieve all INSPIRE themes
-	return ir.parseKind(model.InspireKindTheme)
+func (ir *InspireRepository) GetThemes() ([]inspire.InspireTheme, error) {
+	englishData, dutchData, err := ir.getKind(inspire.InspireKindTheme)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get theme data: %w", err)
+	}
+
+	return ir.parseThemes(englishData, dutchData)
 }
 
-func (ir *InspireRepository) GetAllLayers() ([]interface{}, error) {
-	// todo: use generic types
-	// Call parseKind to retrieve all INSPIRE layers
-	return ir.parseKind(model.InspireKindLayer)
+func (ir *InspireRepository) GetLayers() ([]inspire.InspireLayer, error) {
+	englishData, dutchData, err := ir.getKind(inspire.InspireKindLayer)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get layer data: %w", err)
+	}
+
+	return ir.parseLayers(englishData, dutchData)
 }

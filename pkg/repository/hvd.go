@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"pdok-metadata-tool/pkg/model"
+	model "pdok-metadata-tool/pkg/model/hvd"
 	"sort"
 	"strings"
 	"time"
