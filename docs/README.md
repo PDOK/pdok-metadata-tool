@@ -58,6 +58,12 @@ The metadata toolchain is used to generate service metadata.
 
 List inspire themes or layers. Usage: pmt inspire list <themes|layers>
 
+### csv
+
+Exports inspire themes or layers to a CSV file. Usage: pmt inspire csv <themes|layers>
+
+**-o**="": Output file path for the CSV file.
+
 ## store
 
 The store is used to interact with metadata CSW store service.

@@ -2,10 +2,14 @@ package app
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"github.com/urfave/cli/v3"
+	"os"
+	"path/filepath"
 	"pdok-metadata-tool/pkg/model/inspire"
 	"pdok-metadata-tool/pkg/repository"
+	"strconv"
 )
 
 func init() {
@@ -51,6 +55,115 @@ func init() {
 						}
 					}
 
+					return nil
+				},
+				ShellComplete: func(ctx context.Context, cmd *cli.Command) {
+					// This will complete if no args are passed
+					if cmd.NArg() > 0 {
+						return
+					}
+					for _, t := range inspire.InspireRegisterKinds {
+						fmt.Println(t)
+					}
+				},
+			},
+			{
+				Name:  "csv",
+				Usage: "Exports inspire themes or layers to a CSV file. Usage: pmt inspire csv <themes|layers>",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "o",
+						Value: "",
+						Usage: "Output file path for the CSV file.",
+					},
+				},
+				Action: func(ctx context.Context, cmd *cli.Command) error {
+					if cmd.NArg() == 0 {
+						return fmt.Errorf("please specify a register kind")
+					}
+
+					choice := cmd.Args().First()
+
+					if choice != "theme" && choice != "layer" {
+						return fmt.Errorf("please specify a register kind")
+					}
+
+					fmt.Println("csv inspire: ", choice)
+
+					repo := repository.NewInspireRepository(InspireLocalPath)
+					outputPath := cmd.String("o")
+
+					if outputPath == "" {
+						outputPath = filepath.Join(CachePath, choice+".csv")
+					}
+
+					// Create the CSV file
+					file, err := os.Create(outputPath)
+					if err != nil {
+						return fmt.Errorf("failed to create CSV file: %w", err)
+					}
+					defer file.Close()
+
+					writer := csv.NewWriter(file)
+					defer writer.Flush()
+
+					if choice == "theme" {
+						themes, err := repo.GetThemes()
+						if err != nil {
+							return err
+						}
+
+						fmt.Printf("Exporting %d INSPIRE themes to %s\n", len(themes), outputPath)
+
+						// Write header
+						header := []string{"ID", "Order", "LabelDutch", "LabelEnglish", "URL"}
+						if err := writer.Write(header); err != nil {
+							return fmt.Errorf("failed to write CSV header: %w", err)
+						}
+
+						// Write data
+						for _, theme := range themes {
+							row := []string{
+								theme.Id,
+								strconv.Itoa(theme.Order),
+								theme.LabelDutch,
+								theme.LabelEnglish,
+								theme.URL,
+							}
+							if err := writer.Write(row); err != nil {
+								return fmt.Errorf("failed to write CSV row: %w", err)
+							}
+						}
+					}
+
+					if choice == "layer" {
+						layers, err := repo.GetLayers()
+						if err != nil {
+							return err
+						}
+
+						fmt.Printf("Exporting %d INSPIRE layers to %s\n", len(layers), outputPath)
+
+						// Write header
+						header := []string{"ID", "LabelDutch", "LabelEnglish"}
+						if err := writer.Write(header); err != nil {
+							return fmt.Errorf("failed to write CSV header: %w", err)
+						}
+
+						// Write data
+						for _, layer := range layers {
+							row := []string{
+								layer.Id,
+								layer.LabelDutch,
+								layer.LabelEnglish,
+							}
+							if err := writer.Write(row); err != nil {
+								return fmt.Errorf("failed to write CSV row: %w", err)
+							}
+						}
+					}
+
+					fmt.Printf("Successfully exported INSPIRE %s to %s\n", choice, outputPath)
 					return nil
 				},
 				ShellComplete: func(ctx context.Context, cmd *cli.Command) {
