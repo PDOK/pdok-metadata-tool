@@ -9,17 +9,18 @@ type InspireTheme struct {
 	URL          string `json:"url"`          // URL for the theme
 }
 
-// GetId returns the ID of the theme
-func (t InspireTheme) GetId() string {
-	return t.Id
-}
-
-// GetLabelDutch returns the Dutch label of the theme
-func (t InspireTheme) GetLabelDutch() string {
-	return t.LabelDutch
-}
-
-// GetLabelEnglish returns the English label of the theme
-func (t InspireTheme) GetLabelEnglish() string {
-	return t.LabelEnglish
+// InspireThemeRaw represents the raw structure of an INSPIRE theme as received from the API
+type InspireThemeRaw struct {
+	Register struct {
+		Containeditems []struct {
+			Theme struct {
+				Id          string `json:"id"`          // URL of the theme
+				Themenumber string `json:"themenumber"` // Theme number/order
+				Label       struct {
+					Text string `json:"text"` // The actual label text
+					Lang string `json:"lang"` // The language of the label
+				} `json:"label"` // Theme label in a specific language
+			} `json:"theme"`
+		} `json:"containeditems"`
+	} `json:"register"`
 }

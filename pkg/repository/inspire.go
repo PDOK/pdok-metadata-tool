@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"pdok-metadata-tool/pkg/model/inspire"
+	"strconv"
 	"time"
 )
 
@@ -22,29 +23,23 @@ func NewInspireRepository(localCachePath string) *InspireRepository {
 }
 
 func (ir *InspireRepository) Download(kind inspire.InspireRegisterKind) error {
-	// Get Dutch and English URLs
 	dutchURL := inspire.GetInspireEndpoint(kind, inspire.InspireDutch)
 	englishURL := inspire.GetInspireEndpoint(kind, inspire.InspireEnglish)
 
-	// Get Dutch and English file paths
 	dutchFilePath := inspire.GetInspirePath(kind, inspire.InspireDutch)
 	englishFilePath := inspire.GetInspirePath(kind, inspire.InspireEnglish)
 
-	// Create full paths for storing files
 	dutchFullPath := filepath.Join(ir.localCachePath, dutchFilePath)
 	englishFullPath := filepath.Join(ir.localCachePath, englishFilePath)
 
-	// Ensure directory exists
 	if err := os.MkdirAll(ir.localCachePath, 0755); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
-	// Download Dutch file
 	if err := downloadFile(dutchURL, dutchFullPath); err != nil {
 		return fmt.Errorf("failed to download Dutch file: %w", err)
 	}
 
-	// Download English file
 	if err := downloadFile(englishURL, englishFullPath); err != nil {
 		return fmt.Errorf("failed to download English file: %w", err)
 	}
@@ -54,21 +49,18 @@ func (ir *InspireRepository) Download(kind inspire.InspireRegisterKind) error {
 
 // downloadFile downloads a file from a URL and saves it to a local path
 func downloadFile(url string, filepath string) error {
-	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
-	// Get the data
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Check server response
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("bad status: %s", resp.Status)
 	}
@@ -79,20 +71,12 @@ func downloadFile(url string, filepath string) error {
 }
 
 func (ir *InspireRepository) getKind(kind inspire.InspireRegisterKind) ([]byte, []byte, error) {
-	// Get Dutch and English file paths
 	dutchFilePath := inspire.GetInspirePath(kind, inspire.InspireDutch)
 	englishFilePath := inspire.GetInspirePath(kind, inspire.InspireEnglish)
 
-	// Create full paths for storing files
 	dutchFullPath := filepath.Join(ir.localCachePath, dutchFilePath)
 	englishFullPath := filepath.Join(ir.localCachePath, englishFilePath)
 
-	// Ensure directory exists
-	if err := os.MkdirAll(ir.localCachePath, 0755); err != nil {
-		return nil, nil, fmt.Errorf("failed to create directory: %w", err)
-	}
-
-	// Check Dutch file
 	dutchNeedsDownload := true
 	if fileInfo, err := os.Stat(dutchFullPath); err == nil {
 		// File exists, check if it's older than 3 days
@@ -101,7 +85,6 @@ func (ir *InspireRepository) getKind(kind inspire.InspireRegisterKind) ([]byte, 
 		}
 	}
 
-	// Check English file
 	englishNeedsDownload := true
 	if fileInfo, err := os.Stat(englishFullPath); err == nil {
 		// File exists, check if it's older than 3 days
@@ -110,7 +93,6 @@ func (ir *InspireRepository) getKind(kind inspire.InspireRegisterKind) ([]byte, 
 		}
 	}
 
-	// Download Dutch file if needed
 	if dutchNeedsDownload {
 		dutchURL := inspire.GetInspireEndpoint(kind, inspire.InspireDutch)
 		if err := downloadFile(dutchURL, dutchFullPath); err != nil {
@@ -118,7 +100,6 @@ func (ir *InspireRepository) getKind(kind inspire.InspireRegisterKind) ([]byte, 
 		}
 	}
 
-	// Download English file if needed
 	if englishNeedsDownload {
 		englishURL := inspire.GetInspireEndpoint(kind, inspire.InspireEnglish)
 		if err := downloadFile(englishURL, englishFullPath); err != nil {
@@ -142,50 +123,61 @@ func (ir *InspireRepository) getKind(kind inspire.InspireRegisterKind) ([]byte, 
 }
 
 func (ir *InspireRepository) parseThemes(englishData, dutchData []byte) ([]inspire.InspireTheme, error) {
+	var englishThemeRaw inspire.InspireThemeRaw
+	var dutchThemeRaw inspire.InspireThemeRaw
 
-	// todo: add raw Struct to model
-	var englishThemes []struct {
-		Id    string `json:"id"`
-		Order int    `json:"order"`
-		Label string `json:"label"`
-		URL   string `json:"url"`
-	}
-	var dutchThemes []struct {
-		Id    string `json:"id"`
-		Order int    `json:"order"`
-		Label string `json:"label"`
-		URL   string `json:"url"`
-	}
-
-	// Parse English data
-	if err := json.Unmarshal(englishData, &englishThemes); err != nil {
+	if err := json.Unmarshal(englishData, &englishThemeRaw); err != nil {
 		return nil, fmt.Errorf("failed to parse English themes: %w", err)
 	}
 
-	// Parse Dutch data
-	if err := json.Unmarshal(dutchData, &dutchThemes); err != nil {
+	if err := json.Unmarshal(dutchData, &dutchThemeRaw); err != nil {
 		return nil, fmt.Errorf("failed to parse Dutch themes: %w", err)
 	}
 
 	// Create combined themes
 	var themes []inspire.InspireTheme
-	for _, englishTheme := range englishThemes {
+	for _, englishItem := range englishThemeRaw.Register.Containeditems {
+		// Extract the short ID from the URL (e.g., "ad" from "http://inspire.ec.europa.eu/theme/ad")
+		englishThemeURL := englishItem.Theme.Id
+		shortID := englishThemeURL
+		if len(englishThemeURL) > 0 {
+			// Find the last part of the URL after the last "/"
+			lastSlashIndex := -1
+			for i := len(englishThemeURL) - 1; i >= 0; i-- {
+				if englishThemeURL[i] == '/' {
+					lastSlashIndex = i
+					break
+				}
+			}
+			if lastSlashIndex != -1 && lastSlashIndex < len(englishThemeURL)-1 {
+				shortID = englishThemeURL[lastSlashIndex+1:]
+			}
+		}
+
+		// Convert themenumber to int
+		order := 0
+		if englishItem.Theme.Themenumber != "" {
+			if orderVal, err := strconv.Atoi(englishItem.Theme.Themenumber); err == nil {
+				order = orderVal
+			}
+		}
+
 		// Find matching Dutch theme
 		var dutchLabel string
-		for _, dutchTheme := range dutchThemes {
-			if dutchTheme.Id == englishTheme.Id {
-				dutchLabel = dutchTheme.Label
+		for _, dutchItem := range dutchThemeRaw.Register.Containeditems {
+			if dutchItem.Theme.Id == englishItem.Theme.Id {
+				dutchLabel = dutchItem.Theme.Label.Text
 				break
 			}
 		}
 
 		// Create combined theme
 		theme := inspire.InspireTheme{
-			Id:           englishTheme.Id,
-			Order:        englishTheme.Order,
+			Id:           shortID,
+			Order:        order,
 			LabelDutch:   dutchLabel,
-			LabelEnglish: englishTheme.Label,
-			URL:          englishTheme.URL,
+			LabelEnglish: englishItem.Theme.Label.Text,
+			URL:          englishItem.Theme.Id,
 		}
 		themes = append(themes, theme)
 	}
@@ -194,42 +186,51 @@ func (ir *InspireRepository) parseThemes(englishData, dutchData []byte) ([]inspi
 }
 
 func (ir *InspireRepository) parseLayers(englishData, dutchData []byte) ([]inspire.InspireLayer, error) {
-	var englishLayers []struct {
-		Id    string `json:"id"`
-		Label string `json:"label"`
-	}
-	var dutchLayers []struct {
-		Id    string `json:"id"`
-		Label string `json:"label"`
-	}
+	var englishLayerRaw inspire.InspireLayerRaw
+	var dutchLayerRaw inspire.InspireLayerRaw
 
-	// Parse English data
-	if err := json.Unmarshal(englishData, &englishLayers); err != nil {
+	if err := json.Unmarshal(englishData, &englishLayerRaw); err != nil {
 		return nil, fmt.Errorf("failed to parse English layers: %w", err)
 	}
 
-	// Parse Dutch data
-	if err := json.Unmarshal(dutchData, &dutchLayers); err != nil {
+	if err := json.Unmarshal(dutchData, &dutchLayerRaw); err != nil {
 		return nil, fmt.Errorf("failed to parse Dutch layers: %w", err)
 	}
 
 	// Create combined layers
 	var layers []inspire.InspireLayer
-	for _, englishLayer := range englishLayers {
+	for _, englishItem := range englishLayerRaw.Register.Containeditems {
+		// Extract the short ID from the URL (e.g., "GE.ActiveWell" from "http://inspire.ec.europa.eu/layer/GE.ActiveWell")
+		englishLayerURL := englishItem.Layer.Id
+		shortID := englishLayerURL
+		if len(englishLayerURL) > 0 {
+			// Find the last part of the URL after the last "/"
+			lastSlashIndex := -1
+			for i := len(englishLayerURL) - 1; i >= 0; i-- {
+				if englishLayerURL[i] == '/' {
+					lastSlashIndex = i
+					break
+				}
+			}
+			if lastSlashIndex != -1 && lastSlashIndex < len(englishLayerURL)-1 {
+				shortID = englishLayerURL[lastSlashIndex+1:]
+			}
+		}
+
 		// Find matching Dutch layer
 		var dutchLabel string
-		for _, dutchLayer := range dutchLayers {
-			if dutchLayer.Id == englishLayer.Id {
-				dutchLabel = dutchLayer.Label
+		for _, dutchItem := range dutchLayerRaw.Register.Containeditems {
+			if dutchItem.Layer.Id == englishItem.Layer.Id {
+				dutchLabel = dutchItem.Layer.Label.Text
 				break
 			}
 		}
 
 		// Create combined layer
 		layer := inspire.InspireLayer{
-			Id:           englishLayer.Id,
+			Id:           shortID,
 			LabelDutch:   dutchLabel,
-			LabelEnglish: englishLayer.Label,
+			LabelEnglish: englishItem.Layer.Label.Text,
 		}
 		layers = append(layers, layer)
 	}

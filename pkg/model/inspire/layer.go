@@ -7,17 +7,47 @@ type InspireLayer struct {
 	LabelEnglish string `json:"labelEnglish"` // English label
 }
 
-// GetId returns the ID of the layer
-func (l InspireLayer) GetId() string {
-	return l.Id
-}
-
-// GetLabelDutch returns the Dutch label of the layer
-func (l InspireLayer) GetLabelDutch() string {
-	return l.LabelDutch
-}
-
-// GetLabelEnglish returns the English label of the layer
-func (l InspireLayer) GetLabelEnglish() string {
-	return l.LabelEnglish
+// InspireLayerRaw represents the raw structure of an INSPIRE layer as received from the API
+type InspireLayerRaw struct {
+	Register struct {
+		Registry struct {
+			Label struct {
+				Text string `json:"text"` // The registry label text
+				Lang string `json:"lang"` // The language of the label
+			} `json:"label"`
+			Id string `json:"id"` // The registry ID
+		} `json:"registry"`
+		Label struct {
+			Text string `json:"text"` // The register label text
+			Lang string `json:"lang"` // The language of the label
+		} `json:"label"`
+		Id             string `json:"id"` // The register ID
+		Containeditems []struct {
+			Layer struct {
+				Id    string `json:"id"` // URL of the layer
+				Label struct {
+					Text string `json:"text"` // The actual label text
+					Lang string `json:"lang"` // The language of the label
+				} `json:"label"`
+				Layername struct {
+					Text string `json:"text"` // The layer name
+					Lang string `json:"lang"` // The language of the layer name
+				} `json:"layername"`
+				Theme struct {
+					Label struct {
+						Text string `json:"text"` // The theme label text
+						Lang string `json:"lang"` // The language of the label
+					} `json:"label"`
+					Uri string `json:"uri"` // The theme URI
+				} `json:"theme"`
+				Status struct {
+					Label struct {
+						Text string `json:"text"` // The status label text
+						Lang string `json:"lang"` // The language of the label
+					} `json:"label"`
+					Id string `json:"id"` // The status ID
+				} `json:"status"`
+			} `json:"layer"`
+		} `json:"containeditems"`
+	} `json:"register"`
 }
