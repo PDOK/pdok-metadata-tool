@@ -24,32 +24,30 @@ func NewHVDRepository(thesaurusEndpoint string, thesaurusLocalCachePath string) 
 	}
 }
 
-func (hvd *HVDRepository) Download() error {
+func (hvd *HVDRepository) Download() ([]byte, error) {
 	// Download the thesaurus from thesaurusEndpoint and store it in thesaurusLocalCachePath
 	resp, err := http.Get(hvd.thesaurusEndpoint)
 	if err != nil {
-		return fmt.Errorf("failed to download thesaurus: %w", err)
+		return nil, fmt.Errorf("failed to download thesaurus: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to download thesaurus: status code %d", resp.StatusCode)
+		return nil, fmt.Errorf("failed to download thesaurus: status code %d", resp.StatusCode)
 	}
 
-	// Create the file
-	file, err := os.Create(hvd.thesaurusLocalCachePath)
+	// Read all bytes from response body
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to create local cache file: %w", err)
-	}
-	defer file.Close()
-
-	// Copy the response body to the file
-	_, err = io.Copy(file, resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to write thesaurus to local cache: %w", err)
+		return nil, fmt.Errorf("failed to read thesaurus response body: %w", err)
 	}
 
-	return nil
+	// Write to the cache file
+	if err := os.WriteFile(hvd.thesaurusLocalCachePath, body, 0644); err != nil {
+		return nil, fmt.Errorf("failed to write thesaurus to local cache: %w", err)
+	}
+
+	return body, nil
 }
 
 func (hvd *HVDRepository) getThesaurus() ([]byte, error) {
@@ -58,7 +56,7 @@ func (hvd *HVDRepository) getThesaurus() ([]byte, error) {
 
 	// If file doesn't exist or there's an error, download it
 	if os.IsNotExist(err) || err != nil {
-		err = hvd.Download()
+		_, err = hvd.Download()
 		if err != nil {
 			return nil, fmt.Errorf("failed to download thesaurus: %w", err)
 		}
@@ -66,7 +64,7 @@ func (hvd *HVDRepository) getThesaurus() ([]byte, error) {
 		// Check if file is older than 3 days
 		threedays := time.Hour * 24 * 3
 		if time.Since(fileInfo.ModTime()) > threedays {
-			err = hvd.Download()
+			_, err = hvd.Download()
 			if err != nil {
 				return nil, fmt.Errorf("failed to download thesaurus: %w", err)
 			}
