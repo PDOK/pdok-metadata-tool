@@ -28,6 +28,8 @@ Generates service metadata in "Nederlands profiel ISO 19119" version 2.1.0.
 
 Shows example of <input_file_service_specifics> for users that are not familiar with the service specifics.
 
+**-o**="": Output file in json, yml or yaml format.
+
 ## hvd
 
 Used to retrieve and inspect high value dataset categories from the HVD Thesaurus.
@@ -56,11 +58,11 @@ The metadata toolchain is used to generate service metadata.
 
 ### list
 
-List inspire themes or layers. Usage: pmt inspire list <themes|layers>
+List inspire themes or layers. Usage: pmt inspire list <theme|layer>
 
 ### csv
 
-Exports inspire themes or layers to a CSV file. Usage: pmt inspire csv <themes|layers>
+Exports inspire themes or layers to a CSV file. Usage: pmt inspire csv <theme|layer>
 
 **-o**="": Output file path for the CSV file.
 

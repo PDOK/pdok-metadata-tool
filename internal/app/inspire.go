@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
-	"github.com/urfave/cli/v3"
 	"os"
 	"path/filepath"
 	"pdok-metadata-tool/pkg/model/inspire"
 	"pdok-metadata-tool/pkg/repository"
 	"strconv"
+
+	"github.com/urfave/cli/v3"
 )
 
 func init() {
@@ -19,7 +20,7 @@ func init() {
 		Commands: []*cli.Command{
 			{
 				Name:  "list",
-				Usage: "List inspire themes or layers. Usage: pmt inspire list <themes|layers>",
+				Usage: "List inspire themes or layers. Usage: pmt inspire list <theme|layer>",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					if cmd.NArg() == 0 {
 						return fmt.Errorf("please specify a register kind")
@@ -69,7 +70,7 @@ func init() {
 			},
 			{
 				Name:  "csv",
-				Usage: "Exports inspire themes or layers to a CSV file. Usage: pmt inspire csv <themes|layers>",
+				Usage: "Exports inspire themes or layers to a CSV file. Usage: pmt inspire csv <theme|layer>",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:  "o",
