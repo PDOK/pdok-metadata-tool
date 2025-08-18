@@ -9,9 +9,19 @@ import (
 	"pdok-metadata-tool/pkg/model/inspire"
 	"pdok-metadata-tool/pkg/repository"
 	"strconv"
+	"strings"
 
 	"github.com/urfave/cli/v3"
 )
+
+// errSpecifyRegisterKind returns a unified error message including available kinds.
+func errSpecifyRegisterKind() error {
+	kinds := make([]string, 0, len(inspire.InspireRegisterKinds))
+	for _, k := range inspire.InspireRegisterKinds {
+		kinds = append(kinds, string(k))
+	}
+	return fmt.Errorf("please specify a register kind. Available kinds: %s", strings.Join(kinds, ", "))
+}
 
 func init() {
 	command := &cli.Command{
@@ -23,11 +33,11 @@ func init() {
 				Usage: "List inspire themes or layers. Usage: pmt inspire list <theme|layer>",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					if cmd.NArg() == 0 {
-						return fmt.Errorf("please specify a register kind")
+						return errSpecifyRegisterKind()
 					}
 
 					if cmd.Args().First() != "theme" && cmd.Args().First() != "layer" {
-						return fmt.Errorf("please specify a register kind")
+						return errSpecifyRegisterKind()
 					}
 
 					fmt.Println("list inspire: ", cmd.Args().First())
@@ -80,13 +90,13 @@ func init() {
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					if cmd.NArg() == 0 {
-						return fmt.Errorf("please specify a register kind")
+						return errSpecifyRegisterKind()
 					}
 
 					choice := cmd.Args().First()
 
 					if choice != "theme" && choice != "layer" {
-						return fmt.Errorf("please specify a register kind")
+						return errSpecifyRegisterKind()
 					}
 
 					fmt.Println("csv inspire: ", choice)
