@@ -1,9 +1,9 @@
 package client
 
 import (
+	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/stretchr/testify/assert"
 	"net/url"
-	"pdok-metadata-tool/pkg/model/csw"
 	"testing"
 )
 

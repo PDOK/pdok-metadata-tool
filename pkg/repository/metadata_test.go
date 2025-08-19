@@ -1,10 +1,10 @@
 package repository
 
 import (
+	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"github.com/stretchr/testify/assert"
-	"pdok-metadata-tool/pkg/model/csw"
-	"pdok-metadata-tool/pkg/model/hvd"
-	"pdok-metadata-tool/pkg/model/inspire"
 	"testing"
 )
 

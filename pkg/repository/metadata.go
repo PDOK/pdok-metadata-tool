@@ -1,11 +1,11 @@
 package repository
 
 import (
+	"github.com/pdok/pdok-metadata-tool/pkg/client"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/dataset"
 	log "github.com/sirupsen/logrus"
 	"net/url"
-	"pdok-metadata-tool/pkg/client"
-	"pdok-metadata-tool/pkg/model/csw"
-	"pdok-metadata-tool/pkg/model/dataset"
 )
 
 type MetadataRepository struct {

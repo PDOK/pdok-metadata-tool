@@ -3,8 +3,8 @@ package csw
 import (
 	"encoding/xml"
 	"fmt"
-	"pdok-metadata-tool/pkg/model/hvd"
-	"pdok-metadata-tool/pkg/model/inspire"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"strings"
 )
 

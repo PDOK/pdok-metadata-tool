@@ -2,9 +2,9 @@ package dataset
 
 import (
 	"github.com/google/uuid"
-	"pdok-metadata-tool/pkg/model/csw"
-	"pdok-metadata-tool/pkg/model/hvd"
-	"pdok-metadata-tool/pkg/model/inspire"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 )
 
 type NLDatasetMetadata struct {

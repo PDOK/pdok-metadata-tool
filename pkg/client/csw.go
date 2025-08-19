@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 )
 
 type CswClient struct {

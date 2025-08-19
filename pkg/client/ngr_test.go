@@ -1,9 +1,9 @@
 package client
 
 import (
+	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
 	"github.com/stretchr/testify/assert"
 	"net/url"
-	"pdok-metadata-tool/pkg/model/ngr"
 	"testing"
 )
 

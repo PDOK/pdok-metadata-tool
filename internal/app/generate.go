@@ -29,6 +29,13 @@ func init() {
 			{
 				Name:  "config-example",
 				Usage: "Shows example of <input_file_service_specifics> for users that are not familiar with the service specifics.",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "o",
+						Required: true,
+						Usage:    "Output file in json, yml or yaml format.",
+					},
+				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fmt.Printf("Hello %q", cmd.Args().Get(0))
 					return nil

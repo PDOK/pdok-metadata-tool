@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
-	"github.com/urfave/cli/v3"
+	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/pkg/repository"
 	"os"
-	"pdok-metadata-tool/internal/common"
-	"pdok-metadata-tool/pkg/repository"
 	"strings"
+
+	"github.com/urfave/cli/v3"
 )
 
 func init() {
@@ -19,7 +21,7 @@ func init() {
 			&cli.StringFlag{
 				Name:        "url",
 				DefaultText: "eu-thesaurus-url",
-				Value:       HvdEndpoint,
+				Value:       hvd.HvdEndpoint,
 				Usage:       "HVD Thesaurus endpoint which should contain the HVD categories as RDF format.",
 			},
 			&cli.StringFlag{
@@ -46,7 +48,7 @@ func init() {
 						return fmt.Errorf("failed to get HVDRepository from context")
 					}
 
-					err = repo.Download()
+					_, err = repo.Download()
 					return err
 				},
 			},

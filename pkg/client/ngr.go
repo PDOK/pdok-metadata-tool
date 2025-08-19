@@ -2,9 +2,9 @@ package client
 
 import (
 	"fmt"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
 	"net/http"
 	"net/url"
-	"pdok-metadata-tool/pkg/model/ngr"
 	"time"
 )
 
