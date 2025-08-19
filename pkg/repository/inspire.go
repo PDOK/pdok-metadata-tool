@@ -3,11 +3,11 @@ package repository
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
-	"pdok-metadata-tool/pkg/model/inspire"
 	"strconv"
 	"time"
 )

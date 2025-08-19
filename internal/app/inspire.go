@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
+	"github.com/pdok/pdok-metadata-tool/pkg/repository"
 	"os"
 	"path/filepath"
-	"pdok-metadata-tool/pkg/model/inspire"
-	"pdok-metadata-tool/pkg/repository"
 	"strconv"
 	"strings"
 

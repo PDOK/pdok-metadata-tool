@@ -3,10 +3,10 @@ package repository
 import (
 	"encoding/xml"
 	"fmt"
+	model "github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"io"
 	"net/http"
 	"os"
-	model "pdok-metadata-tool/pkg/model/hvd"
 	"sort"
 	"strings"
 	"time"

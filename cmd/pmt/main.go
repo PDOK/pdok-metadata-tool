@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/pdok/pdok-metadata-tool/internal/app"
 	"os"
-	"pdok-metadata-tool/internal/app"
 )
 
 func main() {

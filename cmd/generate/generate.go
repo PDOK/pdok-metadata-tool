@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/pdok/pdok-metadata-tool/internal/app"
 	clidocs "github.com/urfave/cli-docs/v3"
 	"os"
 	"os/exec"
-	"pdok-metadata-tool/internal/app"
 )
 
 func main() {
