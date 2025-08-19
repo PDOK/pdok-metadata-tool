@@ -1,4 +1,4 @@
-module pdok-metadata-tool
+module github.com/pdok/pdok-metadata-tool
 
 go 1.24
 

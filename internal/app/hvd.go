@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
+	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/pkg/repository"
 	"os"
-	"pdok-metadata-tool/internal/common"
-	"pdok-metadata-tool/pkg/model/hvd"
-	"pdok-metadata-tool/pkg/repository"
 	"strings"
 
 	"github.com/urfave/cli/v3"
