@@ -3,13 +3,14 @@ package repository
 import (
 	"encoding/xml"
 	"fmt"
-	model "github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"io"
 	"net/http"
 	"os"
 	"sort"
 	"strings"
 	"time"
+
+	model "github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 )
 
 type HVDRepository struct {
@@ -94,13 +95,9 @@ func (hvd *HVDRepository) parseThesaurus() (*model.RDF, error) {
 	return &rdf, nil
 }
 
-func (hvd *HVDRepository) GetAllHVDCategories() (result []model.HVDCategory, err error) {
-	rdf, err := hvd.parseThesaurus()
-	if err != nil {
-		return nil, err
-	}
-
-	result = make([]model.HVDCategory, 0, len(rdf.Descriptions))
+// hvdCategoriesFromRDF converts an RDF document into a sorted list of HVDCategory
+func hvdCategoriesFromRDF(rdf *model.RDF) []model.HVDCategory {
+	result := make([]model.HVDCategory, 0, len(rdf.Descriptions))
 	for _, desc := range rdf.Descriptions {
 		// Skip if not a Concept
 		if desc.Type.Resource != "http://www.w3.org/2004/02/skos/core#Concept" {
@@ -151,5 +148,25 @@ func (hvd *HVDRepository) GetAllHVDCategories() (result []model.HVDCategory, err
 		return result[i].Order < result[j].Order
 	})
 
+	return result
+}
+
+// GetAllHVDCategoriesFromContent parses the provided RDF XML bytes into HVD categories.
+// This allows usage of the parser without needing an HVDRepository instance.
+func GetAllHVDCategoriesFromContent(content []byte) ([]model.HVDCategory, error) {
+	var rdf model.RDF
+	if err := xml.Unmarshal(content, &rdf); err != nil {
+		return nil, fmt.Errorf("failed to parse thesaurus: %w", err)
+	}
+	return hvdCategoriesFromRDF(&rdf), nil
+}
+
+func (hvd *HVDRepository) GetAllHVDCategories() (result []model.HVDCategory, err error) {
+	rdf, err := hvd.parseThesaurus()
+	if err != nil {
+		return nil, err
+	}
+
+	result = hvdCategoriesFromRDF(rdf)
 	return result, nil
 }
