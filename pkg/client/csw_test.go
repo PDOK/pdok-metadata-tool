@@ -3,17 +3,17 @@ package client
 import (
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/stretchr/testify/assert"
+	"net/http/httptest"
 	"net/url"
 	"testing"
 )
 
-const cswHost = "https://nationaalgeoregister.nl/"
-const cswPath = "/geonetwork/srv/dut/csw"
-
 func TestCswClient_GetRecords(t *testing.T) {
+	mockedNGRServer := preTestSetup()
+	cswClient := getCswClient(t, mockedNGRServer)
 
 	type args struct {
-		constraint csw.GetRecordsConstraint
+		constraint csw.GetRecordsCQLConstraint
 		offset     int
 		logPrefix  string
 	}
@@ -31,12 +31,12 @@ func TestCswClient_GetRecords(t *testing.T) {
 		{
 			name: "GetRecords for Datasets",
 			args: args{
-				constraint: csw.GetRecordsConstraint{
+				constraint: csw.GetRecordsCQLConstraint{
 					MetadataType:     &dataset,
 					OrganisationName: nil,
 				},
 				offset:    1,
-				logPrefix: "UNITTEST_GetRecords_Datasets",
+				logPrefix: "TEST_CswClient_GetRecords_Datasets",
 			},
 			wantErr:         false,
 			wantNrOfRecords: 10,
@@ -45,12 +45,12 @@ func TestCswClient_GetRecords(t *testing.T) {
 		{
 			name: "GetRecords for Services",
 			args: args{
-				constraint: csw.GetRecordsConstraint{
+				constraint: csw.GetRecordsCQLConstraint{
 					MetadataType:     &service,
 					OrganisationName: nil,
 				},
 				offset:    11,
-				logPrefix: "UNITTEST_GetRecords_Services",
+				logPrefix: "TEST_CswClient_GetRecords_Services",
 			},
 			wantErr:         false,
 			wantNrOfRecords: 10,
@@ -59,8 +59,6 @@ func TestCswClient_GetRecords(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
-			cswClient, _ := getCswClient(cswHost, cswPath)
 
 			mdRecords, nextRecord, err := cswClient.GetRecords(&tt.args.constraint, tt.args.offset, tt.args.logPrefix)
 			if !tt.wantErr {
@@ -73,10 +71,69 @@ func TestCswClient_GetRecords(t *testing.T) {
 			}
 		})
 	}
+}
 
+func TestCswClient_GetRecordsWithOGCFilter(t *testing.T) {
+	mockedNGRServer := preTestSetup()
+	cswClient := getCswClient(t, mockedNGRServer)
+
+	type args struct {
+		filter    csw.GetRecordsOgcFilter
+		logPrefix string
+	}
+
+	tests := []struct {
+		name            string
+		args            args
+		wantErr         bool
+		wantNrOfRecords int
+	}{
+		{
+			name: "GetRecordsWithOGCFilter for Datasets",
+			args: args{
+				filter: csw.GetRecordsOgcFilter{
+					MetadataType: csw.Dataset,
+					Title:        nil,
+					Identifier:   nil,
+				},
+				logPrefix: "TEST_CswClient_GetRecords_Datasets",
+			},
+			wantErr:         false,
+			wantNrOfRecords: 10,
+		},
+		{
+			name: "GetRecordsWithOGCFilter for Services",
+			args: args{
+				filter: csw.GetRecordsOgcFilter{
+					MetadataType: csw.Service,
+					Title:        nil,
+					Identifier:   nil,
+				},
+				logPrefix: "TEST_CswClient_GetRecords_Services",
+			},
+			wantErr:         false,
+			wantNrOfRecords: 10,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			mdRecords, err := cswClient.GetRecordsWithOGCFilter(&tt.args.filter, tt.args.logPrefix)
+			if !tt.wantErr {
+				assert.Nil(t, err)
+			}
+			assert.Len(t, mdRecords, tt.wantNrOfRecords)
+			for _, record := range mdRecords {
+				assert.Equal(t, tt.args.filter.MetadataType.String(), record.Type)
+			}
+		})
+	}
 }
 
 func TestCswClient_GetRecordById(t *testing.T) {
+	mockedNGRServer := preTestSetup()
+	cswClient := getCswClient(t, mockedNGRServer)
+
 	type args struct {
 		id        string
 		logPrefix string
@@ -90,8 +147,8 @@ func TestCswClient_GetRecordById(t *testing.T) {
 		{
 			name: "GetRecordById for Dataset",
 			args: args{
-				id:        "2350b86b-3efd-47e4-883e-519bfa8d0abd",
-				logPrefix: "UNITTEST_GetRecordById_Dataset",
+				id:        "C2DFBDBC-5092-11E0-BA8E-B62DE0D72085",
+				logPrefix: "TEST_CswClient_GetRecordById_Dataset",
 			},
 			wantErr:          false,
 			wantMetadataType: csw.Dataset,
@@ -99,8 +156,8 @@ func TestCswClient_GetRecordById(t *testing.T) {
 		{
 			name: "GetRecordById for Service",
 			args: args{
-				id:        "b7b9859e-c1ca-465d-83c2-f24c2d2567b4",
-				logPrefix: "UNITTEST_GetRecordById_Service",
+				id:        "C2DFBDBC-5092-11E0-BA8E-B62DE0D72086",
+				logPrefix: "TEST_CswClient_GetRecordById_Service",
 			},
 			wantErr:          false,
 			wantMetadataType: csw.Service,
@@ -108,8 +165,6 @@ func TestCswClient_GetRecordById(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cswClient, _ := getCswClient(cswHost, cswPath)
-
 			MDMetadata, err := cswClient.GetRecordById(tt.args.id, tt.args.logPrefix)
 			if !tt.wantErr {
 				assert.Nil(t, err)
@@ -129,13 +184,11 @@ func TestCswClient_GetRecordById(t *testing.T) {
 	}
 }
 
-func getCswClient(host string, path string) (*CswClient, error) {
-	h, err := url.Parse(host)
+func getCswClient(t *testing.T, mockedNGRServer *httptest.Server) *CswClient {
+	hostURL, err := url.Parse(mockedNGRServer.URL)
 	if err != nil {
-		return nil, err
+		t.Fatalf("Failed to parse mocked NGR server URL: %v", err)
 	}
-	h.Path = path
-
-	cswClient := NewCswClient(h)
-	return &cswClient, nil
+	cswClient := NewCswClient(hostURL)
+	return &cswClient
 }

@@ -15,6 +15,10 @@ const (
 	Dataset MetadataType = "dataset"
 )
 
+func (m MetadataType) String() string {
+	return string(m)
+}
+
 type GetRecordByIdResponse struct {
 	XMLName    xml.Name   `xml:"GetRecordByIdResponse"`
 	Text       string     `xml:",chardata"`
@@ -32,19 +36,19 @@ type GetRecordsResponse struct {
 	} `xml:"SearchResults"`
 }
 
-type GetRecordsConstraint struct {
+type GetRecordsCQLConstraint struct {
 	MetadataType     *MetadataType
 	OrganisationName *string
 }
 
-func (grc *GetRecordsConstraint) ToQueryParameter() (constraint string) {
+func (c *GetRecordsCQLConstraint) ToQueryParameter() (constraint string) {
 	var constraints []string
 
-	if grc.MetadataType != nil {
-		constraints = append(constraints, fmt.Sprintf("type='%s'", *grc.MetadataType))
+	if c.MetadataType != nil {
+		constraints = append(constraints, fmt.Sprintf("type='%s'", *c.MetadataType))
 	}
-	if grc.OrganisationName != nil {
-		constraints = append(constraints, fmt.Sprintf("OrganisationName='%s'", *grc.OrganisationName))
+	if c.OrganisationName != nil {
+		constraints = append(constraints, fmt.Sprintf("OrganisationName='%s'", *c.OrganisationName))
 	}
 	if len(constraints) == 0 {
 		return
@@ -61,6 +65,76 @@ func (grc *GetRecordsConstraint) ToQueryParameter() (constraint string) {
 		}
 	}
 	return
+}
+
+type GetRecordsOgcFilter struct {
+	MetadataType MetadataType
+	Title        *string
+	Identifier   *string
+}
+
+func (f *GetRecordsOgcFilter) ToRequestBody() (ogcFilter string, err error) {
+	template := `<csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" service="CSW" version="2.0.2" resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml" outputSchema="http://www.opengis.net/cat/csw/2.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd">
+	<csw:Query typeNames="csw:Record">
+		<csw:ElementSetName>full</csw:ElementSetName>
+                <csw:Constraint version="1.1.0">
+                <ogc:Filter>
+                    <ogc:And>
+%s
+%s
+                    </ogc:And>
+                </ogc:Filter>
+            </csw:Constraint>
+	</csw:Query>
+</csw:GetRecords>`
+
+	metadataTypeFilter := f.getPropertyIsEqualToClause("dc:type", f.MetadataType.String())
+
+	var filters []string
+	if f.Title != nil {
+		filters = append(filters, f.getPropertyIsLikeClause("dc:title", *f.Title))
+	}
+	if f.Identifier != nil {
+		filters = append(filters, f.getPropertyIsEqualToClause("dc:identifier", *f.Identifier))
+	}
+
+	var filter string
+	switch len(filters) {
+	case 0:
+		filter = ""
+	case 1:
+		filter = filters[0]
+	default:
+		filter = wrapFiltersInOrOperator(filters)
+	}
+
+	requestBody := fmt.Sprintf(template, metadataTypeFilter, filter)
+	return requestBody, nil
+}
+
+func wrapFiltersInOrOperator(filters []string) string {
+	template := `<ogc:Or>
+    %s
+</ogc:Or>`
+	return fmt.Sprintf(template, strings.Join(filters, "\n"))
+}
+
+func (f *GetRecordsOgcFilter) getPropertyIsLikeClause(property string, value string) (clause string) {
+	template := `<ogc:PropertyIsLike escapeChar="" wildCard="%%" singleChar="_">
+    <ogc:PropertyName>%s</ogc:PropertyName>
+    <ogc:Literal>%%%s%%</ogc:Literal>
+</ogc:PropertyIsLike>`
+
+	return fmt.Sprintf(template, property, value)
+}
+
+func (f *GetRecordsOgcFilter) getPropertyIsEqualToClause(property string, value string) (clause string) {
+	template := `<ogc:PropertyIsEqualTo>
+    <ogc:PropertyName>%s</ogc:PropertyName>
+    <ogc:Literal>%s</ogc:Literal>
+</ogc:PropertyIsEqualTo>`
+
+	return fmt.Sprintf(template, property, value)
 }
 
 type MDMetadata struct {

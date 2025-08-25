@@ -1,141 +1,87 @@
 package repository
 
 import (
-	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"github.com/stretchr/testify/assert"
+	"net/http/httptest"
+	"net/url"
 	"testing"
 )
 
-const cswHost = "https://nationaalgeoregister.nl/"
-const cswPath = "/geonetwork/srv/dut/csw"
-
-func TestMetadataRepository_GetDatasetMetadata(t *testing.T) {
-	logPrefix := "UNITTEST_GetDatasetMetadata"
-
-	mr, err := NewMetadataRepository(cswHost, cswPath)
-	assert.Nil(t, err)
-
-	metadataRecords, err := mr.GetDatasetMetadata(logPrefix, 123)
-	assert.Nil(t, err)
-	assert.Len(t, metadataRecords, 123)
-	for _, metadataRecord := range metadataRecords {
-		assert.NotNil(t, metadataRecord.MetadataId)
-	}
-}
-
 func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
+	mockedNGRServer := preTestSetup()
+	mr, err := NewMetadataRepository("", "")
+	if mr == nil {
+		assert.FailNow(t, "NewMetadataRepository is nil")
+		return
+	}
+
+	mr.CswClient = getCswClient(t, mockedNGRServer)
+
+	datasetId := "C2DFBDBC-5092-11E0-BA8E-B62DE0D72085"
 	logPrefix := "UNITTEST_GetDatasetMetadataById"
 
-	type args struct {
-		id        string
-		logPrefix string
-	}
+	metadataRecord, err := mr.GetDatasetMetadataById(datasetId, logPrefix)
+	assert.Nil(t, err)
 
-	tests := []struct {
-		name                 string
-		args                 args
-		wantErr              bool
-		wantTitle            string
-		wantAbstractContains string
-		wantContactName      string
-		wantContactEmail     string
-		wantKeywords         []string
-		wantLicenceUrl       string
-		wantThumbnailUrl     string
-		wantInspireVariant   inspire.InspireVariant
-		wantInspireThemes    []string
-		wantHVDCategories    []hvd.HVDCategory
-	}{
-		{
-			name: "GetDatasetMetadataById for BAG AsIs",
-			args: args{
-				id:        "aa3b5e6e-7baa-40c0-8972-3353e927ec2f",
-				logPrefix: logPrefix,
-			},
-			wantErr:              false,
-			wantTitle:            "Basisregistratie Adressen en gebouwen (BAG)",
-			wantAbstractContains: "De gegevens bestaan uit BAG-panden en een deelselectie van BAG-gegevens van deze panden en de zich daarin bevindende verblijfsobjecten.",
-			wantContactName:      "Klantcontactcenter",
-			wantContactEmail:     "bag@kadaster.nl",
-			wantKeywords:         []string{"Basisregistraties Adressen en Gebouwen", "BAG", "adres", "gebouw", "pand", "verblijfsobject", "ligplaats", "standplaats", "nummeraanduiding", "woonplaats", "basisset NOVEX", "Adressen", "Gebouwen", "Nationaal", "HVD", "Geospatiale data"},
-			wantLicenceUrl:       "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
-			wantThumbnailUrl:     "https://github.com/kadaster/metagegevens-voorbeelden/raw/master/Terugmeldingen_BAG.jpg",
-			wantInspireVariant:   inspire.AsIs,
-			wantInspireThemes:    []string{"ad", "bu"},
-			wantHVDCategories:    []hvd.HVDCategory{{Id: "c_ac64a52d"}},
-		},
-		{
-			name: "GetDatasetMetadataById for BAG Gebouwen Harmonized",
-			args: args{
-				id:        "b4ae622c-6201-49d8-bd2e-f7fce9206a1e",
-				logPrefix: logPrefix,
-			},
-			wantErr:              false,
-			wantTitle:            "Gebouwen - Buildings (INSPIRE geharmoniseerd)",
-			wantAbstractContains: "INSPIRE Gebouwen (Buildings)",
-			wantContactName:      "Klantcontactcenter",
-			wantContactEmail:     "kcc@kadaster.nl",
-			wantKeywords:         []string{"Gebouwen", "gebouwen", "buildings", "Nationaal", "HVD", "Geospatiale data"},
-			wantLicenceUrl:       "http://creativecommons.org/publicdomain/zero/1.0/deed.nl",
-			wantThumbnailUrl:     "",
-			wantInspireVariant:   inspire.Harmonized,
-			wantInspireThemes:    []string{"bu"},
-			wantHVDCategories:    []hvd.HVDCategory{{Id: "c_ac64a52d"}},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	assert.Equal(t, "Naam van de dataset (*)", metadataRecord.Title)
+	assert.Equal(t, "Samenvatting (*)", metadataRecord.Abstract)
+	assert.Equal(t, "persoon verantwoordelijk voor de dataset", metadataRecord.ContactName)
+	assert.Equal(t, "Email@organisatie.nl", metadataRecord.ContactEmail)
+	assert.Equal(t, []string{
+		"Beschermde gebieden",
+		"Habitats en biotopen",
+		"Nationaal",
+		"Verspreidingsgebied van habitattypen (Habitatrichtlijn)",
+		"Trefwoorden uit een andere thesaurus",
+		"Trefwoord zonder thesaurus",
+		"Tweede trefwoord zonder thesaurus",
+	}, metadataRecord.Keywords)
+	assert.Equal(t, "https://creativecommons.org/publicdomain/mark/*/deed.nl", metadataRecord.LicenceUrl)
+	assert.Equal(t, "URL naar voorbeeldweergave van de dataset", *metadataRecord.ThumbnailUrl)
 
-			mr, err := NewMetadataRepository(cswHost, cswPath)
-			assert.Nil(t, err)
+	expectedInspireVariant := (*inspire.InspireVariant)(nil)
+	assert.Equal(t, expectedInspireVariant, metadataRecord.InspireVariant)
 
-			metadataRecord, err := mr.GetDatasetMetadataById(tt.args.id, tt.args.logPrefix)
-			if !tt.wantErr {
-				assert.Nil(t, err)
-			}
+	var expectedKeywords []string = nil
+	assert.Equal(t, expectedKeywords, metadataRecord.InspireThemes)
 
-			assert.Equal(t, tt.wantTitle, metadataRecord.Title)
-			assert.Contains(t, metadataRecord.Abstract, tt.wantAbstractContains)
-			assert.Equal(t, tt.wantContactName, metadataRecord.ContactName)
-			assert.Equal(t, tt.wantContactEmail, metadataRecord.ContactEmail)
-			assert.Equal(t, tt.wantKeywords, metadataRecord.Keywords)
-			assert.Equal(t, tt.wantLicenceUrl, metadataRecord.LicenceUrl)
-			assert.Equal(t, &tt.wantThumbnailUrl, metadataRecord.ThumbnailUrl)
-			assert.Equal(t, tt.wantInspireVariant, *metadataRecord.InspireVariant)
-			assert.Equal(t, tt.wantInspireThemes, metadataRecord.InspireThemes)
-			assert.Equal(t, tt.wantHVDCategories, metadataRecord.HVDCategories)
-		})
-	}
+	var expectedHVDCategories []hvd.HVDCategory = nil
+	assert.Equal(t, expectedHVDCategories, metadataRecord.HVDCategories)
+
 }
 
-func TestMetadataRepository_HarvestSummaryRecords(t *testing.T) {
-	logPrefix := "UNITTEST_HarvestSummaryRecords"
-
-	mr, err := NewMetadataRepository(cswHost, cswPath)
-	assert.Nil(t, err)
-	records, err := mr.HarvestSummaryRecords(csw.Dataset, 50, logPrefix)
-
-	assert.Nil(t, err)
-
-	for _, record := range records {
-		assert.NotNil(t, record.Title)
-		assert.NotNil(t, record.Identifier)
+func TestMetadataRepository_SearchDatasetMetadata(t *testing.T) {
+	mockedNGRServer := preTestSetup()
+	mr, err := NewMetadataRepository("", "")
+	if mr == nil {
+		assert.FailNow(t, "NewMetadataRepository is nil")
+		return
 	}
+	mr.CswClient = getCswClient(t, mockedNGRServer)
+
+	title := "ataset titl"
+	logPrefix := "UNITTEST_GetDatasetMetadataById"
+
+	summaryRecords, err := mr.SearchDatasetMetadata(&title, nil, logPrefix)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, summaryRecords)
+
+	for _, summaryRecord := range summaryRecords {
+		assert.Contains(t, summaryRecord.Title, title)
+		assert.Equal(t, summaryRecord.Type, "dataset")
+	}
+
 }
 
-func TestMetadataRepository_HarvestMDMetadata(t *testing.T) {
-	logPrefix := "UNITTEST_HarvestMDMetadata"
-
-	mr, err := NewMetadataRepository(cswHost, cswPath)
-	assert.Nil(t, err)
-	records, err := mr.HarvestMDMetadata(csw.Dataset, 50, logPrefix)
-
-	assert.Nil(t, err)
-	assert.Len(t, records, 50)
-	for _, record := range records {
-		assert.NotNil(t, record.Title)
-		assert.NotNil(t, record.MetadataId)
+func getCswClient(t *testing.T, mockedNGRServer *httptest.Server) *client.CswClient {
+	hostURL, err := url.Parse(mockedNGRServer.URL)
+	if err != nil {
+		t.Fatalf("Failed to parse mocked NGR server URL: %v", err)
 	}
+	cswClient := client.NewCswClient(hostURL)
+	return &cswClient
 }

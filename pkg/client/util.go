@@ -5,12 +5,14 @@ import (
 	"encoding/xml"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
-func getUnmarshalledXMLResponse(resultStruct interface{}, url string, client http.Client, logPrefix string) error {
-	resp, err := getResponse(url, client, logPrefix)
+func getUnmarshalledXMLResponse(resultStruct interface{}, url string, method string, requestBody *string, client http.Client, logPrefix string) error {
+	resp, err := getResponse(url, method, requestBody, client, logPrefix)
 	if err != nil {
 		return err
 	}
@@ -29,7 +31,7 @@ func getUnmarshalledXMLResponse(resultStruct interface{}, url string, client htt
 }
 
 func getUnmarshalledJSONResponse(resultStruct interface{}, url string, client http.Client, logPrefix string) error {
-	resp, err := getResponse(url, client, logPrefix)
+	resp, err := getResponse(url, "GET", nil, client, logPrefix)
 	if err != nil {
 		return err
 	}
@@ -47,9 +49,14 @@ func getUnmarshalledJSONResponse(resultStruct interface{}, url string, client ht
 	return nil
 }
 
-func getResponse(url string, client http.Client, logPrefix string) (*http.Response, error) {
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "pdok.nl (inspire-etf-validator)")
+func getResponse(url string, method string, requestBody *string, client http.Client, logPrefix string) (*http.Response, error) {
+	var body io.Reader = nil
+	if method == "POST" && requestBody != nil {
+		body = strings.NewReader(*requestBody)
+	}
+	req, _ := http.NewRequest(method, url, body)
+
+	req.Header.Set("User-Agent", "pdok.nl (pdok-metadata-tool)")
 	req.Header.Set("Accept", "*/*;q=0.8,application/signed-exchange")
 	log.Infof("%s: get metadata using url %s", logPrefix, req.URL)
 	resp, err := client.Do(req)

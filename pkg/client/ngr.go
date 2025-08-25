@@ -24,6 +24,7 @@ func NewNgrClient(host *url.URL) NgrClient {
 	}
 }
 
+// TODO Use this for harvesting only INSPIRE service metadata in ETF-validator-go
 func (c NgrClient) GetRecordTags(uuid string, logPrefix string) (ngr.RecordTagsResponse, error) {
 	mdTagUrl := fmt.Sprintf("%s/geonetwork/srv/api/records/%s/tags", c.host.String(), uuid)
 

@@ -34,7 +34,7 @@ func (c CswClient) GetRecordById(uuid string, logPrefix string) (csw.MDMetadata,
 		"&id=" + uuid + "#MD_DataIdentification"
 
 	cswResponse := csw.GetRecordByIdResponse{}
-	err := getUnmarshalledXMLResponse(&cswResponse, cswUrl, *c.client, logPrefix)
+	err := getUnmarshalledXMLResponse(&cswResponse, cswUrl, "GET", nil, *c.client, logPrefix)
 	if err != nil {
 		return csw.MDMetadata{}, err
 	}
@@ -42,7 +42,8 @@ func (c CswClient) GetRecordById(uuid string, logPrefix string) (csw.MDMetadata,
 	return cswResponse.MDMetadata, nil
 }
 
-func (c CswClient) GetRecords(constraint *csw.GetRecordsConstraint, offset int, logPrefix string) ([]csw.SummaryRecord, int, error) {
+// TODO Use this for harvesting service metadata in ETF-validator-go
+func (c CswClient) GetRecords(constraint *csw.GetRecordsCQLConstraint, offset int, logPrefix string) ([]csw.SummaryRecord, int, error) {
 	cswUrl := c.host.String() +
 		"?service=CSW" +
 		"&request=GetRecords" +
@@ -56,7 +57,8 @@ func (c CswClient) GetRecords(constraint *csw.GetRecordsConstraint, offset int, 
 	}
 
 	var cswResponse = csw.GetRecordsResponse{}
-	err := getUnmarshalledXMLResponse(&cswResponse, cswUrl, *c.client, logPrefix)
+	err := getUnmarshalledXMLResponse(&cswResponse, cswUrl, "GET", nil, *c.client, logPrefix)
+
 	if err != nil {
 		return nil, -1, err
 	}
@@ -67,4 +69,26 @@ func (c CswClient) GetRecords(constraint *csw.GetRecordsConstraint, offset int, 
 	}
 
 	return cswResponse.SearchResults.SummaryRecords, nextRecord, nil
+}
+
+func (c CswClient) GetRecordsWithOGCFilter(filter *csw.GetRecordsOgcFilter, logPrefix string) ([]csw.SummaryRecord, error) {
+	cswUrl := c.host.String() +
+		"?service=CSW" +
+		"&request=GetRecords" +
+		"&version=2.0.2" +
+		"&typeNames=gmd:MD_Metadata" +
+		"&resultType=results"
+
+	var cswResponse = csw.GetRecordsResponse{}
+
+	requestBody, err := filter.ToRequestBody()
+	if err != nil {
+		return nil, err
+	}
+	err = getUnmarshalledXMLResponse(&cswResponse, cswUrl, "POST", &requestBody, *c.client, logPrefix)
+	if err != nil {
+		return nil, err
+	}
+
+	return cswResponse.SearchResults.SummaryRecords, nil
 }

@@ -4,7 +4,6 @@ import (
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/dataset"
-	log "github.com/sirupsen/logrus"
 	"net/url"
 )
 
@@ -26,11 +25,6 @@ func NewMetadataRepository(cswHost string, cswPath string) (*MetadataRepository,
 	}, nil
 }
 
-func (mr *MetadataRepository) GetDatasetMetadata(logPrefix string, limit int) (metadataRecords []dataset.NLDatasetMetadata, err error) {
-	metadataRecords, err = mr.HarvestMDMetadata(csw.Dataset, limit, logPrefix)
-	return
-}
-
 func (mr *MetadataRepository) GetDatasetMetadataById(id string, logPrefix string) (datasetMetadata *dataset.NLDatasetMetadata, err error) {
 	mdMetadata, err := mr.CswClient.GetRecordById(id, logPrefix)
 	if err != nil {
@@ -41,44 +35,12 @@ func (mr *MetadataRepository) GetDatasetMetadataById(id string, logPrefix string
 	return
 }
 
-func (mr *MetadataRepository) HarvestMDMetadata(metadataType csw.MetadataType, limit int, logPrefix string) (metadataRecords []dataset.NLDatasetMetadata, err error) {
-	summaryRecords, err := mr.HarvestSummaryRecords(metadataType, limit, logPrefix)
-	if err != nil {
-		return nil, err
+func (mr *MetadataRepository) SearchDatasetMetadata(title *string, id *string, logPrefix string) (records []csw.SummaryRecord, err error) {
+	filter := csw.GetRecordsOgcFilter{
+		MetadataType: csw.Dataset,
+		Title:        title,
+		Identifier:   id,
 	}
-	for _, summaryRecord := range summaryRecords {
-		if metadataRecord, err := mr.GetDatasetMetadataById(summaryRecord.Identifier, logPrefix); err != nil {
-			log.Warningf("Failed to get dataset metadata for id %s: %v", summaryRecord.Identifier, err)
-		} else {
-			metadataRecords = append(metadataRecords, *metadataRecord)
-		}
-	}
-	return
-}
-
-func (mr *MetadataRepository) HarvestSummaryRecords(metadataType csw.MetadataType, limit int, logPrefix string) (summaryRecords []csw.SummaryRecord, err error) {
-	var processed = 0
-	var offset = 1
-harvestSummaryRecordsLoop:
-	for {
-		constraint := csw.GetRecordsConstraint{MetadataType: &metadataType}
-		records, nextRecord, err := mr.CswClient.GetRecords(&constraint, offset, logPrefix)
-		if err != nil {
-			log.Fatalf("CSW Harvest could not determine if more records are available, %v", err)
-		}
-		for _, summaryRecord := range records {
-			summaryRecords = append(summaryRecords, summaryRecord)
-			processed++
-
-			if limit > 0 && processed >= limit {
-				break harvestSummaryRecordsLoop
-			}
-
-		}
-		if nextRecord == 0 {
-			break harvestSummaryRecordsLoop
-		}
-		offset = nextRecord
-	}
+	records, err = mr.CswClient.GetRecordsWithOGCFilter(&filter, logPrefix)
 	return
 }
