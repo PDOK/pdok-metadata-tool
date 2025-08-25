@@ -17,6 +17,13 @@ var InspireEnglish InspireRegisterLanguage = "en"
 var InspireRegisterKinds = []InspireRegisterKind{InspireKindTheme, InspireKindLayer}
 var InspireRegisterLanguages = []InspireRegisterLanguage{InspireDutch, InspireEnglish}
 
+type InspireVariant string
+
+const (
+	Harmonized InspireVariant = "HARMONIZED"
+	AsIs       InspireVariant = "ASIS"
+)
+
 // InspireItem is an interface that both InspireLayer and InspireTheme implement
 type InspireItem interface {
 	GetId() string

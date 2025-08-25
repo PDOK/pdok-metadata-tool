@@ -1,0 +1,140 @@
+<csw:GetRecordsResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd">
+	<csw:SearchStatus timestamp="2025-08-24T11:11:33.198Z"/>
+	<csw:SearchResults numberOfRecordsMatched="123"
+					   numberOfRecordsReturned="10"
+					   elementSet="summary"
+					   nextRecord="21">
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a831</dc:identifier>
+			<dc:title>Service title 1</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 1.1</dc:subject>
+			<dc:subject>Service subject 1.2</dc:subject>
+			<dc:subject>Service subject 1.3</dc:subject>
+			<dc:subject>Service subject 1.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 1</dct:abstract>
+		</csw:SummaryRecord>
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a832</dc:identifier>
+			<dc:title>Service title 2</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 2.1</dc:subject>
+			<dc:subject>Service subject 2.2</dc:subject>
+			<dc:subject>Service subject 2.3</dc:subject>
+			<dc:subject>Service subject 2.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 2</dct:abstract>
+		</csw:SummaryRecord>
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a833</dc:identifier>
+			<dc:title>Service title 3</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 3.1</dc:subject>
+			<dc:subject>Service subject 3.2</dc:subject>
+			<dc:subject>Service subject 3.3</dc:subject>
+			<dc:subject>Service subject 3.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 3</dct:abstract>
+		</csw:SummaryRecord>
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a834</dc:identifier>
+			<dc:title>Service title 4</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 4.1</dc:subject>
+			<dc:subject>Service subject 4.2</dc:subject>
+			<dc:subject>Service subject 4.3</dc:subject>
+			<dc:subject>Service subject 4.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 5</dct:abstract>
+		</csw:SummaryRecord>
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a835</dc:identifier>
+			<dc:title>Service title 5</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 5.1</dc:subject>
+			<dc:subject>Service subject 5.2</dc:subject>
+			<dc:subject>Service subject 5.3</dc:subject>
+			<dc:subject>Service subject 5.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 5</dct:abstract>
+		</csw:SummaryRecord>
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a836</dc:identifier>
+			<dc:title>Service title 6</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 6.1</dc:subject>
+			<dc:subject>Service subject 6.2</dc:subject>
+			<dc:subject>Service subject 6.3</dc:subject>
+			<dc:subject>Service subject 6.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 6</dct:abstract>
+		</csw:SummaryRecord>
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a837</dc:identifier>
+			<dc:title>Service title 7</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 7.1</dc:subject>
+			<dc:subject>Service subject 7.2</dc:subject>
+			<dc:subject>Service subject 7.3</dc:subject>
+			<dc:subject>Service subject 7.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 7</dct:abstract>
+		</csw:SummaryRecord>
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a838</dc:identifier>
+			<dc:title>Service title 8</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 8.1</dc:subject>
+			<dc:subject>Service subject 8.2</dc:subject>
+			<dc:subject>Service subject 8.3</dc:subject>
+			<dc:subject>Service subject 8.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 8</dct:abstract>
+		</csw:SummaryRecord>
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a839</dc:identifier>
+			<dc:title>Service title 9</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 9.1</dc:subject>
+			<dc:subject>Service subject 9.2</dc:subject>
+			<dc:subject>Service subject 9.3</dc:subject>
+			<dc:subject>Service subject 9.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 9</dct:abstract>
+		</csw:SummaryRecord>
+		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
+						   xmlns:dct="http://purl.org/dc/terms/"
+						   xmlns:geonet="http://www.fao.org/geonetwork">
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a810</dc:identifier>
+			<dc:title>Service title 10</dc:title>
+			<dc:type>service</dc:type>
+			<dc:subject>Service subject 10.1</dc:subject>
+			<dc:subject>Service subject 10.2</dc:subject>
+			<dc:subject>Service subject 10.3</dc:subject>
+			<dc:subject>Service subject 10.4</dc:subject>
+			<dct:modified>2024-10-30</dct:modified>
+			<dct:abstract>Service abstract 10</dct:abstract>
+		</csw:SummaryRecord>
+	</csw:SearchResults>
+</csw:GetRecordsResponse>
