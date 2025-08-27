@@ -10,9 +10,8 @@ import (
 )
 
 type NgrClient struct {
-	host      *url.URL
-	client    *http.Client
-	cswClient CswClient
+	host   *url.URL
+	client *http.Client
 }
 
 func NewNgrClient(host *url.URL) NgrClient {

@@ -10,9 +10,8 @@ import (
 )
 
 type CswClient struct {
-	host     *url.URL
-	endpoint string
-	client   *http.Client
+	host   *url.URL
+	client *http.Client
 }
 
 func NewCswClient(host *url.URL) CswClient {
