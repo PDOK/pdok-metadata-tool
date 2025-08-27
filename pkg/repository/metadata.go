@@ -1,10 +1,11 @@
 package repository
 
 import (
+	"net/url"
+
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/dataset"
-	"net/url"
 )
 
 type MetadataRepository struct {
@@ -25,8 +26,8 @@ func NewMetadataRepository(cswHost string, cswPath string) (*MetadataRepository,
 	}, nil
 }
 
-func (mr *MetadataRepository) GetDatasetMetadataById(id string, logPrefix string) (datasetMetadata *dataset.NLDatasetMetadata, err error) {
-	mdMetadata, err := mr.CswClient.GetRecordById(id, logPrefix)
+func (mr *MetadataRepository) GetDatasetMetadataById(id string) (datasetMetadata *dataset.NLDatasetMetadata, err error) {
+	mdMetadata, err := mr.CswClient.GetRecordById(id)
 	if err != nil {
 		return
 	}
@@ -35,12 +36,12 @@ func (mr *MetadataRepository) GetDatasetMetadataById(id string, logPrefix string
 	return
 }
 
-func (mr *MetadataRepository) SearchDatasetMetadata(title *string, id *string, logPrefix string) (records []csw.SummaryRecord, err error) {
+func (mr *MetadataRepository) SearchDatasetMetadata(title *string, id *string) (records []csw.SummaryRecord, err error) {
 	filter := csw.GetRecordsOgcFilter{
 		MetadataType: csw.Dataset,
 		Title:        title,
 		Identifier:   id,
 	}
-	records, err = mr.CswClient.GetRecordsWithOGCFilter(&filter, logPrefix)
+	records, err = mr.CswClient.GetRecordsWithOGCFilter(&filter)
 	return
 }

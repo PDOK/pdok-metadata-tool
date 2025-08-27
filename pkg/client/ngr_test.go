@@ -1,11 +1,12 @@
 package client
 
 import (
-	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
-	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNgrClient_GetRecordTags(t *testing.T) {
@@ -13,8 +14,7 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 	ngrClient := getNgrClient(t, mockedNGRServer)
 
 	type args struct {
-		uuid      string
-		logPrefix string
+		uuid string
 	}
 	tests := []struct {
 		name         string
@@ -26,8 +26,7 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 		{
 			name: "GetRecordTags_INSPIRE_Dataset",
 			args: args{
-				uuid:      "b4ae622c-6201-49d8-bd2e-f7fce9206a1e",
-				logPrefix: "TEST_NgrClient_GetRecordTags_INSPIRE_Dataset",
+				uuid: "b4ae622c-6201-49d8-bd2e-f7fce9206a1e",
 			},
 			wantNrOfTags: 1,
 			want: ngr.RecordTagsResponse{
@@ -44,8 +43,7 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 		}, {
 			name: "GetRecordTags_tagless_Dataset",
 			args: args{
-				uuid:      "c4bda1aa-d6e6-482c-a6f1-bd519e3202d4",
-				logPrefix: "TEST_NgrClient_GetRecordTags_tagless_Dataset",
+				uuid: "c4bda1aa-d6e6-482c-a6f1-bd519e3202d4",
 			},
 			wantNrOfTags: 0,
 			want:         ngr.RecordTagsResponse{},
@@ -54,7 +52,7 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ngrClient.GetRecordTags(tt.args.uuid, tt.args.logPrefix)
+			got, err := ngrClient.GetRecordTags(tt.args.uuid)
 
 			assert.Nil(t, err)
 			assert.Len(t, got, tt.wantNrOfTags)

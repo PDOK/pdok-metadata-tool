@@ -21,9 +21,7 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 	mr.CswClient = getCswClient(t, mockedNGRServer)
 
 	datasetId := "C2DFBDBC-5092-11E0-BA8E-B62DE0D72085"
-	logPrefix := "UNITTEST_GetDatasetMetadataById"
-
-	metadataRecord, err := mr.GetDatasetMetadataById(datasetId, logPrefix)
+	metadataRecord, err := mr.GetDatasetMetadataById(datasetId)
 	assert.Nil(t, err)
 
 	assert.Equal(t, "Naam van de dataset (*)", metadataRecord.Title)
@@ -63,9 +61,7 @@ func TestMetadataRepository_SearchDatasetMetadata(t *testing.T) {
 	mr.CswClient = getCswClient(t, mockedNGRServer)
 
 	title := "ataset titl"
-	logPrefix := "UNITTEST_GetDatasetMetadataById"
-
-	summaryRecords, err := mr.SearchDatasetMetadata(&title, nil, logPrefix)
+	summaryRecords, err := mr.SearchDatasetMetadata(&title, nil)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, summaryRecords)

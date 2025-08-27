@@ -4,52 +4,46 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )
 
-func getUnmarshalledXMLResponse(resultStruct interface{}, url string, method string, requestBody *string, client http.Client, logPrefix string) error {
-	resp, err := getResponse(url, method, requestBody, client, logPrefix)
+func getUnmarshalledXMLResponse(resultStruct interface{}, url string, method string, requestBody *string, client http.Client) error {
+	resp, err := getResponse(url, method, requestBody, client)
 	if err != nil {
 		return err
 	}
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Errorf("Read body: %v", err)
-		return fmt.Errorf("Error while reading NGR response from url %s ; %v.", url, err)
+		return fmt.Errorf("Error while reading NGR response from url: %s\n\n%v", url, err)
 	}
 
 	err = xml.Unmarshal(data, resultStruct)
 	if err != nil {
-		log.Errorf("Unmarshalling: %v", err)
-		return fmt.Errorf("Error unmarshalling NGR response from url %s ; %v.", url, err)
+		return fmt.Errorf("Error unmarshalling NGR response from url: %s\n\n%v", url, err)
 	}
 	return nil
 }
 
-func getUnmarshalledJSONResponse(resultStruct interface{}, url string, client http.Client, logPrefix string) error {
-	resp, err := getResponse(url, "GET", nil, client, logPrefix)
+func getUnmarshalledJSONResponse(resultStruct interface{}, url string, client http.Client) error {
+	resp, err := getResponse(url, "GET", nil, client)
 	if err != nil {
 		return err
 	}
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Errorf("Read body: %v", err)
-		return fmt.Errorf("Error while reading NGR response from url %s ; %v.", url, err)
+		return fmt.Errorf("Error while reading NGR response from url: %s\n\n%v", url, err)
 	}
 
 	err = json.Unmarshal(data, resultStruct)
 	if err != nil {
-		log.Errorf("Unmarshalling: %v", err)
-		return fmt.Errorf("Error unmarshalling NGR response from url %s ; %v.", url, err)
+		return fmt.Errorf("Error unmarshalling NGR response from url: %s\n\n%v", url, err)
 	}
 	return nil
 }
 
-func getResponse(url string, method string, requestBody *string, client http.Client, logPrefix string) (*http.Response, error) {
+func getResponse(url string, method string, requestBody *string, client http.Client) (*http.Response, error) {
 	var body io.Reader = nil
 	if method == "POST" && requestBody != nil {
 		body = strings.NewReader(*requestBody)
@@ -58,15 +52,13 @@ func getResponse(url string, method string, requestBody *string, client http.Cli
 
 	req.Header.Set("User-Agent", "pdok.nl (pdok-metadata-tool)")
 	req.Header.Set("Accept", "*/*;q=0.8,application/signed-exchange")
-	log.Infof("%s: get metadata using url %s", logPrefix, req.URL)
+	// log.Infof("get metadata using url %s", req.URL) // Used for debugging
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Errorf("Retrieving service fron NGR: %v", err)
-		return nil, fmt.Errorf("Error while calling NGR using url %s ; %v.", url, err)
+		return nil, fmt.Errorf("Error while calling NGR using url: %s\n\n%v", url, err)
 	}
 	if resp.StatusCode != 200 {
-		log.Errorf("Retrieving services from NGR: HTTP Statuscode %d", resp.StatusCode)
-		return nil, fmt.Errorf("Error while calling NGR using url %s ; http status is %d.", url, resp.StatusCode)
+		return nil, fmt.Errorf("Error while calling NGR using url %s\nhttp status is %d", url, resp.StatusCode)
 	}
 	return resp, nil
 }

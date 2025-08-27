@@ -15,7 +15,6 @@ func TestCswClient_GetRecords(t *testing.T) {
 	type args struct {
 		constraint csw.GetRecordsCQLConstraint
 		offset     int
-		logPrefix  string
 	}
 
 	dataset := csw.Dataset
@@ -35,8 +34,7 @@ func TestCswClient_GetRecords(t *testing.T) {
 					MetadataType:     &dataset,
 					OrganisationName: nil,
 				},
-				offset:    1,
-				logPrefix: "TEST_CswClient_GetRecords_Datasets",
+				offset: 1,
 			},
 			wantErr:         false,
 			wantNrOfRecords: 10,
@@ -49,8 +47,7 @@ func TestCswClient_GetRecords(t *testing.T) {
 					MetadataType:     &service,
 					OrganisationName: nil,
 				},
-				offset:    11,
-				logPrefix: "TEST_CswClient_GetRecords_Services",
+				offset: 11,
 			},
 			wantErr:         false,
 			wantNrOfRecords: 10,
@@ -60,7 +57,7 @@ func TestCswClient_GetRecords(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			mdRecords, nextRecord, err := cswClient.GetRecords(&tt.args.constraint, tt.args.offset, tt.args.logPrefix)
+			mdRecords, nextRecord, err := cswClient.GetRecords(&tt.args.constraint, tt.args.offset)
 			if !tt.wantErr {
 				assert.Nil(t, err)
 			}
@@ -78,8 +75,7 @@ func TestCswClient_GetRecordsWithOGCFilter(t *testing.T) {
 	cswClient := getCswClient(t, mockedNGRServer)
 
 	type args struct {
-		filter    csw.GetRecordsOgcFilter
-		logPrefix string
+		filter csw.GetRecordsOgcFilter
 	}
 
 	tests := []struct {
@@ -96,7 +92,6 @@ func TestCswClient_GetRecordsWithOGCFilter(t *testing.T) {
 					Title:        nil,
 					Identifier:   nil,
 				},
-				logPrefix: "TEST_CswClient_GetRecords_Datasets",
 			},
 			wantErr:         false,
 			wantNrOfRecords: 10,
@@ -109,7 +104,6 @@ func TestCswClient_GetRecordsWithOGCFilter(t *testing.T) {
 					Title:        nil,
 					Identifier:   nil,
 				},
-				logPrefix: "TEST_CswClient_GetRecords_Services",
 			},
 			wantErr:         false,
 			wantNrOfRecords: 10,
@@ -118,7 +112,7 @@ func TestCswClient_GetRecordsWithOGCFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			mdRecords, err := cswClient.GetRecordsWithOGCFilter(&tt.args.filter, tt.args.logPrefix)
+			mdRecords, err := cswClient.GetRecordsWithOGCFilter(&tt.args.filter)
 			if !tt.wantErr {
 				assert.Nil(t, err)
 			}
@@ -135,8 +129,7 @@ func TestCswClient_GetRecordById(t *testing.T) {
 	cswClient := getCswClient(t, mockedNGRServer)
 
 	type args struct {
-		id        string
-		logPrefix string
+		id string
 	}
 	tests := []struct {
 		name             string
@@ -147,8 +140,7 @@ func TestCswClient_GetRecordById(t *testing.T) {
 		{
 			name: "GetRecordById for Dataset",
 			args: args{
-				id:        "C2DFBDBC-5092-11E0-BA8E-B62DE0D72085",
-				logPrefix: "TEST_CswClient_GetRecordById_Dataset",
+				id: "C2DFBDBC-5092-11E0-BA8E-B62DE0D72085",
 			},
 			wantErr:          false,
 			wantMetadataType: csw.Dataset,
@@ -156,8 +148,7 @@ func TestCswClient_GetRecordById(t *testing.T) {
 		{
 			name: "GetRecordById for Service",
 			args: args{
-				id:        "C2DFBDBC-5092-11E0-BA8E-B62DE0D72086",
-				logPrefix: "TEST_CswClient_GetRecordById_Service",
+				id: "C2DFBDBC-5092-11E0-BA8E-B62DE0D72086",
 			},
 			wantErr:          false,
 			wantMetadataType: csw.Service,
@@ -165,7 +156,7 @@ func TestCswClient_GetRecordById(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			MDMetadata, err := cswClient.GetRecordById(tt.args.id, tt.args.logPrefix)
+			MDMetadata, err := cswClient.GetRecordById(tt.args.id)
 			if !tt.wantErr {
 				assert.Nil(t, err)
 			}

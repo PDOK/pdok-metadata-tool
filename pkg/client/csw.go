@@ -25,7 +25,7 @@ func NewCswClient(host *url.URL) CswClient {
 	}
 }
 
-func (c CswClient) GetRecordById(uuid string, logPrefix string) (csw.MDMetadata, error) {
+func (c CswClient) GetRecordById(uuid string) (csw.MDMetadata, error) {
 	cswUrl := c.host.String() +
 		"?service=CSW" +
 		"&request=GetRecordById" +
@@ -34,7 +34,7 @@ func (c CswClient) GetRecordById(uuid string, logPrefix string) (csw.MDMetadata,
 		"&id=" + uuid + "#MD_DataIdentification"
 
 	cswResponse := csw.GetRecordByIdResponse{}
-	err := getUnmarshalledXMLResponse(&cswResponse, cswUrl, "GET", nil, *c.client, logPrefix)
+	err := getUnmarshalledXMLResponse(&cswResponse, cswUrl, "GET", nil, *c.client)
 	if err != nil {
 		return csw.MDMetadata{}, err
 	}
@@ -43,7 +43,7 @@ func (c CswClient) GetRecordById(uuid string, logPrefix string) (csw.MDMetadata,
 }
 
 // TODO Use this for harvesting service metadata in ETF-validator-go
-func (c CswClient) GetRecords(constraint *csw.GetRecordsCQLConstraint, offset int, logPrefix string) ([]csw.SummaryRecord, int, error) {
+func (c CswClient) GetRecords(constraint *csw.GetRecordsCQLConstraint, offset int) ([]csw.SummaryRecord, int, error) {
 	cswUrl := c.host.String() +
 		"?service=CSW" +
 		"&request=GetRecords" +
@@ -57,7 +57,7 @@ func (c CswClient) GetRecords(constraint *csw.GetRecordsCQLConstraint, offset in
 	}
 
 	var cswResponse = csw.GetRecordsResponse{}
-	err := getUnmarshalledXMLResponse(&cswResponse, cswUrl, "GET", nil, *c.client, logPrefix)
+	err := getUnmarshalledXMLResponse(&cswResponse, cswUrl, "GET", nil, *c.client)
 
 	if err != nil {
 		return nil, -1, err
@@ -71,7 +71,7 @@ func (c CswClient) GetRecords(constraint *csw.GetRecordsCQLConstraint, offset in
 	return cswResponse.SearchResults.SummaryRecords, nextRecord, nil
 }
 
-func (c CswClient) GetRecordsWithOGCFilter(filter *csw.GetRecordsOgcFilter, logPrefix string) ([]csw.SummaryRecord, error) {
+func (c CswClient) GetRecordsWithOGCFilter(filter *csw.GetRecordsOgcFilter) ([]csw.SummaryRecord, error) {
 	cswUrl := c.host.String() +
 		"?service=CSW" +
 		"&request=GetRecords" +
@@ -85,7 +85,7 @@ func (c CswClient) GetRecordsWithOGCFilter(filter *csw.GetRecordsOgcFilter, logP
 	if err != nil {
 		return nil, err
 	}
-	err = getUnmarshalledXMLResponse(&cswResponse, cswUrl, "POST", &requestBody, *c.client, logPrefix)
+	err = getUnmarshalledXMLResponse(&cswResponse, cswUrl, "POST", &requestBody, *c.client)
 	if err != nil {
 		return nil, err
 	}
