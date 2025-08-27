@@ -64,27 +64,35 @@ func buildMockWebserverNgr() *httptest.Server {
 				writeOkResponse("./testdata/CSW_GetRecordsResponse_Dataset.xml", rw, ContentTypeXML)
 			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results&startPosition=11&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0&constraint=type='service'":
 				writeOkResponse("./testdata/CSW_GetRecordsResponse_Service.xml", rw, ContentTypeXML)
-			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results":
-				bodyBytes, err := io.ReadAll(req.Body)
-				if err != nil {
-					http.Error(rw, "Error reading body", http.StatusInternalServerError)
-					return
-				}
-				defer req.Body.Close()
-
-				requestBody := string(bodyBytes)
-
-				if strings.Contains(requestBody, "<ogc:PropertyName>dc:type</ogc:PropertyName>") {
-					if strings.Contains(requestBody, "<ogc:Literal>service</ogc:Literal>") {
-						writeOkResponse("./testdata/CSW_GetRecordsResponse_Service.xml", rw, ContentTypeXML)
-					} else if strings.Contains(requestBody, "<ogc:Literal>dataset</ogc:Literal>") {
-						writeOkResponse("./testdata/CSW_GetRecordsResponse_Dataset.xml", rw, ContentTypeXML)
-					}
-				}
 			default:
 				log.Infof("no handler for request %s in test setup", req.URL.String())
 				rw.WriteHeader(http.StatusNotFound)
 				return
+			}
+		case url == "/":
+			bodyBytes, err := io.ReadAll(req.Body)
+			if err != nil {
+				http.Error(rw, "Error reading body", http.StatusInternalServerError)
+				return
+			}
+			defer req.Body.Close()
+
+			requestBody := string(bodyBytes)
+			bodyMatched := false
+
+			if strings.Contains(requestBody, "<ogc:PropertyName>dc:type</ogc:PropertyName>") {
+				if strings.Contains(requestBody, "<ogc:Literal>service</ogc:Literal>") {
+					writeOkResponse("./testdata/CSW_GetRecordsResponse_Service.xml", rw, ContentTypeXML)
+					bodyMatched = true
+				} else if strings.Contains(requestBody, "<ogc:Literal>dataset</ogc:Literal>") {
+					writeOkResponse("./testdata/CSW_GetRecordsResponse_Dataset.xml", rw, ContentTypeXML)
+					bodyMatched = true
+				}
+			}
+
+			if !bodyMatched {
+				log.Infof("no handler for request %s in test setup", req.URL.String())
+				rw.WriteHeader(http.StatusNotFound)
 			}
 		default:
 			log.Infof("no handler for request %s in test setup", req.URL.String())

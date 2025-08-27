@@ -34,6 +34,7 @@ func (c CswClient) GetRecordById(uuid string) (csw.MDMetadata, error) {
 
 	cswResponse := csw.GetRecordByIdResponse{}
 	err := getUnmarshalledXMLResponse(&cswResponse, cswUrl, "GET", nil, *c.client)
+
 	if err != nil {
 		return csw.MDMetadata{}, err
 	}
@@ -71,20 +72,13 @@ func (c CswClient) GetRecords(constraint *csw.GetRecordsCQLConstraint, offset in
 }
 
 func (c CswClient) GetRecordsWithOGCFilter(filter *csw.GetRecordsOgcFilter) ([]csw.SummaryRecord, error) {
-	cswUrl := c.host.String() +
-		"?service=CSW" +
-		"&request=GetRecords" +
-		"&version=2.0.2" +
-		"&typeNames=gmd:MD_Metadata" +
-		"&resultType=results"
-
-	var cswResponse = csw.GetRecordsResponse{}
-
 	requestBody, err := filter.ToRequestBody()
 	if err != nil {
 		return nil, err
 	}
-	err = getUnmarshalledXMLResponse(&cswResponse, cswUrl, "POST", &requestBody, *c.client)
+
+	var cswResponse = csw.GetRecordsResponse{}
+	err = getUnmarshalledXMLResponse(&cswResponse, c.host.String(), "POST", &requestBody, *c.client)
 	if err != nil {
 		return nil, err
 	}

@@ -52,6 +52,7 @@ func getResponse(url string, method string, requestBody *string, client http.Cli
 
 	req.Header.Set("User-Agent", "pdok.nl (pdok-metadata-tool)")
 	req.Header.Set("Accept", "*/*;q=0.8,application/signed-exchange")
+	req.Header.Set("Content-Type", "application/xml")
 	// log.Infof("get metadata using url %s", req.URL) // Used for debugging
 	resp, err := client.Do(req)
 	if err != nil {

@@ -76,13 +76,10 @@ type GetRecordsOgcFilter struct {
 func (f *GetRecordsOgcFilter) ToRequestBody() (ogcFilter string, err error) {
 	template := `<csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" service="CSW" version="2.0.2" resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml" outputSchema="http://www.opengis.net/cat/csw/2.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd">
 	<csw:Query typeNames="csw:Record">
-		<csw:ElementSetName>full</csw:ElementSetName>
+		<csw:ElementSetName>summary</csw:ElementSetName>
                 <csw:Constraint version="1.1.0">
                 <ogc:Filter>
-                    <ogc:And>
-%s
-%s
-                    </ogc:And>
+                    %s
                 </ogc:Filter>
             </csw:Constraint>
 	</csw:Query>
@@ -91,24 +88,24 @@ func (f *GetRecordsOgcFilter) ToRequestBody() (ogcFilter string, err error) {
 	metadataTypeFilter := f.getPropertyIsEqualToClause("dc:type", f.MetadataType.String())
 
 	var filters []string
-	if f.Title != nil {
+	if f.Title != nil && len(*f.Title) > 0 {
 		filters = append(filters, f.getPropertyIsLikeClause("dc:title", *f.Title))
 	}
-	if f.Identifier != nil {
+	if f.Identifier != nil && len(*f.Identifier) > 0 {
 		filters = append(filters, f.getPropertyIsEqualToClause("dc:identifier", *f.Identifier))
 	}
 
 	var filter string
 	switch len(filters) {
 	case 0:
-		filter = ""
+		filter = metadataTypeFilter
 	case 1:
-		filter = filters[0]
+		filter = wrapFiltersInAndOperator([]string{metadataTypeFilter, filters[0]})
 	default:
-		filter = wrapFiltersInOrOperator(filters)
+		filter = wrapFiltersInAndOperator([]string{metadataTypeFilter, wrapFiltersInOrOperator(filters)})
 	}
 
-	requestBody := fmt.Sprintf(template, metadataTypeFilter, filter)
+	requestBody := fmt.Sprintf(template, filter)
 	return requestBody, nil
 }
 
@@ -116,6 +113,13 @@ func wrapFiltersInOrOperator(filters []string) string {
 	template := `<ogc:Or>
     %s
 </ogc:Or>`
+	return fmt.Sprintf(template, strings.Join(filters, "\n"))
+}
+
+func wrapFiltersInAndOperator(filters []string) string {
+	template := `<ogc:And>
+    %s
+</ogc:And>`
 	return fmt.Sprintf(template, strings.Join(filters, "\n"))
 }
 
@@ -215,7 +219,7 @@ type MDMetadata struct {
 	} `xml:"distributionInfo>MD_Distribution>transferOptions>MD_DigitalTransferOptions>onLine"`
 	DQDataQuality struct {
 		Report []struct {
-			ConsistencyResult struct {
+			ConsistencyResult []struct {
 				SpecificationAnchor Anchor `xml:"DQ_ConformanceResult>specification>CI_Citation>title>Anchor"`
 				SpecificationTitle  string `xml:"DQ_ConformanceResult>specification>CI_Citation>title>CharacterString"`
 				Explanation         string `xml:"DQ_ConformanceResult>explanation>CharacterString"`
@@ -274,36 +278,38 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 	asIs := inspire.AsIs
 
 	for _, report := range m.DQDataQuality.Report {
-		if strings.Contains(report.ConsistencyResult.SpecificationTitle, inspireRegulation) {
-			isInspire = true
-		}
-		if strings.HasPrefix(report.ConsistencyResult.SpecificationTitle, "INSPIRE") && report.ConsistencyResult.Pass != "true" {
-			isConformant = false
+		for _, result := range report.ConsistencyResult {
+			hasInspireRegulation := strings.Contains(result.SpecificationTitle, inspireRegulation)
+			hasInspireSpecTitle := strings.HasPrefix(result.SpecificationTitle, "INSPIRE")
+
+			if hasInspireRegulation {
+				isInspire = true
+			}
+			if hasInspireSpecTitle && result.Pass != "true" {
+				isConformant = false
+			}
 		}
 	}
 
 	switch {
 	case isInspire && isConformant:
 		return &harmonized
-	case isInspire && !isConformant:
+	case isInspire:
 		return &asIs
 	default:
 		return nil
 	}
-
 }
 
 func (m *MDMetadata) GetInspireThemes() (themes []string) {
 	for _, descriptiveKeyword := range m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords {
 		if descriptiveKeyword.MDKeywords.ThesaurusName.Href == "http://www.eionet.europa.eu/gemet/inspire_themes" {
 			for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
-
 				inspireThemeHrefPrefix := "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
 				if strings.Contains(keyword.Anchor.Href, inspireThemeHrefPrefix) {
 					themeValue := strings.ReplaceAll(keyword.Anchor.Href, inspireThemeHrefPrefix, "")
 					themes = append(themes, themeValue)
 				}
-
 			}
 		}
 	}
@@ -327,7 +333,7 @@ func (m *MDMetadata) GetHVDCategories() (categories []hvd.HVDCategory) {
 }
 
 type SummaryRecord struct {
-	Identifier string `xml:"identifier"`
-	Title      string `xml:"title"`
-	Type       string `xml:"type"`
+	Identifier string `xml:"identifier" json:"identifier"`
+	Title      string `xml:"title" json:"title"`
+	Type       string `xml:"type" json:"type"`
 }
