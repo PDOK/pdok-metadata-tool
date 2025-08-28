@@ -1,14 +1,13 @@
 package dataset
 
 import (
-	"github.com/google/uuid"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 )
 
 type NLDatasetMetadata struct {
-	MetadataId     uuid.UUID
+	MetadataId     string
 	SourceId       string
 	Title          string
 	Abstract       string
@@ -24,13 +23,13 @@ type NLDatasetMetadata struct {
 
 func NewNLDatasetMetadataFromMDMetadata(m *csw.MDMetadata) *NLDatasetMetadata {
 	// TODO What to do with invalid uuids?
-	metadataId, err := uuid.Parse(m.UUID)
-	if err != nil {
-		metadataId = uuid.Nil
-	}
+	//metadataId, err := uuid.Parse(m.UUID)
+	//if err != nil {
+	//	metadataId = uuid.Nil
+	//}
 
 	return &NLDatasetMetadata{
-		MetadataId:     metadataId,
+		MetadataId:     m.UUID,
 		SourceId:       m.UUID,
 		Title:          m.IdentificationInfo.MDDataIdentification.Title,
 		Abstract:       m.IdentificationInfo.MDDataIdentification.Abstract,

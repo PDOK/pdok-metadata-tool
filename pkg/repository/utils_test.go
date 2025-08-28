@@ -37,8 +37,7 @@ func buildMockWebserverNgr() *httptest.Server {
 			if err != nil {
 				log.Errorf("%v", err)
 			}
-		case "/?service=CSW&request=GetRecords&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results":
-
+		case "/":
 			bodyBytes, err := io.ReadAll(req.Body)
 			if err != nil {
 				http.Error(rw, "Error reading body", http.StatusInternalServerError)
@@ -64,7 +63,6 @@ func buildMockWebserverNgr() *httptest.Server {
 					log.Errorf("%v", err)
 				}
 			}
-
 		default:
 			log.Infof("no handler for request %s in test setup", req.URL.String())
 			rw.WriteHeader(http.StatusNotFound)
