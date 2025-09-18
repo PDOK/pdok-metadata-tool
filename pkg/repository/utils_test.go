@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+const GetRecordById = "/?service=CSW&request=GetRecordById"
+
 func preTestSetup() *httptest.Server {
 	ngrServer := buildMockWebserverNgr()
 	return ngrServer
@@ -18,12 +20,23 @@ func preTestSetup() *httptest.Server {
 func buildMockWebserverNgr() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 
-		test := req.URL.String()
-		fmt.Print(test)
-		switch req.URL.String() {
-		case "/?service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=C2DFBDBC-5092-11E0-BA8E-B62DE0D72085":
+		switch url := req.URL.String(); {
+		case strings.HasPrefix(url, GetRecordById):
+			responsePath := ""
+			switch path := strings.TrimPrefix(url, GetRecordById); path {
+			case "&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=C2DFBDBC-5092-11E0-BA8E-B62DE0D72085":
+				responsePath = "../../examples/ISO19115/Voorbeeld_Metadata_Dataset_2022_max.xml"
+			case "&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=3703b249-a0eb-484e-ba7a-10e31a55bcec":
+				responsePath = "../../examples/ISO19115/Invasieve_Exoten_INSPIRE_geharmoniseerd.xml"
+			case "&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=07575774-57a1-4419-bab4-6c88fdeb02b2":
+				responsePath = "../../examples/ISO19115/Waterschappen_Hydrografie_INSPIRE_geharmoniseerd.xml"
+			case "&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=19165027-a13a-4c19-9013-ec1fd191019d":
+				responsePath = "../../examples/ISO19115/Wetlands_INSPIRE_geharmoniseerd.xml"
+			default:
+				log.Infof("no handler for request %s in test setup", req.URL.String())
+				rw.WriteHeader(http.StatusNotFound)
+			}
 
-			responsePath := "../../examples/ISO19115/Voorbeeld_Metadata_Dataset_2022_max.xml"
 			metadataResponse, err := readFileToString(responsePath)
 			if err != nil {
 				log.Errorf("%v", err)
@@ -37,7 +50,7 @@ func buildMockWebserverNgr() *httptest.Server {
 			if err != nil {
 				log.Errorf("%v", err)
 			}
-		case "/":
+		case url == "/":
 			bodyBytes, err := io.ReadAll(req.Body)
 			if err != nil {
 				http.Error(rw, "Error reading body", http.StatusInternalServerError)
