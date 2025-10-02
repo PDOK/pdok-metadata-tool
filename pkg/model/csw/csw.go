@@ -201,7 +201,10 @@ type MDMetadata struct {
 							CodeListValue string `xml:"codeListValue,attr"`
 						} `xml:"MD_KeywordTypeCode"`
 					} `xml:"type"`
-					ThesaurusName Anchor `xml:"thesaurusName>CI_Citation>title>Anchor"`
+					Thesaurus struct {
+						CharacterString string `xml:"CharacterString"`
+						Anchor          Anchor `xml:"Anchor"`
+					} `xml:"thesaurusName>CI_Citation>title"`
 				} `xml:"MD_Keywords"`
 			} `xml:"descriptiveKeywords"`
 			ContactName  string   `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
@@ -220,10 +223,12 @@ type MDMetadata struct {
 	DQDataQuality struct {
 		Report []struct {
 			ConsistencyResult []struct {
-				SpecificationAnchor Anchor `xml:"DQ_ConformanceResult>specification>CI_Citation>title>Anchor"`
-				SpecificationTitle  string `xml:"DQ_ConformanceResult>specification>CI_Citation>title>CharacterString"`
-				Explanation         string `xml:"DQ_ConformanceResult>explanation>CharacterString"`
-				Pass                string `xml:"DQ_ConformanceResult>pass>Boolean"`
+				Specification struct {
+					CharacterString string `xml:"CharacterString"`
+					Anchor          Anchor `xml:"Anchor"`
+				} `xml:"DQ_ConformanceResult>specification>CI_Citation>title"`
+				Explanation string `xml:"DQ_ConformanceResult>explanation>CharacterString"`
+				Pass        string `xml:"DQ_ConformanceResult>pass>Boolean"`
 			} `xml:"DQ_DomainConsistency>result"`
 		} `xml:"report"`
 	} `xml:"dataQualityInfo>DQ_DataQuality"`
@@ -279,8 +284,15 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 
 	for _, report := range m.DQDataQuality.Report {
 		for _, result := range report.ConsistencyResult {
-			hasInspireRegulation := strings.Contains(result.SpecificationTitle, inspireRegulation)
-			hasInspireSpecTitle := strings.HasPrefix(result.SpecificationTitle, "INSPIRE")
+			specificationTitle := ""
+			if result.Specification.CharacterString != "" {
+				specificationTitle = result.Specification.CharacterString
+			} else if result.Specification.Anchor.Text != "" {
+				specificationTitle = result.Specification.Anchor.Text
+			}
+
+			hasInspireRegulation := strings.Contains(specificationTitle, inspireRegulation)
+			hasInspireSpecTitle := strings.HasPrefix(specificationTitle, "INSPIRE")
 
 			if hasInspireRegulation {
 				isInspire = true
@@ -302,13 +314,27 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 }
 
 func (m *MDMetadata) GetInspireThemes() (themes []string) {
+	const thesaurusName = "GEMET - INSPIRE themes, version 1.0"
+	const thesaurusVocabularyDutch = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+
 	for _, descriptiveKeyword := range m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords {
-		if descriptiveKeyword.MDKeywords.ThesaurusName.Href == "http://www.eionet.europa.eu/gemet/inspire_themes" {
+		thesaurus := descriptiveKeyword.MDKeywords.Thesaurus
+		if thesaurus.CharacterString == thesaurusName || thesaurus.Anchor.Text == thesaurusName {
 			for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
-				inspireThemeHrefPrefix := "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
-				if strings.Contains(keyword.Anchor.Href, inspireThemeHrefPrefix) {
-					themeValue := strings.ReplaceAll(keyword.Anchor.Href, inspireThemeHrefPrefix, "")
-					themes = append(themes, themeValue)
+				if keyword.Anchor.Href != "" {
+					// Try to get the INSPIRE theme from the anchor
+					// according to TG Recommendation 1.5: metadata/2.0/rec/datasets-and-series/use-anchors-for-gemet
+					if strings.Contains(keyword.Anchor.Href, thesaurusVocabularyDutch) {
+						theme := strings.ReplaceAll(keyword.Anchor.Href, thesaurusVocabularyDutch, "")
+						themes = append(themes, theme)
+					}
+				} else if keyword.CharacterString != "" {
+					// Otherwise match the keyword with values of the GEMET vocabulary
+					// according to TG Requirement 1.4: metadata/2.0/req/datasets-and-series/inspire-theme-keyword
+					theme := inspire.GetInspireThemeIdForDutchLabel(keyword.CharacterString)
+					if theme != "" {
+						themes = append(themes, theme)
+					}
 				}
 			}
 		}
@@ -318,13 +344,15 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 }
 
 func (m *MDMetadata) GetHVDCategories() (categories []hvd.HVDCategory) {
+	const thesaurusVocabulary = "http://data.europa.eu/bna/"
+
 	for _, descriptiveKeyword := range m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords {
-		if descriptiveKeyword.MDKeywords.ThesaurusName.Href == "http://publications.europa.eu/resource/dataset/high-value-dataset-category" {
-			for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
-				hvdCategoryHrefPrefix := "http://data.europa.eu/bna/"
-				if strings.Contains(keyword.Anchor.Href, hvdCategoryHrefPrefix) {
-					categoryValue := strings.ReplaceAll(keyword.Anchor.Href, hvdCategoryHrefPrefix, "")
-					categories = append(categories, hvd.HVDCategory{Id: categoryValue})
+		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
+			if keyword.Anchor.Href != "" {
+				if strings.Contains(keyword.Anchor.Href, thesaurusVocabulary) {
+					parts := strings.Split(keyword.Anchor.Href, "/")
+					category := parts[len(parts)-1]
+					categories = append(categories, hvd.HVDCategory{Id: category})
 				}
 			}
 		}
