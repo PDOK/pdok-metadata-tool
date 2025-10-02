@@ -1,0 +1,44 @@
+globals:
+  contactOrganisationName: "Beheer PDOK"
+  contactOrganisationUri: "http://standaarden.overheid.nl/owms/terms/pdok"
+  contactEmail: "beheerpdok@kadaster.nl"
+  contactUrl: "https://www.pdok.nl/contact"
+  qosAvailability: 99.999
+  qosPerformance: 1
+  qosCapacity: 100
+  title: "Test regular"
+  creationDate: "2019-09-26"
+  abstract: "Unit test regular"
+  keywords:
+    - "AA"
+    - "BB"
+  serviceLicense: "https://creativecommons.org/licenses/by/4.0/deed.nl"
+  useLimitation: "Geen beperkingen"
+  boundingBox:
+    minX: "3.2062529"
+    maxX: "7.2452583"
+    minY: "50.733607"
+    maxY: "53.582979"
+  linkedDatasets:
+    - "00000000-0000-0000-0000-000000000003"
+  coordinateReferenceSystem: "EPSG:28992"
+  thumbnails:
+    - file: "https://test.nl/thumb.png"
+      description: "thumbnail"
+      filetype: "png"
+services:
+  - type: wfs
+    id: "00000000-0000-0000-0000-000000000001"
+    accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
+    inspireType: "harmonised"
+    keywords:
+      - "AA"
+      - "BB"
+      - "CCC"
+  - type: wms
+    id: "00000000-0000-0000-0000-000000000002"
+    accessPoint: "https://test.nl/test/wms?request=GetCapabilities&service=WMS"
+    keywords:
+      - "AA"
+      - "BB"
+      - "CCC"

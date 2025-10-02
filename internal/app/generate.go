@@ -3,7 +3,12 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/pkg/generator"
 	"github.com/urfave/cli/v3"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 func init() {
@@ -20,9 +25,52 @@ func init() {
 						Required: true,
 						Usage:    "Path to input file containing service specifics in json, yml or yaml format. See config-example for an example of the input file.",
 					},
+					&cli.StringFlag{
+						Name:     "output_dir",
+						Required: false,
+						Usage:    "Location used to store service metadata as xml. If omitted the current working directory is used.",
+					},
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					fmt.Printf("Hello %q", cmd.Args().Get(0))
+
+					inputFile := cmd.String("input_file_service_specifics")
+					if inputFile == "" {
+						return fmt.Errorf("input file for service specifics (--input_file_service_specifics) is required")
+					}
+
+					outputDir := cmd.String("output_dir")
+					if outputDir == "" {
+						// Use current working directory if not provided
+						cwd, err := os.Getwd()
+						if err != nil {
+							return fmt.Errorf("failed to get current working directory: %w", err)
+						}
+						outputDir = cwd
+					}
+
+					var serviceSpecifics generator.ServiceSpecifics
+					err := serviceSpecifics.LoadFromYAML(inputFile)
+					if err != nil {
+						return err
+					}
+
+					err = serviceSpecifics.Validate()
+					if err != nil {
+						return err
+					}
+
+					ISO19119generator, err := generator.NewISO19119Generator(serviceSpecifics, outputDir)
+					if err != nil {
+						return err
+					}
+
+					err = ISO19119generator.Generate()
+					if err != nil {
+						return err
+					}
+
+					ISO19119generator.PrintSummary()
+
 					return nil
 				},
 			},
@@ -37,7 +85,30 @@ func init() {
 					},
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					fmt.Printf("Hello %q", cmd.Args().Get(0))
+					outputFormat := cmd.String("o")
+					if outputFormat == "" {
+						return fmt.Errorf("outputFormat (--o) is required")
+					}
+
+					projRoot := common.GetProjectRoot()
+					filename := ""
+
+					switch strings.ToLower(outputFormat) {
+					case "yaml", "yml":
+						filename = "example.yaml"
+					case "json":
+						filename = "example.json"
+					default:
+						return fmt.Errorf("unsupported output format: %s", outputFormat)
+					}
+
+					path := filepath.Join(projRoot, "examples/service_specifics/", filename)
+					data, err := os.ReadFile(path)
+					if err != nil {
+						return fmt.Errorf("failed to read input file: %w", err)
+					}
+					fmt.Print(string(data))
+
 					return nil
 				},
 			},

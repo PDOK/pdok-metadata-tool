@@ -4,8 +4,12 @@ The scope for this toolset is internal usage for [PDOK](pdok.nl).
 
 ## Building the Project
 
-You can build the project using the `generate.go` script:
+You can build the project using the `generate.go` script, i.e. from the project root:
+```bash
+go run ./cmd/generate/generate.go
+```
 
+or from a specific directory:
 ```bash
 cd cmd/generate
 go run generate.go
@@ -13,7 +17,7 @@ go run generate.go
 
 This will:
 1. Generate CLI documentation in `docs/README.md`
-2. Build the `pmt` executable in the project root
+2. Build the `pmt` executable in the current directory
 
 ## CLI Usage
 

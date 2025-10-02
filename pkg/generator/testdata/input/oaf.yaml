@@ -1,0 +1,32 @@
+globals:
+  contactOrganisationName: "Beheer PDOK"
+  contactOrganisationUri: "http://standaarden.overheid.nl/owms/terms/pdok"
+  contactEmail: "beheerpdok@kadaster.nl"
+  contactUrl: "https://www.pdok.nl/contact"
+  qosAvailability: 99.999
+  qosPerformance: 1
+  qosCapacity: 100
+  title: "Test OAF"
+  creationDate: "2024-04-01"
+  abstract: "Unit test OAF"
+  keywords:
+    - "AA"
+    - "BB"
+  serviceLicense: "https://creativecommons.org/licenses/by/4.0/deed.nl"
+  useLimitation: "Geen beperkingen"
+  boundingBox:
+    minX: "3.2062529"
+    maxX: "7.2452583"
+    minY: "50.733607"
+    maxY: "53.582979"
+  linkedDatasets:
+    - "00000000-0000-0000-0000-000000000000"
+  coordinateReferenceSystem: "EPSG:28992"
+services:
+  - type: oaf
+    id: "00000000-0000-0000-0000-000000000008"
+    accessPoint: "https://test.nl/test/ogc/v1"
+    keywords:
+      - "A"
+      - "B"
+      - "C"

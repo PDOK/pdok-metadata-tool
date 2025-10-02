@@ -3,37 +3,70 @@ package main
 import (
 	"fmt"
 	"github.com/pdok/pdok-metadata-tool/internal/app"
+	"github.com/pdok/pdok-metadata-tool/internal/common"
 	clidocs "github.com/urfave/cli-docs/v3"
 	"os"
 	"os/exec"
+	"path/filepath"
+)
+
+var (
+	projRoot = common.GetProjectRoot()
 )
 
 func main() {
 	fmt.Println("Generating artefacts for PDOK metadata tools")
-	generateMarkdownDocs("docs/README.md")
-	buildApp()
-	fmt.Println("Generation success")
+
+	path := filepath.Join(projRoot, "docs/README.md")
+	generateMarkdownDocs(path)
+	if success := buildApp(); success {
+		fmt.Println("Generation success")
+	} else {
+		fmt.Println("Generation failed")
+	}
+
 }
 
-func buildApp() {
+func buildApp() bool {
 	currentDir, err := os.Getwd()
 	if err != nil {
 		fmt.Printf("Failed to get current directory: %v\n", err)
-		return
+		return false
+	}
+
+	entries, err := os.ReadDir(currentDir)
+	if err != nil {
+		fmt.Printf("Failed to read entries from current directory: %v\n", err)
+		return false
+	}
+
+	const executableName = "pmt"
+	found := false
+	for _, entry := range entries {
+		if entry.IsDir() && entry.Name() == executableName {
+			found = true
+			break
+		}
+	}
+	if found {
+		fmt.Printf("Cannot build executable since a directory named %s exists in %s\n", executableName, currentDir)
+		return false
 	}
 
 	fmt.Println("Building pmt executable at: " + currentDir)
-
 	// Run the build command from the project root
-	cmd := exec.Command("go", "build", "-o", "pmt", "cmd/pmt/main.go")
+	path := filepath.Join(projRoot, "cmd/pmt/main.go")
+	cmd := exec.Command("go", "build", "-o", executableName, path)
+
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	err = cmd.Run()
 	if err != nil {
 		fmt.Printf("Failed to build pmt: %v\n", err)
-		return
+		return false
 	}
+	return true
 }
 
 func generateMarkdownDocs(filepath string) {

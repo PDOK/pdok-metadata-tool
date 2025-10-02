@@ -274,7 +274,7 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 	isConformant := true
 	inspireRegulation := "VERORDENING (EU) Nr. 1089/2010"
 
-	harmonized := inspire.Harmonized
+	harmonised := inspire.Harmonised
 	asIs := inspire.AsIs
 
 	for _, report := range m.DQDataQuality.Report {
@@ -293,7 +293,7 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 
 	switch {
 	case isInspire && isConformant:
-		return &harmonized
+		return &harmonised
 	case isInspire:
 		return &asIs
 	default:

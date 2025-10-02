@@ -170,3 +170,64 @@ func (hvd *HVDRepository) GetAllHVDCategories() (result []model.HVDCategory, err
 	result = hvdCategoriesFromRDF(rdf)
 	return result, nil
 }
+
+func (hvd *HVDRepository) GetHVDCategoryByCode(code string) (*model.HVDCategory, error) {
+	allCategories, err := hvd.GetAllHVDCategories()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, category := range allCategories {
+		if category.Id == code {
+			return &category, err
+		}
+	}
+
+	return nil, fmt.Errorf("no HVD category found for code: %s", code)
+}
+
+func (hvd *HVDRepository) GetFilteredHvdCategories(filterCategories []string) ([]model.HVDCategory, error) {
+	allCategories, err := hvd.GetAllHVDCategories()
+	if err != nil {
+		return nil, err
+	}
+
+	// Make sure all parent codes are present in the category filter
+	filterCategoriesIncludingParents := map[string]bool{}
+
+	for _, filterCategory := range filterCategories {
+		category, err := hvd.GetHVDCategoryByCode(filterCategory)
+		if err != nil {
+			return nil, err
+		}
+
+		// Check for 1st level parent
+		if category.Parent != "" {
+			firstParent, err := hvd.GetHVDCategoryByCode(category.Parent)
+			if err != nil {
+				return nil, err
+			}
+
+			// Check for 2nd level parent
+			if firstParent.Parent != "" {
+				secondParent, err := hvd.GetHVDCategoryByCode(firstParent.Parent)
+				if err != nil {
+					return nil, err
+				}
+				filterCategoriesIncludingParents[secondParent.Id] = true
+			}
+			filterCategoriesIncludingParents[firstParent.Id] = true
+		}
+		filterCategoriesIncludingParents[category.Id] = true
+	}
+
+	// Filter all HVD categories while keeping the order unchanged
+	var result []model.HVDCategory
+	for _, category := range allCategories {
+		_, ok := filterCategoriesIncludingParents[category.Id]
+		if ok {
+			result = append(result, category)
+		}
+	}
+	return result, nil
+}

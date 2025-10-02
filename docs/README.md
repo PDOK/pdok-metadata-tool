@@ -24,6 +24,8 @@ Generates service metadata in "Nederlands profiel ISO 19119" version 2.1.0.
 
 **--input_file_service_specifics**="": Path to input file containing service specifics in json, yml or yaml format. See config-example for an example of the input file.
 
+**--output_dir**="": Location used to store service metadata as xml. If omitted the current working directory is used.
+
 ### config-example
 
 Shows example of <input_file_service_specifics> for users that are not familiar with the service specifics.
@@ -34,7 +36,7 @@ Shows example of <input_file_service_specifics> for users that are not familiar 
 
 Used to retrieve and inspect high value dataset categories from the HVD Thesaurus.
 
-**--local-path**="": Local path where the HVD Thesaurus is cached. (default: ./cache/high-value-dataset-category.rdf)
+**--local-path**="": Local path where the HVD Thesaurus is cached. (default: /var/git/pdok-metadata-tool/cache/high-value-dataset-category.rdf)
 
 **--url**="": HVD Thesaurus endpoint which should contain the HVD categories as RDF format. (default: https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Fhigh-value-dataset-category%2F20241002-0%2Frdf%2Fskos_core%2Fhigh-value-dataset-category.rdf&fileName=high-value-dataset-category.rdf)
 
@@ -50,7 +52,7 @@ Displays list of HVD categories.
 
 Exports HVD categories to a CSV file.
 
-**-o**="": Output file path for the CSV file. (default: ./cache/high-value-dataset-category.csv)
+**-o**="": Output file path for the CSV file. (default: /var/git/pdok-metadata-tool/cache/high-value-dataset-category.csv)
 
 ## inspire
 

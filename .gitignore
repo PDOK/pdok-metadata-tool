@@ -3,3 +3,4 @@ dist
 tmp
 pmt
 cache/
+pkg/generator/testdata/output/

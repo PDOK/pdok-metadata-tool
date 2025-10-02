@@ -1,0 +1,43 @@
+globals:
+  contactOrganisationName: "Example organisation name"
+  contactOrganisationUri: "http://standaarden.overheid.nl/owms/terms/organisation"
+  contactEmail: "contact@example.nl"
+  contactUrl: "https://www.example.nl/contact"
+  qosAvailability: 99.999
+  qosPerformance: 1
+  qosCapacity: 100
+  title: "Example title"
+  creationDate: "2019-09-26"
+  abstract: "Example abstract"
+  keywords:
+    - "AA"
+    - "BB"
+  serviceLicense: "https://creativecommons.org/licenses/by/4.0/deed.nl"
+  useLimitation: "Geen beperkingen"
+  boundingBox:
+    minX: "3.2062529"
+    maxX: "7.2452583"
+    minY: "50.733607"
+    maxY: "53.582979"
+  linkedDatasets:
+    - "00000000-0000-0000-0000-000000000003"
+  coordinateReferenceSystem: "EPSG:28992"
+  thumbnails:
+    - file: "https://example.nl/thumb.png"
+      description: "thumbnail"
+      filetype: "png"
+services:
+  - type: wfs
+    id: "00000000-0000-0000-0000-000000000001"
+    accessPoint: "https://example.nl/example/wfs?request=GetCapabilities&service=WFS"
+    keywords:
+      - "AA"
+      - "BB"
+      - "CCC"
+  - type: wms
+    id: "00000000-0000-0000-0000-000000000002"
+    accessPoint: "https://example.nl/example/wms?request=GetCapabilities&service=WMS"
+    keywords:
+      - "AA"
+      - "BB"
+      - "CCC"

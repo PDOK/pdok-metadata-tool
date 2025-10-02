@@ -1,0 +1,33 @@
+globals:
+  contactOrganisationName: "Beheer PDOK"
+  contactOrganisationUri: "http://standaarden.overheid.nl/owms/terms/pdok"
+  contactEmail: "beheerpdok@kadaster.nl"
+  contactUrl: "https://www.pdok.nl/contact"
+  qosAvailability: 99.999
+  qosPerformance: 1
+  qosCapacity: 100
+  title: "Test HVD simple"
+  creationDate: "2018-08-16"
+  abstract: "Unit test hvd simple"
+  keywords:
+    - "A"
+    - "B"
+    - "C"
+  hvdCategories:
+    - "c_b79e35eb"
+  serviceLicense: "https://creativecommons.org/licenses/by/4.0/deed.nl"
+  useLimitation: "Geen beperkingen"
+  boundingBox:
+    minX: "3.2062529"
+    maxX: "7.2452583"
+    minY: "50.733607"
+    maxY: "53.582979"
+  linkedDatasets:
+    - "00000000-0000-0000-0000-000000000000"
+  coordinateReferenceSystem: "EPSG:28992"
+services:
+  - type: wms
+    id: "00000000-0000-0000-0000-000000000003"
+    accessPoint: "https://test.nl/test/wms?request=GetCapabilities&service=WMS"
+    title: "Test hvd simple"
+    creationDate: "2024-12-12"
