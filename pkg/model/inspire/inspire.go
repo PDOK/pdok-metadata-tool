@@ -1,6 +1,8 @@
 package inspire
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var InspireEndpoint = "https://inspire.ec.europa.eu"
 
@@ -20,7 +22,7 @@ var InspireRegisterLanguages = []InspireRegisterLanguage{InspireDutch, InspireEn
 type InspireVariant string
 
 const (
-	Harmonized InspireVariant = "HARMONIZED"
+	Harmonised InspireVariant = "HARMONISED"
 	AsIs       InspireVariant = "ASIS"
 )
 

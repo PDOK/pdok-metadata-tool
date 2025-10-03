@@ -1,0 +1,40 @@
+globals:
+  contactOrganisationName: "Beheer PDOK"
+  contactOrganisationUri: "http://standaarden.overheid.nl/owms/terms/pdok"
+  contactEmail: "beheerpdok@kadaster.nl"
+  contactUrl: "https://www.pdok.nl/contact"
+  qosAvailability: 99.999
+  qosPerformance: 1
+  qosCapacity: 100
+  title: "Test inspire"
+  creationDate: "2018-08-16"
+  abstract: "Unit test inspire"
+  keywords:
+    - "A"
+    - "B"
+    - "C"
+  inspireThemes:
+    - "https://www.eionet.europa.eu/gemet/nl/inspire-theme/ps"
+  serviceLicense: "https://creativecommons.org/licenses/by/4.0/deed.nl"
+  useLimitation: "Geen beperkingen"
+  boundingBox:
+    minX: "3.2062529"
+    maxX: "7.2452583"
+    minY: "50.733607"
+    maxY: "53.582979"
+  linkedDatasets:
+    - "40000000-0000-0000-0000-000000000000"
+  coordinateReferenceSystem: "EPSG:28992"
+services:
+  - type: wms
+    id: "00000000-0000-0000-0000-000000000005"
+    accessPoint: "https://test.nl/test/wms?request=GetCapabilities&service=WMS"
+    inspireType: "harmonised"
+  - type: wfs
+    id: "00000000-0000-0000-0000-000000000006"
+    accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
+    inspireType: "invocable"
+  - type: atom
+    id: "00000000-0000-0000-0000-000000000007"
+    accessPoint: "https://test.nl/test/atom/index.xml"
+    inspireType: "harmonised"

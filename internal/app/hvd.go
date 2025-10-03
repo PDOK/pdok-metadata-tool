@@ -26,7 +26,7 @@ func init() {
 			},
 			&cli.StringFlag{
 				Name:  "local-path",
-				Value: HvdLocalRDFPath,
+				Value: common.HvdLocalRDFPath,
 				Usage: "Local path where the HVD Thesaurus is cached.",
 			},
 		},
@@ -93,7 +93,7 @@ func init() {
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:  "o",
-						Value: HvdLocalCSVPath,
+						Value: common.HvdLocalCSVPath,
 						Usage: "Output file path for the CSV file.",
 					},
 				},

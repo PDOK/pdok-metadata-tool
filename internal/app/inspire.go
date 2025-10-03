@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
+	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"github.com/pdok/pdok-metadata-tool/pkg/repository"
 	"os"
@@ -42,7 +43,7 @@ func init() {
 
 					fmt.Println("list inspire: ", cmd.Args().First())
 
-					repo := repository.NewInspireRepository(InspireLocalPath)
+					repo := repository.NewInspireRepository(common.InspireLocalPath)
 
 					if cmd.Args().First() == "theme" {
 						themes, err := repo.GetThemes()
@@ -101,11 +102,11 @@ func init() {
 
 					fmt.Println("csv inspire: ", choice)
 
-					repo := repository.NewInspireRepository(InspireLocalPath)
+					repo := repository.NewInspireRepository(common.InspireLocalPath)
 					outputPath := cmd.String("o")
 
 					if outputPath == "" {
-						outputPath = filepath.Join(CachePath, choice+".csv")
+						outputPath = filepath.Join(common.CachePath, choice+".csv")
 					}
 
 					// Create the CSV file

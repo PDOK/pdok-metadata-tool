@@ -1,0 +1,32 @@
+globals:
+  contactOrganisationName: "Beheer PDOK"
+  contactOrganisationUri: "http://standaarden.overheid.nl/owms/terms/pdok"
+  contactEmail: "beheerpdok@kadaster.nl"
+  contactUrl: "https://www.pdok.nl/contact"
+  qosAvailability: 99.999
+  qosPerformance: 1
+  qosCapacity: 100
+  title: "Test OAT"
+  creationDate: "2022-05-23"
+  abstract: "Unit test OAT"
+  keywords:
+    - "AA"
+    - "BB"
+  serviceLicense: "https://creativecommons.org/licenses/by/4.0/deed.nl"
+  useLimitation: "Geen beperkingen"
+  boundingBox:
+    minX: "2.8039"
+    maxX: "7.7245"
+    minY: "50.6687"
+    maxY: "53.5474"
+  linkedDatasets:
+    - "00000000-0000-0000-0000-000000000000"
+  coordinateReferenceSystem: "EPSG:28992"
+services:
+  - type: oat
+    id: "00000000-0000-0000-0000-000000000009"
+    accessPoint: "https://test.nl/test/ogc/v1"
+    keywords:
+      - "A"
+      - "B"
+      - "C"

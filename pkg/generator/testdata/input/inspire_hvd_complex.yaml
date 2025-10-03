@@ -1,0 +1,59 @@
+globals:
+  contactOrganisationName: "Beheer PDOK"
+  contactOrganisationUri: "http://standaarden.overheid.nl/owms/terms/pdok"
+  contactEmail: "beheerpdok@kadaster.nl"
+  contactUrl: "https://www.pdok.nl/contact"
+  qosAvailability: 99.999
+  qosPerformance: 1
+  qosCapacity: 100
+  title: "Test INSPIRE HVD complex"
+  creationDate: "2025-09-30"
+  abstract: "Unit test INSPIRE HVD complex"
+  keywords:
+    - "AAAA"
+    - "BBBB"
+    - "CCCC"
+  inspireThemes:
+    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/hy"
+    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/bu"
+    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/tn"
+    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/lc"
+    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/sr"
+    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/gn"
+  hvdCategories:
+    - "c_ac64a52d"
+  serviceLicense: "http://creativecommons.org/licenses/by/4.0/deed.nl"
+  useLimitation: "Geen beperkingen"
+  boundingBox:
+    minX: "0.6312"
+    maxX: "9.4514"
+    minY: "50.2455"
+    maxY: "54.0469"
+  linkedDatasets:
+    - "10000000-0000-0000-0000-000000000000"
+    - "20000000-0000-0000-0000-000000000000"
+    - "30000000-0000-0000-0000-000000000000"
+    - "40000000-0000-0000-0000-000000000000"
+    - "50000000-0000-0000-0000-000000000000"
+    - "60000000-0000-0000-0000-000000000000"
+  coordinateReferenceSystem: "EPSG:28992"
+  thumbnails:
+    - file: "https://test.nl/thumb.png"
+      description: "thumbnail"
+services:
+  - type: atom
+    id: "00000000-0000-0000-0000-000000000010"
+    accessPoint: "https://test.nl/test/atom/index.xml"
+    inspireType: "harmonised"
+  - type: wfs
+    id: "00000000-0000-0000-0000-000000000011"
+    accessPoint: "https://test.nl/test-invocable/wfs?request=GetCapabilities&service=WFS"
+    inspireType: "invocable"
+  - type: wfs
+    id: "00000000-0000-0000-0000-000000000012"
+    accessPoint: "https://test.nl/test-interoperable/wfs?request=GetCapabilities&service=WFS"
+    inspireType: "interoperable"
+  - type: oaf
+    id: "00000000-0000-0000-0000-000000000013"
+    accessPoint: "https://test.nl/test-interoperable/ogc/v1"
+    inspireType: "interoperable"
