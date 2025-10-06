@@ -1,5 +1,5 @@
 // Package common provides shared util functions.
-package common
+package common //nolint:revive,nolintlint
 
 import (
 	"path/filepath"

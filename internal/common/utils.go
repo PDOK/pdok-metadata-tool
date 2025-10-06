@@ -1,4 +1,5 @@
-package common //nolint:revive
+package common //nolint:revive,nolintlint
+
 import (
 	"io"
 
