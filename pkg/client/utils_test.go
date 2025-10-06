@@ -2,15 +2,16 @@ package client
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
+
+	log "github.com/sirupsen/logrus" //nolint:depguard
 )
 
-const GetRecordById = "/?service=CSW&request=GetRecordById"
+const GetRecordByID = "/?service=CSW&request=GetRecordByID"
 const GetRecords = "/?service=CSW&request=GetRecords"
 
 const (
@@ -20,21 +21,22 @@ const (
 
 func preTestSetup() *httptest.Server {
 	ngrServer := buildMockWebserverNgr()
+
 	return ngrServer
 }
 
 func buildMockWebserverNgr() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-
 		switch url := req.URL.String(); {
 		case strings.EqualFold(url, "/geonetwork/srv/api/records/b4ae622c-6201-49d8-bd2e-f7fce9206a1e/tags"):
 			writeOkResponse("./testdata/API_Records_Tags_Inspire.json", rw, ContentTypeJSON)
 		case strings.EqualFold(url, "/geonetwork/srv/api/records/c4bda1aa-d6e6-482c-a6f1-bd519e3202d4/tags"):
 			writeOkResponse("./testdata/API_Records_Tags_Empty.json", rw, ContentTypeJSON)
 
-		case strings.HasPrefix(url, GetRecordById):
-			responsePath := ""
-			switch path := strings.TrimPrefix(url, GetRecordById); path {
+		case strings.HasPrefix(url, GetRecordByID):
+			var responsePath string
+
+			switch path := strings.TrimPrefix(url, GetRecordByID); path {
 			case "&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=C2DFBDBC-5092-11E0-BA8E-B62DE0D72085":
 				responsePath = "../../examples/ISO19115/Voorbeeld_Metadata_Dataset_2022_max.xml"
 			case "&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=C2DFBDBC-5092-11E0-BA8E-B62DE0D72086":
@@ -42,6 +44,7 @@ func buildMockWebserverNgr() *httptest.Server {
 			default:
 				log.Infof("no handler for request %s in test setup", req.URL.String())
 				rw.WriteHeader(http.StatusNotFound)
+
 				return
 			}
 
@@ -53,8 +56,9 @@ func buildMockWebserverNgr() *httptest.Server {
 			rw.Header().Set("Content-Type", "application/xml")
 			rw.WriteHeader(http.StatusOK)
 
-			getRecordByIdResponse := wrapAsGetRecordByIdResponse(metadataResponse)
-			_, err = fmt.Fprint(rw, getRecordByIdResponse)
+			getRecordByIDResponse := wrapAsGetRecordByIDResponse(metadataResponse)
+
+			_, err = fmt.Fprint(rw, getRecordByIDResponse)
 			if err != nil {
 				log.Errorf("%v", err)
 			}
@@ -67,12 +71,15 @@ func buildMockWebserverNgr() *httptest.Server {
 			default:
 				log.Infof("no handler for request %s in test setup", req.URL.String())
 				rw.WriteHeader(http.StatusNotFound)
+
 				return
 			}
 		case url == "/":
 			bodyBytes, err := io.ReadAll(req.Body)
 			if err != nil {
+				//nolint:forbidigo
 				http.Error(rw, "Error reading body", http.StatusInternalServerError)
+
 				return
 			}
 			defer req.Body.Close()
@@ -82,10 +89,16 @@ func buildMockWebserverNgr() *httptest.Server {
 
 			if strings.Contains(requestBody, "<ogc:PropertyName>dc:type</ogc:PropertyName>") {
 				if strings.Contains(requestBody, "<ogc:Literal>service</ogc:Literal>") {
-					writeOkResponse("./testdata/CSW_GetRecordsResponse_Service.xml", rw, ContentTypeXML)
+					writeOkResponse(
+						"./testdata/CSW_GetRecordsResponse_Service.xml",
+						rw,
+						ContentTypeXML,
+					)
+
 					bodyMatched = true
 				} else if strings.Contains(requestBody, "<ogc:Literal>dataset</ogc:Literal>") {
 					writeOkResponse("./testdata/CSW_GetRecordsResponse_Dataset.xml", rw, ContentTypeXML)
+
 					bodyMatched = true
 				}
 			}
@@ -97,6 +110,7 @@ func buildMockWebserverNgr() *httptest.Server {
 		default:
 			log.Infof("no handler for request %s in test setup", req.URL.String())
 			rw.WriteHeader(http.StatusNotFound)
+
 			return
 		}
 	}))
@@ -107,10 +121,11 @@ func readFileToString(filePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(bytes), nil
 }
 
-func wrapAsGetRecordByIdResponse(metadata string) string {
+func wrapAsGetRecordByIDResponse(metadata string) string {
 	return `<csw:GetRecordByIdResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">` +
 		metadata +
 		`</csw:GetRecordByIdResponse>`
@@ -121,7 +136,8 @@ func writeOkResponse(responsePath string, rw http.ResponseWriter, contentType st
 	if err != nil {
 		log.Errorf("%v", err)
 	}
+
 	rw.Header().Set("Content-Type", contentType)
 	rw.WriteHeader(http.StatusOK)
-	_, err = fmt.Fprint(rw, response)
+	_, _ = fmt.Fprint(rw, response)
 }

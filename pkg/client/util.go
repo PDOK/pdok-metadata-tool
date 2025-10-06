@@ -7,59 +7,75 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/pdok/pdok-metadata-tool/internal/common"
 )
 
-func getUnmarshalledXMLResponse(resultStruct interface{}, url string, method string, requestBody *string, client http.Client) error {
-	resp, err := getResponse(url, method, requestBody, client)
+func getUnmarshalledXMLResponse(
+	resultStruct interface{},
+	url string,
+	method string,
+	requestBody *string,
+	client http.Client,
+) error {
+	responseBody, err := getResponseBody(url, method, requestBody, client)
 	if err != nil {
 		return err
 	}
-	data, err := io.ReadAll(resp.Body)
+
+	err = xml.Unmarshal(responseBody, resultStruct)
 	if err != nil {
-		return fmt.Errorf("Error while reading NGR response from url: %s\n\n%v", url, err)
+		return fmt.Errorf("error unmarshalling NGR response from url %s: %w", url, err)
 	}
 
-	err = xml.Unmarshal(data, resultStruct)
-	if err != nil {
-		return fmt.Errorf("Error unmarshalling NGR response from url: %s\n\n%v", url, err)
-	}
 	return nil
 }
 
 func getUnmarshalledJSONResponse(resultStruct interface{}, url string, client http.Client) error {
-	resp, err := getResponse(url, "GET", nil, client)
+	responseBody, err := getResponseBody(url, "GET", nil, client)
 	if err != nil {
 		return err
 	}
-	data, err := io.ReadAll(resp.Body)
+
+	err = json.Unmarshal(responseBody, resultStruct)
 	if err != nil {
-		return fmt.Errorf("Error while reading NGR response from url: %s\n\n%v", url, err)
+		return fmt.Errorf("error unmarshalling NGR response from url %s: %w", url, err)
 	}
 
-	err = json.Unmarshal(data, resultStruct)
-	if err != nil {
-		return fmt.Errorf("Error unmarshalling NGR response from url: %s\n\n%v", url, err)
-	}
 	return nil
 }
 
-func getResponse(url string, method string, requestBody *string, client http.Client) (*http.Response, error) {
-	var body io.Reader = nil
+func getResponseBody(
+	url string,
+	method string,
+	requestBody *string,
+	client http.Client,
+) ([]byte, error) {
+	var body io.Reader
 	if method == "POST" && requestBody != nil {
 		body = strings.NewReader(*requestBody)
 	}
+
 	req, _ := http.NewRequest(method, url, body)
 
 	req.Header.Set("User-Agent", "pdok.nl (pdok-metadata-tool)")
 	req.Header.Set("Accept", "*/*;q=0.8,application/signed-exchange")
 	req.Header.Set("Content-Type", "application/xml")
-	// log.Infof("get metadata using url %s", req.URL) // Used for debugging
+
+	//nolint:bodyclose // We use common.SafeClose to handle closing the response body
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Error while calling NGR using url: %s\n\n%v", url, err)
+		return nil, fmt.Errorf("error while calling NGR using url %s: %w", url, err)
 	}
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Error while calling NGR using url %s\nhttp status is %d", url, resp.StatusCode)
+	defer common.SafeClose(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(
+			"error while calling NGR using url %s\nhttp status is %d",
+			url,
+			resp.StatusCode,
+		)
 	}
-	return resp, nil
+
+	return io.ReadAll(resp.Body)
 }

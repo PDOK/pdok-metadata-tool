@@ -1,3 +1,4 @@
+// Package dataset holds a model containing the relevant fields for dataset metadata.
 package dataset
 
 import (
@@ -6,38 +7,34 @@ import (
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 )
 
+// NLDatasetMetadata is used for retrieving the relevant fields from dataset metadata.
 type NLDatasetMetadata struct {
-	MetadataId     string
-	SourceId       string
+	MetadataID     string
+	SourceID       string
 	Title          string
 	Abstract       string
 	ContactName    string
 	ContactEmail   string
 	Keywords       []string
-	LicenceUrl     string
-	ThumbnailUrl   *string
+	LicenceURL     string
+	ThumbnailURL   *string
 	InspireVariant *inspire.InspireVariant
 	InspireThemes  []string
 	HVDCategories  []hvd.HVDCategory
 }
 
+// NewNLDatasetMetadataFromMDMetadata creates a new instance based on dataset metadata from a CSW response.
 func NewNLDatasetMetadataFromMDMetadata(m *csw.MDMetadata) *NLDatasetMetadata {
-	// TODO What to do with invalid uuids?
-	//metadataId, err := uuid.Parse(m.UUID)
-	//if err != nil {
-	//	metadataId = uuid.Nil
-	//}
-
 	return &NLDatasetMetadata{
-		MetadataId:     m.UUID,
-		SourceId:       m.UUID,
+		MetadataID:     m.UUID,
+		SourceID:       m.UUID,
 		Title:          m.IdentificationInfo.MDDataIdentification.Title,
 		Abstract:       m.IdentificationInfo.MDDataIdentification.Abstract,
 		ContactName:    m.IdentificationInfo.MDDataIdentification.ContactName,
 		ContactEmail:   m.IdentificationInfo.MDDataIdentification.ContactEmail,
 		Keywords:       m.GetKeywords(),
-		LicenceUrl:     m.GetLicenseUrl(),
-		ThumbnailUrl:   m.GetThumbnailUrl(),
+		LicenceURL:     m.GetLicenseURL(),
+		ThumbnailURL:   m.GetThumbnailURL(),
 		InspireVariant: m.GetInspireVariant(),
 		InspireThemes:  m.GetInspireThemes(),
 		HVDCategories:  m.GetHVDCategories(),

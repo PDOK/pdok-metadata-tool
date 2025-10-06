@@ -1,10 +1,12 @@
 package repository
 
 import (
+	"testing"
+
 	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/stretchr/testify/assert"
-	"testing"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHvdRepository_GetAllHvdCategories(t *testing.T) {
@@ -12,32 +14,44 @@ func TestHvdRepository_GetAllHvdCategories(t *testing.T) {
 
 	result, err := hvdRepo.GetAllHVDCategories()
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, result)
-	assert.GreaterOrEqual(t, len(result), 0)
 }
 
 func TestHvdRepository_GetFilteredHvdCategories(t *testing.T) {
-
 	var tests = []struct {
 		filterCodes   []string
 		expectedCodes []string
 	}{
 		// Valid specifics
-		0: {filterCodes: []string{"c_f76b01e6"}, expectedCodes: []string{"c_b79e35eb", "c_b151a0ba", "c_f76b01e6"}},
-		1: {filterCodes: []string{"c_f76b01e6", "c_407951ff"}, expectedCodes: []string{"c_b79e35eb", "c_b151a0ba", "c_f76b01e6", "c_407951ff"}},
-		2: {filterCodes: []string{"c_f76b01e6", "c_315692ad"}, expectedCodes: []string{"c_dd313021", "c_315692ad", "c_b79e35eb", "c_b151a0ba", "c_f76b01e6"}},
+		0: {
+			filterCodes:   []string{"c_f76b01e6"},
+			expectedCodes: []string{"c_b79e35eb", "c_b151a0ba", "c_f76b01e6"},
+		},
+		1: {
+			filterCodes:   []string{"c_f76b01e6", "c_407951ff"},
+			expectedCodes: []string{"c_b79e35eb", "c_b151a0ba", "c_f76b01e6", "c_407951ff"},
+		},
+		2: {
+			filterCodes: []string{"c_f76b01e6", "c_315692ad"},
+			expectedCodes: []string{
+				"c_dd313021",
+				"c_315692ad",
+				"c_b79e35eb",
+				"c_b151a0ba",
+				"c_f76b01e6",
+			},
+		},
 	}
 	for _, test := range tests {
 		hvdRepo := getNewHVDRepository()
 		filteredCategories, err := hvdRepo.GetFilteredHvdCategories(test.filterCodes)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		for i, code := range test.expectedCodes {
-			assert.Equal(t, code, filteredCategories[i].Id)
+			assert.Equal(t, code, filteredCategories[i].ID)
 		}
 	}
-
 }
 
 func getNewHVDRepository() *HVDRepository {

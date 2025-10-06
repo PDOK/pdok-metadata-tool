@@ -1,14 +1,15 @@
+// Package main provides a main function for running the PDOK Metadata tool CLI.
 package main
 
 import (
 	"context"
 	"fmt"
-	"github.com/pdok/pdok-metadata-tool/internal/app"
 	"os"
+
+	"github.com/pdok/pdok-metadata-tool/internal/app"
 )
 
 func main() {
-
 	ctx := context.Background()
 	if err := app.PDOKMetadataToolCLI.Run(ctx, os.Args); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)

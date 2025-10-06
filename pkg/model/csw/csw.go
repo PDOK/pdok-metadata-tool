@@ -1,15 +1,19 @@
+// Package csw holds models for handling CSW requests.
 package csw
 
 import (
 	"encoding/xml"
 	"fmt"
+	"strings"
+
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
-	"strings"
 )
 
+// MetadataType holds the possible types of metadata.
 type MetadataType string
 
+// Possible values for MetadataType.
 const (
 	Service MetadataType = "service"
 	Dataset MetadataType = "dataset"
@@ -19,16 +23,17 @@ func (m MetadataType) String() string {
 	return string(m)
 }
 
-type GetRecordByIdResponse struct {
+// GetRecordByIDResponse struct for unmarshalling a CSW GetRecordByID response.
+type GetRecordByIDResponse struct {
 	XMLName    xml.Name   `xml:"GetRecordByIdResponse"`
 	Text       string     `xml:",chardata"`
 	Csw        string     `xml:"csw,attr"`
 	MDMetadata MDMetadata `xml:"MD_Metadata"`
 }
 
+// GetRecordsResponse struct for unmarshalling a CSW GetRecords response.
 type GetRecordsResponse struct {
 	XMLName       xml.Name `xml:"GetRecordsResponse"`
-	nextRecord    int      ``
 	SearchResults struct {
 		NumberOfRecordsMatched string          `xml:"numberOfRecordsMatched,attr"`
 		NextRecord             string          `xml:"nextRecord,attr"`
@@ -36,20 +41,24 @@ type GetRecordsResponse struct {
 	} `xml:"SearchResults"`
 }
 
+// GetRecordsCQLConstraint struct for creating a CQL constraint.
 type GetRecordsCQLConstraint struct {
 	MetadataType     *MetadataType
 	OrganisationName *string
 }
 
+// ToQueryParameter returns a query parameter string based on the constraints.
 func (c *GetRecordsCQLConstraint) ToQueryParameter() (constraint string) {
 	var constraints []string
 
 	if c.MetadataType != nil {
 		constraints = append(constraints, fmt.Sprintf("type='%s'", *c.MetadataType))
 	}
+
 	if c.OrganisationName != nil {
 		constraints = append(constraints, fmt.Sprintf("OrganisationName='%s'", *c.OrganisationName))
 	}
+
 	if len(constraints) == 0 {
 		return
 	}
@@ -64,15 +73,18 @@ func (c *GetRecordsCQLConstraint) ToQueryParameter() (constraint string) {
 			constraint += "+AND+"
 		}
 	}
+
 	return
 }
 
+// GetRecordsOgcFilter struct for creating an OgcFilter for a CSW GetRecords request.
 type GetRecordsOgcFilter struct {
 	MetadataType MetadataType
 	Title        *string
 	Identifier   *string
 }
 
+// ToRequestBody Returns a request body string for a CSW GetRecords request.
 func (f *GetRecordsOgcFilter) ToRequestBody() (ogcFilter string, err error) {
 	template := `<csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" service="CSW" version="2.0.2" resultType="results" startPosition="1" maxRecords="5" outputFormat="application/xml" outputSchema="http://www.opengis.net/cat/csw/2.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd">
 	<csw:Query typeNames="csw:Record">
@@ -91,21 +103,26 @@ func (f *GetRecordsOgcFilter) ToRequestBody() (ogcFilter string, err error) {
 	if f.Title != nil && len(*f.Title) > 0 {
 		filters = append(filters, f.getPropertyIsLikeClause("dc:title", *f.Title))
 	}
+
 	if f.Identifier != nil && len(*f.Identifier) > 0 {
 		filters = append(filters, f.getPropertyIsEqualToClause("dc:identifier", *f.Identifier))
 	}
 
 	var filter string
+
 	switch len(filters) {
 	case 0:
 		filter = metadataTypeFilter
 	case 1:
 		filter = wrapFiltersInAndOperator([]string{metadataTypeFilter, filters[0]})
 	default:
-		filter = wrapFiltersInAndOperator([]string{metadataTypeFilter, wrapFiltersInOrOperator(filters)})
+		filter = wrapFiltersInAndOperator(
+			[]string{metadataTypeFilter, wrapFiltersInOrOperator(filters)},
+		)
 	}
 
 	requestBody := fmt.Sprintf(template, filter)
+
 	return requestBody, nil
 }
 
@@ -113,6 +130,7 @@ func wrapFiltersInOrOperator(filters []string) string {
 	template := `<ogc:Or>
     %s
 </ogc:Or>`
+
 	return fmt.Sprintf(template, strings.Join(filters, "\n"))
 }
 
@@ -120,10 +138,14 @@ func wrapFiltersInAndOperator(filters []string) string {
 	template := `<ogc:And>
     %s
 </ogc:And>`
+
 	return fmt.Sprintf(template, strings.Join(filters, "\n"))
 }
 
-func (f *GetRecordsOgcFilter) getPropertyIsLikeClause(property string, value string) (clause string) {
+func (f *GetRecordsOgcFilter) getPropertyIsLikeClause(
+	property string,
+	value string,
+) (clause string) {
 	template := `<ogc:PropertyIsLike escapeChar="" wildCard="%%" singleChar="_">
     <ogc:PropertyName>%s</ogc:PropertyName>
     <ogc:Literal>%%%s%%</ogc:Literal>
@@ -132,7 +154,10 @@ func (f *GetRecordsOgcFilter) getPropertyIsLikeClause(property string, value str
 	return fmt.Sprintf(template, property, value)
 }
 
-func (f *GetRecordsOgcFilter) getPropertyIsEqualToClause(property string, value string) (clause string) {
+func (f *GetRecordsOgcFilter) getPropertyIsEqualToClause(
+	property string,
+	value string,
+) (clause string) {
 	template := `<ogc:PropertyIsEqualTo>
     <ogc:PropertyName>%s</ogc:PropertyName>
     <ogc:Literal>%s</ogc:Literal>
@@ -141,8 +166,9 @@ func (f *GetRecordsOgcFilter) getPropertyIsEqualToClause(property string, value 
 	return fmt.Sprintf(template, property, value)
 }
 
+// MDMetadata struct for unmarshalling the CSW response.
 type MDMetadata struct {
-	SelfUrl string
+	SelfURL string
 	MdType  *struct {
 		CodeListValue string `xml:",chardata"`
 		TextValue     string `xml:"codeListValue,attr"`
@@ -209,7 +235,7 @@ type MDMetadata struct {
 			} `xml:"descriptiveKeywords"`
 			ContactName  string   `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
 			ContactEmail string   `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>address>CI_Address>electronicMailAddress>CharacterString"`
-			LicenseUrl   []Anchor `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
+			LicenseURL   []Anchor `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
 
 			ResponsibleParty *ResponsibleParty `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
 		} `xml:"MD_DataIdentification"`
@@ -234,16 +260,19 @@ type MDMetadata struct {
 	} `xml:"dataQualityInfo>DQ_DataQuality"`
 }
 
+// ResponsibleParty struct for unmarshalling the CSW response.
 type ResponsibleParty struct {
 	Char   string `xml:"CharacterString"`
 	Anchor string `xml:"Anchor"`
 }
 
+// Anchor struct for unmarshalling the CSW response.
 type Anchor struct {
 	Text string `xml:",chardata"`
 	Href string `xml:"href,attr"`
 }
 
+// GetKeywords returns a slice of keywords.
 func (m *MDMetadata) GetKeywords() (keywords []string) {
 	for _, descriptiveKeyword := range m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords {
 		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
@@ -254,26 +283,34 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 			}
 		}
 	}
+
 	return
 }
 
-func (m *MDMetadata) GetLicenseUrl() string {
-	for _, val := range m.IdentificationInfo.MDDataIdentification.LicenseUrl {
+// GetLicenseURL returns the license href.
+func (m *MDMetadata) GetLicenseURL() string {
+	for _, val := range m.IdentificationInfo.MDDataIdentification.LicenseURL {
 		if strings.Contains(val.Href, "creativecommons.org") {
 			return val.Href
 		}
 	}
+
 	return ""
 }
 
-func (m *MDMetadata) GetThumbnailUrl() *string {
-	if m.IdentificationInfo.MDDataIdentification != nil && m.IdentificationInfo.MDDataIdentification.GraphicOverview != nil {
-		thumbnailUrl := m.IdentificationInfo.MDDataIdentification.GraphicOverview.MDBrowseGraphic.FileName
-		return &thumbnailUrl
+// GetThumbnailURL returns the thumbnail URL.
+func (m *MDMetadata) GetThumbnailURL() *string {
+	if m.IdentificationInfo.MDDataIdentification != nil &&
+		m.IdentificationInfo.MDDataIdentification.GraphicOverview != nil {
+		thumbnailURL := m.IdentificationInfo.MDDataIdentification.GraphicOverview.MDBrowseGraphic.FileName
+
+		return &thumbnailURL
 	}
+
 	return nil
 }
 
+// GetInspireVariant retrieves the INSPIRE variant from dataset metadata.
 func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 	isInspire := false
 	isConformant := true
@@ -297,6 +334,7 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 			if hasInspireRegulation {
 				isInspire = true
 			}
+
 			if hasInspireSpecTitle && result.Pass != "true" {
 				isConformant = false
 			}
@@ -313,36 +351,48 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 	}
 }
 
+// GetInspireThemes retrieves the INSPIRE themes from dataset metadata.
 func (m *MDMetadata) GetInspireThemes() (themes []string) {
-	const thesaurusName = "GEMET - INSPIRE themes, version 1.0"
-	const thesaurusVocabularyDutch = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+	const (
+		thesaurusName            = "GEMET - INSPIRE themes, version 1.0"
+		thesaurusVocabularyDutch = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+	)
 
 	for _, descriptiveKeyword := range m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords {
 		thesaurus := descriptiveKeyword.MDKeywords.Thesaurus
-		if thesaurus.CharacterString == thesaurusName || thesaurus.Anchor.Text == thesaurusName {
-			for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
-				if keyword.Anchor.Href != "" {
-					// Try to get the INSPIRE theme from the anchor
-					// according to TG Recommendation 1.5: metadata/2.0/rec/datasets-and-series/use-anchors-for-gemet
-					if strings.Contains(keyword.Anchor.Href, thesaurusVocabularyDutch) {
-						theme := strings.ReplaceAll(keyword.Anchor.Href, thesaurusVocabularyDutch, "")
-						themes = append(themes, theme)
-					}
-				} else if keyword.CharacterString != "" {
-					// Otherwise match the keyword with values of the GEMET vocabulary
-					// according to TG Requirement 1.4: metadata/2.0/req/datasets-and-series/inspire-theme-keyword
-					theme := inspire.GetInspireThemeIdForDutchLabel(keyword.CharacterString)
-					if theme != "" {
-						themes = append(themes, theme)
-					}
+
+		if thesaurus.CharacterString != thesaurusName && thesaurus.Anchor.Text != thesaurusName {
+			// Skip, this is not the right thesaurus
+			continue
+		}
+
+		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
+			if keyword.Anchor.Href != "" {
+				// Try to get the INSPIRE theme from the anchor
+				// according to TG Recommendation 1.5: metadata/2.0/rec/datasets-and-series/use-anchors-for-gemet
+				if strings.Contains(keyword.Anchor.Href, thesaurusVocabularyDutch) {
+					theme := strings.ReplaceAll(
+						keyword.Anchor.Href,
+						thesaurusVocabularyDutch,
+						"",
+					)
+					themes = append(themes, theme)
+				}
+			} else if keyword.CharacterString != "" {
+				// Otherwise match the keyword with values of the GEMET vocabulary
+				// according to TG Requirement 1.4: metadata/2.0/req/datasets-and-series/inspire-theme-keyword
+				theme := inspire.GetInspireThemeIDForDutchLabel(keyword.CharacterString)
+				if theme != "" {
+					themes = append(themes, theme)
 				}
 			}
 		}
 	}
 
-	return
+	return themes
 }
 
+// GetHVDCategories retrieves the HVD categories from dataset metadata.
 func (m *MDMetadata) GetHVDCategories() (categories []hvd.HVDCategory) {
 	const thesaurusVocabulary = "http://data.europa.eu/bna/"
 
@@ -352,16 +402,18 @@ func (m *MDMetadata) GetHVDCategories() (categories []hvd.HVDCategory) {
 				if strings.Contains(keyword.Anchor.Href, thesaurusVocabulary) {
 					parts := strings.Split(keyword.Anchor.Href, "/")
 					category := parts[len(parts)-1]
-					categories = append(categories, hvd.HVDCategory{Id: category})
+					categories = append(categories, hvd.HVDCategory{ID: category})
 				}
 			}
 		}
 	}
+
 	return
 }
 
+// SummaryRecord struct for unmarshalling the CSW response.
 type SummaryRecord struct {
-	Identifier string `xml:"identifier" json:"identifier"`
-	Title      string `xml:"title" json:"title"`
-	Type       string `xml:"type" json:"type"`
+	Identifier string `json:"identifier" xml:"identifier"`
+	Title      string `json:"title"      xml:"title"`
+	Type       string `json:"type"       xml:"type"`
 }

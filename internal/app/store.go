@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+
 	"github.com/urfave/cli/v3"
 )
 
@@ -20,8 +21,9 @@ func init() {
 						UsageText: "Metadata uuid of metadata record which needs to be bumped in NGR.",
 					},
 				},
-				Action: func(ctx context.Context, cmd *cli.Command) error {
+				Action: func(_ context.Context, cmd *cli.Command) error {
 					fmt.Printf("Hello %q", cmd.Args().Get(0))
+
 					return nil
 				},
 			},

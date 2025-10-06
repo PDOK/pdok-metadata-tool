@@ -1,13 +1,17 @@
 package inspire
 
-// InspireLayer represents an INSPIRE layer with both English and Dutch labels
+// InspireLayer represents an INSPIRE layer with both English and Dutch labels.
+//
+//nolint:revive
 type InspireLayer struct {
-	Id           string `json:"id"`           // Primary Key, Unique, up to 100 characters
+	ID           string `json:"id"`           // Primary Key, Unique, up to 100 characters
 	LabelDutch   string `json:"labelDutch"`   // Dutch label
 	LabelEnglish string `json:"labelEnglish"` // English label
 }
 
-// InspireLayerRaw represents the raw structure of an INSPIRE layer as received from the API
+// InspireLayerRaw represents the raw structure of an INSPIRE layer as received from the API.
+//
+//nolint:revive
 type InspireLayerRaw struct {
 	Register struct {
 		Registry struct {
@@ -15,21 +19,21 @@ type InspireLayerRaw struct {
 				Text string `json:"text"` // The registry label text
 				Lang string `json:"lang"` // The language of the label
 			} `json:"label"`
-			Id string `json:"id"` // The registry ID
+			ID string `json:"id"` // The registry ID
 		} `json:"registry"`
 		Label struct {
 			Text string `json:"text"` // The register label text
 			Lang string `json:"lang"` // The language of the label
 		} `json:"label"`
-		Id             string `json:"id"` // The register ID
-		Containeditems []struct {
+		ID             string `json:"id"` // The register ID
+		ContainedItems []struct {
 			Layer struct {
-				Id    string `json:"id"` // URL of the layer
+				ID    string `json:"id"` // URL of the layer
 				Label struct {
 					Text string `json:"text"` // The actual label text
 					Lang string `json:"lang"` // The language of the label
 				} `json:"label"`
-				Layername struct {
+				LayerName struct {
 					Text string `json:"text"` // The layer name
 					Lang string `json:"lang"` // The language of the layer name
 				} `json:"layername"`
@@ -38,14 +42,14 @@ type InspireLayerRaw struct {
 						Text string `json:"text"` // The theme label text
 						Lang string `json:"lang"` // The language of the label
 					} `json:"label"`
-					Uri string `json:"uri"` // The theme URI
+					URI string `json:"uri"` // The theme URI
 				} `json:"theme"`
 				Status struct {
 					Label struct {
 						Text string `json:"text"` // The status label text
 						Lang string `json:"lang"` // The language of the label
 					} `json:"label"`
-					Id string `json:"id"` // The status ID
+					ID string `json:"id"` // The status ID
 				} `json:"status"`
 			} `json:"layer"`
 		} `json:"containeditems"`
