@@ -1,28 +1,35 @@
+// Package generator holds the logic for generating metadata.
 package generator
 
 import (
 	"encoding/xml"
 	"fmt"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/codelist"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 	"github.com/pdok/pdok-metadata-tool/pkg/repository"
-	"os"
-	"path/filepath"
-	"time"
 )
 
+// ISO19119Generator is used for generating service metadata according to ISO19119 format.
 type ISO19119Generator struct {
 	MetadataHolder map[string]*MetadataEntry
-	currentId      *string
+	currentID      *string
 	revisionDate   string
 	Codelist       *codelist.Codelist
 	HVDRepository  *repository.HVDRepository
 	outputDir      string
 }
 
-func NewISO19119Generator(serviceSpecifics ServiceSpecifics, outputDir string) (*ISO19119Generator, error) {
+// NewISO19119Generator creates a new instance of the ISO19119 generator and sets up the metadata holder.
+func NewISO19119Generator(
+	serviceSpecifics ServiceSpecifics,
+	outputDir string,
+) (*ISO19119Generator, error) {
 	// Setup holder for serviceSpecifics-config and output
 	holder := make(map[string]*MetadataEntry)
 	for _, serviceConfig := range serviceSpecifics.Services {
@@ -47,14 +54,17 @@ func NewISO19119Generator(serviceSpecifics ServiceSpecifics, outputDir string) (
 	}, nil
 }
 
+// CurrentEntry returns the current MetadataEntry for processing.
 func (g *ISO19119Generator) CurrentEntry() (*MetadataEntry, error) {
-	entry, ok := g.MetadataHolder[*g.currentId]
+	entry, ok := g.MetadataHolder[*g.currentID]
 	if !ok {
-		return nil, fmt.Errorf("no entry found for id: %s", *g.currentId)
+		return nil, fmt.Errorf("no entry found for id: %s", *g.currentID)
 	}
+
 	return entry, nil
 }
 
+// MetadataEntry is used for processing the metadata generation.
 type MetadataEntry struct {
 	Config   ServiceConfig
 	Metadata iso1911x.ISO19119
@@ -65,30 +75,38 @@ func (e *MetadataEntry) setFilename() {
 	e.filename = e.Config.ID + ".xml"
 }
 
+// Generate generates the metadata for each entry in the metadata holder.
 func (g *ISO19119Generator) Generate() error {
 	for id := range g.MetadataHolder {
-		g.currentId = &id
+		g.currentID = &id
 		if err := g.SetMetadata(); err != nil {
 			return err
 		}
+
 		if err := g.WriteToXML(); err != nil {
 			return err
 		}
-		g.currentId = nil
+
+		g.currentID = nil
 	}
+
 	return nil
 }
 
+// SetMetadata sets all the values for the metadata.
 func (g *ISO19119Generator) SetMetadata() error {
 	if err := g.setGeneralInfo(); err != nil {
 		return err
 	}
+
 	if err := g.setIdentificationInfo(); err != nil {
 		return err
 	}
+
 	if err := g.setDistributionInfo(); err != nil {
 		return err
 	}
+
 	if err := g.setDataQualityInfo(); err != nil {
 		return err
 	}
@@ -96,11 +114,50 @@ func (g *ISO19119Generator) SetMetadata() error {
 	return nil
 }
 
+// WriteToXML writes the available metadata to XML.
+func (g *ISO19119Generator) WriteToXML() error {
+	entry, err := g.CurrentEntry()
+	if err != nil {
+		return err
+	}
+
+	output, err := xml.MarshalIndent(entry.Metadata, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	perm := 750
+	if err1 := os.MkdirAll(g.outputDir, os.FileMode(perm)); err1 != nil {
+		return err1
+	}
+
+	entry.setFilename()
+
+	path := filepath.Join(g.outputDir, entry.filename)
+
+	perm = 0600
+	if err = os.WriteFile(path, output, os.FileMode(perm)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// PrintSummary prints a summary of the generated metadata files.
+func (g *ISO19119Generator) PrintSummary() {
+	fmt.Printf("The following metadata has been created in %s: \n", g.outputDir)
+
+	for _, entry := range g.MetadataHolder {
+		fmt.Printf("  - %s\n", entry.filename)
+	}
+}
+
 func (g *ISO19119Generator) setGeneralInfo() error {
 	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err
 	}
+
 	config := entry.Config
 
 	entry.Metadata = iso1911x.ISO19119{
@@ -153,7 +210,7 @@ func (g *ISO19119Generator) setGeneralInfo() error {
 				// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#verantwoordelijke-organisatie-metadata
 				OrganisationName: iso1911x.OrganisationNameTag{
 					Anchor: iso1911x.AnchorTag{
-						Href:  config.GetContactOrganisationUri(),
+						Href:  config.GetContactOrganisationURI(),
 						Value: config.GetContactOrganisationName(),
 					},
 				},
@@ -169,7 +226,7 @@ func (g *ISO19119Generator) setGeneralInfo() error {
 						OnlineResource: iso1911x.OnlineResourceTag{
 							CIOnlineResource: iso1911x.CIOnlineResourceTag{
 								Linkage: iso1911x.URLTag{
-									URL: config.GetContactUrl(),
+									URL: config.GetContactURL(),
 								},
 							},
 						},
@@ -203,8 +260,8 @@ func (g *ISO19119Generator) setGeneralInfo() error {
 	return nil
 }
 
+//nolint:funlen,maintidx
 func (g *ISO19119Generator) setIdentificationInfo() error {
-
 	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err
@@ -235,7 +292,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 									CIDateTypeCode: iso1911x.CodeListValueTag{
 										CodeList:      "https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode",
 										CodeListValue: "creation",
-										Value:         "creatie",
+										Value:         "creatie", //nolint:misspell
 									},
 								},
 							},
@@ -271,7 +328,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 					// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#verantwoordelijke-organisatie-bron
 					OrganisationName: iso1911x.OrganisationNameTag{
 						Anchor: iso1911x.AnchorTag{
-							Href:  config.GetContactOrganisationUri(),
+							Href:  config.GetContactOrganisationURI(),
 							Value: config.GetContactOrganisationName(),
 						},
 					},
@@ -280,13 +337,15 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 							Address: iso1911x.AddressTag{
 								CIAddress: iso1911x.CIAddressTag{
 									// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#verantwoordelijke-organisatie-bron-email
-									Email: iso1911x.CharacterStringTag{CharacterString: config.GetContactEmail()},
+									Email: iso1911x.CharacterStringTag{
+										CharacterString: config.GetContactEmail(),
+									},
 								},
 							},
 							OnlineResource: iso1911x.OnlineResourceTag{
 								CIOnlineResource: iso1911x.CIOnlineResourceTag{
 									Linkage: iso1911x.URLTag{
-										URL: config.GetContactUrl(),
+										URL: config.GetContactURL(),
 									},
 								},
 							},
@@ -308,21 +367,28 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 	// setThumbnails
 	thumbnails := config.GetThumbnails()
 
-	if thumbnails != nil && len(thumbnails) > 0 {
+	if thumbnails != nil {
 		entry.Metadata.IdentificationInfo.ServiceIdentification.GraphicOverview = []iso1911x.GraphicOverviewTag{}
 		for _, thumbnail := range thumbnails {
 			graphicOverview := iso1911x.GraphicOverviewTag{
 				BrowseGraphic: iso1911x.BrowseGraphic{
-					FileName:        iso1911x.CharacterStringTag{CharacterString: thumbnail.File},
-					FileDescription: iso1911x.CharacterStringTag{CharacterString: thumbnail.Description},
-					FileType:        nil,
+					FileName: iso1911x.CharacterStringTag{CharacterString: thumbnail.File},
+					FileDescription: iso1911x.CharacterStringTag{
+						CharacterString: thumbnail.Description,
+					},
+					FileType: nil,
 				},
 			}
 			if thumbnail.Filetype != "" {
-				graphicOverview.BrowseGraphic.FileType = common.Ptr(iso1911x.CharacterStringTag{CharacterString: thumbnail.Filetype})
+				graphicOverview.BrowseGraphic.FileType = common.Ptr(
+					iso1911x.CharacterStringTag{CharacterString: thumbnail.Filetype},
+				)
 			}
 
-			entry.Metadata.IdentificationInfo.ServiceIdentification.GraphicOverview = append(entry.Metadata.IdentificationInfo.ServiceIdentification.GraphicOverview, graphicOverview)
+			entry.Metadata.IdentificationInfo.ServiceIdentification.GraphicOverview = append(
+				entry.Metadata.IdentificationInfo.ServiceIdentification.GraphicOverview,
+				graphicOverview,
+			)
 		}
 	}
 
@@ -358,16 +424,26 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 				Value: protocol.SpatialDataserviceCategory,
 			},
 		}
-		descriptiveKeyword.Keywords.Keyword = append(descriptiveKeyword.Keywords.Keyword, keywordTag)
+		descriptiveKeyword.Keywords.Keyword = append(
+			descriptiveKeyword.Keywords.Keyword,
+			keywordTag,
+		)
 	}
 
 	for _, keyword := range keywords {
 		keywordTag := iso1911x.KeywordTag{
 			CharacterString: &keyword,
 		}
-		descriptiveKeyword.Keywords.Keyword = append(descriptiveKeyword.Keywords.Keyword, keywordTag)
+		descriptiveKeyword.Keywords.Keyword = append(
+			descriptiveKeyword.Keywords.Keyword,
+			keywordTag,
+		)
 	}
-	entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords = append(entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords, descriptiveKeyword)
+
+	entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords = append(
+		entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords,
+		descriptiveKeyword,
+	)
 
 	// INSPIRE theme as keyword
 	if len(config.GetInspireThemes()) > 0 {
@@ -393,7 +469,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 						},
 						Dates: []iso1911x.CIDateTag{
 							{
-								iso1911x.CIDate{
+								CIDate: iso1911x.CIDate{
 									Date: iso1911x.DateTag{
 										// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#thesaurusdatum
 										Date: "2008-06-01",
@@ -429,6 +505,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 			if !ok {
 				return fmt.Errorf("no INSPIRE theme found for code: %s", inspireTheme)
 			}
+
 			inspireKeyword := iso1911x.KeywordTag{
 				// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#trefwoord
 				// Must match the element WMS_Capabilities/Capability/inspire_vs:ExtendedCapability/inspire_common:Keyword in the Capabilities file
@@ -439,9 +516,16 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 					Value: *inspireThemeLabel,
 				},
 			}
-			inspireDescriptiveKeyword.Keywords.Keyword = append(inspireDescriptiveKeyword.Keywords.Keyword, inspireKeyword)
+			inspireDescriptiveKeyword.Keywords.Keyword = append(
+				inspireDescriptiveKeyword.Keywords.Keyword,
+				inspireKeyword,
+			)
 		}
-		entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords = append(entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords, inspireDescriptiveKeyword)
+
+		entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords = append(
+			entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords,
+			inspireDescriptiveKeyword,
+		)
 	}
 
 	// If an HVD category is linked, this must be made clear by means of a keyword, see https://docs.geostandaarden.nl/eu/handreiking-hvd/#409368F9
@@ -465,7 +549,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 		}
 
 		for _, hvdCategory := range filteredHvdCategories {
-			fullHvdCategoryCode := "http://data.europa.eu/bna/" + hvdCategory.Id
+			fullHvdCategoryCode := "http://data.europa.eu/bna/" + hvdCategory.ID
 
 			hvdCategoryKeyword := iso1911x.KeywordTag{
 				Anchor: &iso1911x.AnchorTag{
@@ -508,7 +592,10 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 			},
 		}
 
-		entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords = append(entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords, descriptiveKeyword)
+		entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords = append(
+			entry.Metadata.IdentificationInfo.ServiceIdentification.DescriptiveKeywords,
+			descriptiveKeyword,
+		)
 	}
 
 	// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#x5-2-12-juridische-toegangsrestricties
@@ -525,12 +612,16 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 	}
 
 	licenseURI := config.GetServiceLicense()
+
 	dataLicense, ok := g.Codelist.GetDataLicenseByURI(licenseURI)
 	if !ok {
 		return fmt.Errorf("no data license found for license URI: %s", licenseURI)
 	}
 
-	entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints = append(entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints, constraint1)
+	entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints = append(
+		entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints,
+		constraint1,
+	)
 	resourceConstraint := iso1911x.ResourceConstraint{
 		MDLegalConstraints: &iso1911x.MDLegalConstraints{
 			// Must match the element WMS_Capabilities/Service/AccessConstraints in the Capabilities file
@@ -566,9 +657,16 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 				Value: "Geen condities voor toegang en gebruik",
 			},
 		}
-		resourceConstraint.MDLegalConstraints.OtherConstraints = append(resourceConstraint.MDLegalConstraints.OtherConstraints, inspireOtherConstraint)
+		resourceConstraint.MDLegalConstraints.OtherConstraints = append(
+			resourceConstraint.MDLegalConstraints.OtherConstraints,
+			inspireOtherConstraint,
+		)
 	}
-	entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints = append(entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints, resourceConstraint)
+
+	entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints = append(
+		entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints,
+		resourceConstraint,
+	)
 
 	if config.InspireType != nil {
 		// For INSPIRE, also include a code from the LimitationsOnPublicAccess code list in an additional MD_LegalConstraints element
@@ -594,7 +692,10 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 			},
 		}
 
-		entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints = append(entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints, inspireResourceConstraint)
+		entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints = append(
+			entry.Metadata.IdentificationInfo.ServiceIdentification.ResourceConstraints,
+			inspireResourceConstraint,
+		)
 	}
 
 	// serviceType
@@ -671,7 +772,9 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 	}
 
 	// OperatesOn
-	var operatesOn []iso1911x.OperatesOn
+	expectedSize := 5
+
+	operatesOn := make([]iso1911x.OperatesOn, 0, expectedSize)
 	for _, linkedDataset := range config.GetLinkedDatasets() {
 		// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#gekoppelde-bron
 		// The attribute xlink:href must contain a URI pointing to the MD_DataIdentification section in the XML of the dataset's metadata record
@@ -680,6 +783,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 			Href:    "https://nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&request=GetRecordById&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=" + linkedDataset + "#MD_DataIdentification",
 		})
 	}
+
 	if len(operatesOn) > 0 {
 		entry.Metadata.IdentificationInfo.ServiceIdentification.OperatesOn = operatesOn
 	}
@@ -735,11 +839,13 @@ func (g *ISO19119Generator) setDistributionInfo() error {
 	return nil
 }
 
+//nolint:funlen,maintidx
 func (g *ISO19119Generator) setDataQualityInfo() error {
 	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err
 	}
+
 	config := entry.Config
 
 	entry.Metadata.DataQualityInfo = iso1911x.DataQualityInfo{
@@ -870,9 +976,11 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-invocable-sds-metadata
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-interoperable-sds-metadata
-	if config.InspireType != nil && (*config.InspireType == Invocable || *config.InspireType == Interoperable) {
-
-		SDSServiceCategory, ok := g.Codelist.GetSDSServiceCategoryBySDSCategory(string(*config.InspireType))
+	if config.InspireType != nil &&
+		(*config.InspireType == Invocable || *config.InspireType == Interoperable) {
+		SDSServiceCategory, ok := g.Codelist.GetSDSServiceCategoryBySDSCategory(
+			string(*config.InspireType),
+		)
 		if !ok {
 			return fmt.Errorf("no INSPIRE service type found for type: %s", config.Type)
 		}
@@ -1028,7 +1136,10 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 					},
 				},
 			}
-			entry.Metadata.DataQualityInfo.DataQuality.Report = append(entry.Metadata.DataQualityInfo.DataQuality.Report, qosAvailabilityReport)
+			entry.Metadata.DataQualityInfo.DataQuality.Report = append(
+				entry.Metadata.DataQualityInfo.DataQuality.Report,
+				qosAvailabilityReport,
+			)
 
 			qosPerformanceReport := iso1911x.ReportTag{
 				ConceptualConsistency: &iso1911x.ConceptualConsistencyTag{
@@ -1052,7 +1163,10 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 					},
 				},
 			}
-			entry.Metadata.DataQualityInfo.DataQuality.Report = append(entry.Metadata.DataQualityInfo.DataQuality.Report, qosPerformanceReport)
+			entry.Metadata.DataQualityInfo.DataQuality.Report = append(
+				entry.Metadata.DataQualityInfo.DataQuality.Report,
+				qosPerformanceReport,
+			)
 
 			qosCapacityReport := iso1911x.ReportTag{
 				ConceptualConsistency: &iso1911x.ConceptualConsistencyTag{
@@ -1076,33 +1190,11 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 					},
 				},
 			}
-			entry.Metadata.DataQualityInfo.DataQuality.Report = append(entry.Metadata.DataQualityInfo.DataQuality.Report, qosCapacityReport)
+			entry.Metadata.DataQualityInfo.DataQuality.Report = append(
+				entry.Metadata.DataQualityInfo.DataQuality.Report,
+				qosCapacityReport,
+			)
 		}
-	}
-
-	return nil
-}
-
-func (g *ISO19119Generator) WriteToXML() error {
-
-	entry, err := g.CurrentEntry()
-	if err != nil {
-		return err
-	}
-
-	output, err := xml.MarshalIndent(entry.Metadata, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	if err1 := os.MkdirAll(g.outputDir, 0755); err1 != nil {
-		return err1
-	}
-
-	entry.setFilename()
-	path := filepath.Join(g.outputDir, entry.filename)
-	if err = os.WriteFile(path, output, 0644); err != nil {
-		return err
 	}
 
 	return nil
@@ -1110,11 +1202,4 @@ func (g *ISO19119Generator) WriteToXML() error {
 
 func (g *ISO19119Generator) getRevisionDate() string {
 	return g.revisionDate
-}
-
-func (g *ISO19119Generator) PrintSummary() {
-	fmt.Printf("The following metadata has been created in %s: \n", g.outputDir)
-	for _, entry := range g.MetadataHolder {
-		fmt.Printf("  - %s\n", entry.filename)
-	}
 }

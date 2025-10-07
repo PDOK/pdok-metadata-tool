@@ -1,8 +1,10 @@
 package csw
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetRecordsOgcFilter_ToRequestBody(t *testing.T) {
@@ -41,9 +43,8 @@ func TestGetRecordsOgcFilter_ToRequestBody(t *testing.T) {
 	}
 
 	requestBody, err := filter.ToRequestBody()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, expectedRequestBody, requestBody)
-
 }
 
 func TestGetRecordsOgcFilter_getPropertyIsLikeClause(t *testing.T) {

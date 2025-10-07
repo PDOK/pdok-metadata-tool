@@ -2,12 +2,14 @@ package generator
 
 import (
 	"encoding/xml"
-	"github.com/stretchr/testify/assert"
-	"github.com/ucarion/c14n"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/ucarion/c14n"
 )
 
 const inputPath = "testdata/input/"
@@ -15,7 +17,6 @@ const outputFolder = "testdata/output"
 const expectedPath = "testdata/expected"
 
 func TestGenerateMetadata(t *testing.T) {
-
 	var tests = []struct {
 		configFileName string
 		fileOutput     map[string]string
@@ -66,40 +67,38 @@ func TestGenerateMetadata(t *testing.T) {
 				"00000000-0000-0000-0000-000000000010.xml": "inspire_hvd_complex_atom.xml",
 				"00000000-0000-0000-0000-000000000011.xml": "inspire_hvd_complex_wfs_invocable.xml",
 				"00000000-0000-0000-0000-000000000012.xml": "inspire_hvd_complex_wfs_interoperable.xml",
-				//"00000000-0000-0000-0000-000000000013.xml": "inspire_hvd_complex_oaf_interoperable.xml",
+				"00000000-0000-0000-0000-000000000013.xml": "inspire_hvd_complex_oaf_interoperable.xml",
 			},
 		},
 	}
 
 	for _, test := range tests {
 		var serviceSpecifics ServiceSpecifics
+
 		err := serviceSpecifics.LoadFromYAML(test.configFileName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		err = serviceSpecifics.Validate()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		generator, err := NewISO19119Generator(serviceSpecifics, outputFolder)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Overwrite revisionDate for testing
 		generator.revisionDate = "2025-01-09"
 
 		err = generator.Generate()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		for createdOutput, expectedOutput := range test.fileOutput {
-
 			xml1, err := canonicalizeXML(filepath.Join(outputFolder, createdOutput))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			xml2, err := canonicalizeXML(filepath.Join(expectedPath, expectedOutput))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			assert.Equal(t, xml1, xml2, "Canonicalized XML files should be equal")
-
 		}
-
 	}
 }
 
@@ -110,6 +109,7 @@ func canonicalizeXML(path string) (string, error) {
 	}
 
 	decoder := xml.NewDecoder(strings.NewReader(string(data)))
+
 	canonical, err := c14n.Canonicalize(decoder)
 	if err != nil {
 		return "", err

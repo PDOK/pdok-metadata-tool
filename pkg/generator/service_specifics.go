@@ -2,44 +2,52 @@ package generator
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/pdok/pdok-metadata-tool/internal/common"
-	"gopkg.in/yaml.v3"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"gopkg.in/yaml.v3"
 )
 
+// ServiceSpecifics struct for unmarshalling the input for metadata generation.
 type ServiceSpecifics struct {
 	Globals  GlobalConfig    `yaml:"globals"`
 	Services []ServiceConfig `yaml:"services"`
 }
 
+// GlobalConfig struct for unmarshalling service specifics input.
 type GlobalConfig struct {
 	OverrideableFields `yaml:",inline"`
 }
 
+// ServiceConfig struct for unmarshalling service specifics input.
 type ServiceConfig struct {
 	OverrideableFields `yaml:",inline"`
-	Type               string       `yaml:"type"`
-	ID                 string       `yaml:"id"`
-	AccessPoint        string       `yaml:"accessPoint"`
-	InspireType        *InspireType `yaml:"inspireType"`
+
+	Type        string       `yaml:"type"`
+	ID          string       `yaml:"id"`
+	AccessPoint string       `yaml:"accessPoint"`
+	InspireType *InspireType `yaml:"inspireType"`
 
 	// Pointer to globals
 	Globals *GlobalConfig `yaml:"-"`
 }
 
+// InspireType struct for unmarshalling service specifics input.
 type InspireType string
 
+// Values for InspireType.
 const (
 	Harmonised    InspireType = "HARMONISED"
 	Interoperable InspireType = "INTEROPERABLE"
 	Invocable     InspireType = "INVOCABLE"
 )
 
-func (iv *InspireType) UnmarshalYAML(unmarshal func(interface{}) error) error {
+// UnmarshalYAML unmarshalls the expected string for INSPIRE types.
+func (iv *InspireType) UnmarshalYAML(unmarshal func(any) error) error {
 	var s string
 	if err := unmarshal(&s); err != nil {
 		return err
@@ -57,15 +65,16 @@ func (iv *InspireType) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
+// OverrideableFields struct for unmarshalling service specifics input.
 type OverrideableFields struct {
 	Title                     *string      `yaml:"title,omitempty"`
 	CreationDate              *string      `yaml:"creationDate,omitempty"`
 	Abstract                  *string      `yaml:"abstract,omitempty"`
 	Keywords                  []string     `yaml:"keywords,omitempty"`
 	ContactOrganisationName   *string      `yaml:"contactOrganisationName,omitempty"`
-	ContactOrganisationUri    *string      `yaml:"contactOrganisationUri,omitempty"`
+	ContactOrganisationURI    *string      `yaml:"contactOrganisationUri,omitempty"`
 	ContactEmail              *string      `yaml:"contactEmail,omitempty"`
-	ContactUrl                *string      `yaml:"contactUrl,omitempty"`
+	ContactURL                *string      `yaml:"contactUrl,omitempty"`
 	InspireThemes             []string     `yaml:"inspireThemes,omitempty"`
 	HvdCategories             []string     `yaml:"hvdCategories,omitempty"`
 	ServiceLicense            *string      `yaml:"serviceLicense,omitempty"`
@@ -79,6 +88,7 @@ type OverrideableFields struct {
 	QosCapacity               *int         `yaml:"qosCapacity,omitempty"`
 }
 
+// BoundingBox struct for unmarshalling service specifics input.
 type BoundingBox struct {
 	MinX string `yaml:"minX"`
 	MaxX string `yaml:"maxX"`
@@ -86,17 +96,21 @@ type BoundingBox struct {
 	MaxY string `yaml:"maxY"`
 }
 
+// Thumbnail struct for unmarshalling service specifics input.
 type Thumbnail struct {
 	File        string `yaml:"file"`
 	Description string `yaml:"description"`
 	Filetype    string `yaml:"filetype"`
 }
 
+// LoadFromYAML unmarshalls the input for the given input file.
 func (s *ServiceSpecifics) LoadFromYAML(filename string) error {
+	//nolint:gosec
 	yamlFile, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
+
 	if err = yaml.Unmarshal(yamlFile, s); err != nil {
 		return err
 	}
@@ -116,30 +130,40 @@ func (s *ServiceSpecifics) LoadFromYAML(filename string) error {
 	return nil
 }
 
+// Validate the ServiceSpecifics on a global level, also calls Validate on service level.
 func (s *ServiceSpecifics) Validate() error {
 	var validationErrors []string
+
 	seenIDs := make(map[string]bool)
 
 	for i, service := range s.Services {
 		// Check for duplicate ID
 		if seenIDs[service.ID] {
-			validationErrors = append(validationErrors, fmt.Sprintf("Service[%d]: id is duplicate '%s'", i, service.ID))
+			validationErrors = append(
+				validationErrors,
+				fmt.Sprintf("Service[%d]: id is duplicate '%s'", i, service.ID),
+			)
 		} else {
 			seenIDs[service.ID] = true
 		}
 
 		// Validate individual service
 		if err := service.Validate(); err != nil {
-			validationErrors = append(validationErrors, fmt.Sprintf("Service[%d] (%s): %v", i, service.ID, err))
+			validationErrors = append(
+				validationErrors,
+				fmt.Sprintf("Service[%d] (%s): %v", i, service.ID, err),
+			)
 		}
 	}
 
 	if len(validationErrors) > 0 {
 		return fmt.Errorf("validation failed:\n%s", strings.Join(validationErrors, "\n"))
 	}
+
 	return nil
 }
 
+// Validate the ServiceSpecifics on service level.
 func (sc *ServiceConfig) Validate() error {
 	var errors []string
 
@@ -147,7 +171,7 @@ func (sc *ServiceConfig) Validate() error {
 		errors = append(errors, "id is required")
 	} else {
 		if _, err := uuid.Parse(sc.ID); err != nil {
-			errors = append(errors, fmt.Sprintf("id is not a valid UUID: %s", sc.ID))
+			errors = append(errors, "id is not a valid UUID: "+sc.ID)
 		}
 	}
 
@@ -158,6 +182,7 @@ func (sc *ServiceConfig) Validate() error {
 	if sc.GetTitle() == "" {
 		errors = append(errors, "title is required (either local or global)")
 	}
+
 	if sc.GetCreationDate() == "" {
 		errors = append(errors, "creationDate is required (either local or global)")
 	} else {
@@ -170,6 +195,7 @@ func (sc *ServiceConfig) Validate() error {
 	if sc.GetAbstract() == "" {
 		errors = append(errors, "abstract is required (either local or global)")
 	}
+
 	if len(sc.GetKeywords()) == 0 {
 		errors = append(errors, "at least one keyword is required (either local or global)")
 	}
@@ -177,27 +203,35 @@ func (sc *ServiceConfig) Validate() error {
 	if sc.GetContactOrganisationName() == "" {
 		errors = append(errors, "contactOrganisationName is required (either local or global)")
 	}
-	if sc.GetContactOrganisationUri() == "" {
-		errors = append(errors, "contactOrganisationName is required (either local or global)")
+
+	if sc.GetContactOrganisationURI() == "" {
+		errors = append(errors, "GetContactOrganisationURI is required (either local or global)")
 	}
+
 	if sc.GetContactEmail() == "" {
 		errors = append(errors, "contactEmail is required (either local or global)")
 	}
-	if sc.GetContactUrl() == "" {
+
+	if sc.GetContactURL() == "" {
 		errors = append(errors, "contactUrl is required (either local or global)")
 	}
+
 	if sc.GetServiceLicense() == "" {
 		errors = append(errors, "serviceLicense is required (either local or global)")
 	}
+
 	if sc.GetCoordinateReferenceSystem() == "" {
 		errors = append(errors, "serviceLicense is required (either local or global)")
 	}
+
 	if sc.GetQosAvailability() == "-999" {
 		errors = append(errors, "qosAvailability is required (either local or global)")
 	}
+
 	if sc.GetQosPerformance() == "-999" {
 		errors = append(errors, "qosPerformance is required (either local or global)")
 	}
+
 	if sc.GetQosCapacity() == "-999" {
 		errors = append(errors, "qosCapacity is required (either local or global)")
 	}
@@ -209,15 +243,19 @@ func (sc *ServiceConfig) Validate() error {
 	if len(errors) > 0 {
 		return fmt.Errorf("%s", strings.Join(errors, "; "))
 	}
+
 	return nil
 }
 
+// GetTitle returns the (overrideable) title, and possibly adds a postfix.
 func (sc *ServiceConfig) GetTitle() string {
 	if sc.Title != nil {
 		return *sc.Title
 	}
+
 	if sc.Globals.Title != nil {
 		postfix := ""
+
 		switch sc.Type {
 		case "wms":
 			postfix = " WMS"
@@ -233,141 +271,182 @@ func (sc *ServiceConfig) GetTitle() string {
 
 		return *sc.Globals.Title + postfix
 	}
+
 	return ""
 }
 
+// GetCreationDate returns the (overrideable) creation date.
 func (sc *ServiceConfig) GetCreationDate() string {
 	if sc.CreationDate != nil {
 		return *sc.CreationDate
 	}
+
 	if sc.Globals.CreationDate != nil {
 		return *sc.Globals.CreationDate
 	}
+
 	return ""
 }
 
+// GetAbstract returns the (overrideable) abstract.
 func (sc *ServiceConfig) GetAbstract() string {
 	if sc.Abstract != nil {
 		return *sc.Abstract
 	}
+
 	if sc.Globals.Abstract != nil {
 		return *sc.Globals.Abstract
 	}
+
 	return ""
 }
 
+// GetKeywords returns the (overrideable) keywords.
 func (sc *ServiceConfig) GetKeywords() []string {
 	if len(sc.Keywords) > 0 {
 		return sc.Keywords
 	}
+
 	return sc.Globals.Keywords
 }
 
+// GetContactOrganisationName returns the (overrideable) contact organisation name.
 func (sc *ServiceConfig) GetContactOrganisationName() string {
 	if sc.ContactOrganisationName != nil {
 		return *sc.ContactOrganisationName
 	}
+
 	if sc.Globals.ContactOrganisationName != nil {
 		return *sc.Globals.ContactOrganisationName
 	}
+
 	return ""
 }
 
-func (sc *ServiceConfig) GetContactOrganisationUri() string {
-	if sc.ContactOrganisationUri != nil {
-		return *sc.ContactOrganisationUri
+// GetContactOrganisationURI returns the (overrideable) contact organisation URI.
+func (sc *ServiceConfig) GetContactOrganisationURI() string {
+	if sc.ContactOrganisationURI != nil {
+		return *sc.ContactOrganisationURI
 	}
-	if sc.Globals.ContactOrganisationUri != nil {
-		return *sc.Globals.ContactOrganisationUri
+
+	if sc.Globals.ContactOrganisationURI != nil {
+		return *sc.Globals.ContactOrganisationURI
 	}
+
 	return ""
 }
 
+// GetContactEmail returns the (overrideable) contact email.
 func (sc *ServiceConfig) GetContactEmail() string {
 	if sc.ContactEmail != nil {
 		return *sc.ContactEmail
 	}
+
 	if sc.Globals.ContactEmail != nil {
 		return *sc.Globals.ContactEmail
 	}
+
 	return ""
 }
 
-func (sc *ServiceConfig) GetContactUrl() string {
-	if sc.ContactUrl != nil {
-		return *sc.ContactUrl
+// GetContactURL returns the (overrideable) contact URL.
+func (sc *ServiceConfig) GetContactURL() string {
+	if sc.ContactURL != nil {
+		return *sc.ContactURL
 	}
-	if sc.Globals.ContactUrl != nil {
-		return *sc.Globals.ContactUrl
+
+	if sc.Globals.ContactURL != nil {
+		return *sc.Globals.ContactURL
 	}
+
 	return ""
 }
 
+// GetInspireThemes returns the (overrideable) INSPIRE themes.
 func (sc *ServiceConfig) GetInspireThemes() []string {
 	if len(sc.InspireThemes) > 0 {
 		return sc.InspireThemes
 	}
+
 	return sc.Globals.InspireThemes
 }
 
+// GetHvdCategories returns the (overrideable) HVD categories.
 func (sc *ServiceConfig) GetHvdCategories() []string {
 	if len(sc.HvdCategories) > 0 {
 		return sc.HvdCategories
 	}
+
 	return sc.Globals.HvdCategories
 }
 
+// GetServiceLicense returns the (overrideable) service license.
 func (sc *ServiceConfig) GetServiceLicense() string {
 	if sc.ServiceLicense != nil {
 		return *sc.ServiceLicense
 	}
+
 	if sc.Globals.ServiceLicense != nil {
 		return *sc.Globals.ServiceLicense
 	}
+
 	return ""
 }
 
+// GetUseLimitation returns the (overrideable) use limitation.
 func (sc *ServiceConfig) GetUseLimitation() string {
 	if sc.UseLimitation != nil {
 		return *sc.UseLimitation
 	}
+
 	if sc.Globals.UseLimitation != nil {
 		return *sc.Globals.UseLimitation
 	}
+
 	return "Geen beperkingen"
 }
 
+// GetBoundingBox returns the (overrideable) bounding box.
 func (sc *ServiceConfig) GetBoundingBox() *BoundingBox {
 	if sc.BoundingBox != nil {
 		return sc.BoundingBox
 	}
+
 	return sc.Globals.BoundingBox
 }
 
+// GetLinkedDatasets returns the (overrideable) linked datasets.
 func (sc *ServiceConfig) GetLinkedDatasets() []string {
 	if len(sc.LinkedDatasets) > 0 {
 		return sc.LinkedDatasets
 	}
+
 	return sc.Globals.LinkedDatasets
 }
 
+// GetCoordinateReferenceSystem returns the (overrideable) coordinate reference system.
 func (sc *ServiceConfig) GetCoordinateReferenceSystem() string {
 	if sc.CoordinateReferenceSystem != nil {
 		return *sc.CoordinateReferenceSystem
 	}
+
 	if sc.Globals.CoordinateReferenceSystem != nil {
 		return *sc.Globals.CoordinateReferenceSystem
 	}
+
 	return ""
 }
 
+// GetThumbnails returns the (overrideable) thumbnails.
 func (sc *ServiceConfig) GetThumbnails() []Thumbnail {
 	if len(sc.Thumbnails) > 0 {
 		return sc.Thumbnails
 	}
+
 	return sc.Globals.Thumbnails
 }
 
+// GetQosAvailability returns the (overrideable) availability.
 func (sc *ServiceConfig) GetQosAvailability() string {
 	var value float64 = -999
 	if sc.QosAvailability != nil {
@@ -375,9 +454,11 @@ func (sc *ServiceConfig) GetQosAvailability() string {
 	} else if sc.Globals.QosAvailability != nil {
 		value = *sc.Globals.QosAvailability
 	}
+
 	return strconv.FormatFloat(value, 'f', -1, 64)
 }
 
+// GetQosPerformance returns the (overrideable) performance.
 func (sc *ServiceConfig) GetQosPerformance() string {
 	var value float64 = -999
 	if sc.QosPerformance != nil {
@@ -385,15 +466,18 @@ func (sc *ServiceConfig) GetQosPerformance() string {
 	} else if sc.Globals.QosPerformance != nil {
 		value = *sc.Globals.QosPerformance
 	}
+
 	return strconv.FormatFloat(value, 'f', -1, 64)
 }
 
+// GetQosCapacity returns the (overrideable) capacity.
 func (sc *ServiceConfig) GetQosCapacity() string {
-	var value int = -999
+	var value = -999
 	if sc.QosCapacity != nil {
 		value = *sc.QosCapacity
 	} else if sc.Globals.QosCapacity != nil {
 		value = *sc.Globals.QosCapacity
 	}
+
 	return strconv.Itoa(value)
 }

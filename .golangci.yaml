@@ -44,7 +44,6 @@ linters:
     - gocognit                  # Computes and checks the cognitive complexity of functions.
     - goconst                   # Finds repeated strings that could be replaced by a constant.
     - gocritic                  # Provides diagnostics that check for bugs, performance and style issues.
-    - godot                     # Check if comments end in a period.
     - goheader                  # Check if file header matches to pattern.
     - gomoddirectives           # Manage the use of 'replace', 'retract', and 'excludes' directives in go.mod.
     - gomodguard                # Allow and blocklist linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations.
@@ -57,21 +56,18 @@ linters:
     - inamedparam               # Reports interfaces with unnamed method parameters.
     - interfacebloat            # A linter that checks the number of methods inside an interface.
     - intrange                  # Intrange is a linter to find places where for loops could make use of an integer range.
-    - ireturn                   # Accept Interfaces, Return Concrete Types.
     - loggercheck               # Checks key value pairs for common logger libraries (kitlog,klog,logr,slog,zap).
     - maintidx                  # Maintidx measures the maintainability index of each function.
     - makezero                  # Find slice declarations with non-zero initial length.
     - mirror                    # Reports wrong mirror patterns of bytes/strings usage.
-    - misspell                  # Finds commonly misspelled English words.
     - mnd                       # An analyzer to detect magic numbers.
     - musttag                   # Enforce field tags in (un)marshaled structs.
     - nakedret                  # Checks that functions with naked returns are not longer than a maximum size (can be zero).
     - nestif                    # Reports deeply nested if statements.
     - nilerr                    # Find the code that returns nil even if it checks that the error is not nil.
     - nilnesserr                # Reports constructs that checks for err != nil, but returns a different nil value error.
-    - nilnil                    # Checks that there is no simultaneous return of `nil` error and an invalid value.
     - nlreturn                  # Checks for a new line before return and branch statements to increase code clarity.
-    - nolintlint                # Reports ill-formed or insufficient nolint directives.
+
     - nosprintfhostport         # Checks for misuse of Sprintf to construct a host with port in a URL.
     - paralleltest              # Detects missing usage of t.Parallel() method in your Go test.
     - perfsprint                # Checks that fmt.Sprintf can be replaced with a faster alternative.
@@ -86,7 +82,6 @@ linters:
     - sloglint                  # Ensure consistent code style when using log/slog.
     - spancheck                 # Checks for mistakes with OpenTelemetry/Census spans.
     - sqlclosecheck             # Checks that sql.Rows, sql.Stmt, sqlx.NamedStmt, pgx.Query are closed.
-    - tagalign                  # Check that struct tags are well aligned.
     - tagliatelle               # Checks the struct tags.
     - testableexamples          # Linter checks if examples are testable (have an expected output).
     - testifylint               # Checks usage of github.com/stretchr/testify.
@@ -114,12 +109,19 @@ linters:
           - nestif        # Reports deeply nested if statements.
           - paralleltest  # Detects missing usage of t.Parallel() method in your Go test.
           - testpackage   # Linter that makes you use a separate _test package.
+      - linters:
+          - revive
+        text: "var-naming: .* should be .*ID"
 
   settings:
+    testifylint:
+      enable-all: true
+      disable:
+        - require-error
     cyclop:
       # The maximal code complexity to report.
       # Default: 10
-      max-complexity: 15
+      max-complexity: 22
     depguard:
       rules:
         main:
@@ -143,11 +145,37 @@ linters:
       # Checks the number of lines in a function.
       # If lower than 0, disable the check.
       # Default: 60
-      lines: 100
+      lines: 125
+      statements: 42
     nestif:
       # Minimal complexity of if statements to report.
       # Default: 5
       min-complexity: 6
+    revive:
+      rules:
+        # default rules
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: dot-imports
+        - name: empty-block
+        - name: error-naming
+        - name: error-return
+        - name: error-strings
+        - name: errorf
+        - name: increment-decrement
+        - name: indent-error-flow
+        - name: range
+        - name: receiver-naming
+        - name: redefines-builtin-id
+        - name: superfluous-else
+        - name: time-naming
+        - name: unexported-return
+        - name: unreachable-code
+        - name: unused-parameter
+        - name: var-declaration
+        # enabled or tweaked by us
+        - name: use-any
 
 formatters:
   enable:

@@ -1,47 +1,65 @@
+// Package inspire provides the models used for retrieving INSPIRE data.
 package inspire
 
 import (
 	"fmt"
 )
 
-var InspireEndpoint = "https://inspire.ec.europa.eu"
+// InspireEndpoint is the endpoint for INSPIRE registry downloads (currently not used since it's not complete).
+const InspireEndpoint = "https://inspire.ec.europa.eu"
 
+// InspireRegisterKind values.
 type InspireRegisterKind string
 
-var InspireKindTheme InspireRegisterKind = "theme"
-var InspireKindLayer InspireRegisterKind = "layer"
+// Values for InspireRegisterKind.
+const (
+	Theme InspireRegisterKind = "theme"
+	Layer InspireRegisterKind = "layer"
+)
 
+// InspireRegisterLanguage values.
 type InspireRegisterLanguage string
 
-var InspireDutch InspireRegisterLanguage = "nl"
-var InspireEnglish InspireRegisterLanguage = "en"
+// Values for InspireRegisterLanguage.
+const (
+	Dutch   InspireRegisterLanguage = "nl"
+	English InspireRegisterLanguage = "en"
+)
 
-var InspireRegisterKinds = []InspireRegisterKind{InspireKindTheme, InspireKindLayer}
-var InspireRegisterLanguages = []InspireRegisterLanguage{InspireDutch, InspireEnglish}
+// InspireRegisterKinds holds the INSPIRE registry kinds.
+var InspireRegisterKinds = []InspireRegisterKind{Theme, Layer}
 
+// InspireVariant values.
 type InspireVariant string
 
+// Values for InspireVariant.
 const (
 	Harmonised InspireVariant = "HARMONISED"
 	AsIs       InspireVariant = "ASIS"
 )
 
-// InspireItem is an interface that both InspireLayer and InspireTheme implement
+// InspireItem is an interface that both InspireLayer and InspireTheme implement.
 type InspireItem interface {
 	GetId() string
 	GetLabelDutch() string
 	GetLabelEnglish() string
 }
 
+// GetInspireEndpoint returns the INSPIRE endpoint for a given kind and language.
 func GetInspireEndpoint(kind InspireRegisterKind, language InspireRegisterLanguage) string {
 	return fmt.Sprintf("%s/%s/%s.%s.json", InspireEndpoint, kind, kind, language)
 }
 
+// GetInspirePath returns the JSON path for a given kind and language.
 func GetInspirePath(kind InspireRegisterKind, language InspireRegisterLanguage) string {
 	return fmt.Sprintf("%s.%s.json", kind, language)
 }
 
-func GetInspireThemeIdForDutchLabel(labelDutch string) (id string) {
+// GetInspireThemeIDForDutchLabel returns the INSPIRE theme id for a given Dutch label.
+//
+//nolint:cyclop,funlen
+func GetInspireThemeIDForDutchLabel(labelDutch string) (id string) {
+	//nolint:misspell
 	switch labelDutch {
 	case "Administratieve eenheden":
 		id = "au"
@@ -61,7 +79,7 @@ func GetInspireThemeIdForDutchLabel(labelDutch string) (id string) {
 		id = "er"
 	case "Faciliteiten voor landbouw en aquacultuur":
 		id = "af"
-	case "Faciliteiten voor productie en industrie":
+	case "Faciliteiten voor productive en industrie":
 		id = "pf"
 	case "Gebieden met natuurrisico's":
 		id = "nz"
@@ -112,5 +130,6 @@ func GetInspireThemeIdForDutchLabel(labelDutch string) (id string) {
 	case "Zeegebieden":
 		id = "sr"
 	}
-	return
+
+	return id
 }

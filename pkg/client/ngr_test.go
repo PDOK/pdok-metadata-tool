@@ -7,6 +7,7 @@ import (
 
 	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNgrClient_GetRecordTags(t *testing.T) {
@@ -16,6 +17,7 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 	type args struct {
 		uuid string
 	}
+
 	tests := []struct {
 		name         string
 		args         args
@@ -31,7 +33,7 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 			wantNrOfTags: 1,
 			want: ngr.RecordTagsResponse{
 				{
-					Id:   224342,
+					ID:   224342,
 					Name: "inspire",
 					Label: map[string]string{
 						"dut": "Inspire",
@@ -54,7 +56,7 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ngrClient.GetRecordTags(tt.args.uuid)
 
-			assert.Nil(t, err)
+			require.NoError(t, err)
 			assert.Len(t, got, tt.wantNrOfTags)
 			assert.Equal(t, tt.want, got)
 		})
@@ -62,10 +64,14 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 }
 
 func getNgrClient(t *testing.T, mockedNGRServer *httptest.Server) *NgrClient {
+	t.Helper()
+
 	hostURL, err := url.Parse(mockedNGRServer.URL)
 	if err != nil {
 		t.Fatalf("Failed to parse mocked NGR server URL: %v", err)
 	}
+
 	ngrClient := NewNgrClient(hostURL)
+
 	return &ngrClient
 }

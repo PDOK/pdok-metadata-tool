@@ -1,5 +1,5 @@
 {
-  "reference_systems": {
+  "referenceSystems": {
     "EPSG:28992": {
       "uri": "http://www.opengis.net/def/crs/EPSG/0/28992",
       "name": "Amersfoort / RD New"
@@ -25,7 +25,7 @@
       "uri": "https://www.opengis.net/def/crs/EPSG/0/4326"
     }
   },
-  "inspire_themes": {
+  "inspireThemes": {
     "https://www.eionet.europa.eu/gemet/nl/inspire-theme/au": "Administratieve eenheden",
     "https://www.eionet.europa.eu/gemet/nl/inspire-theme/ad": "Adressen",
     "https://www.eionet.europa.eu/gemet/nl/inspire-theme/ac": "Atmosferische omstandigheden",
@@ -61,7 +61,7 @@
     "https://www.eionet.europa.eu/gemet/nl/inspire-theme/tn": "Vervoersnetwerken",
     "https://www.eionet.europa.eu/gemet/nl/inspire-theme/sr": "Zeegebieden"
   },
-  "hvd_categories": {
+  "hvdCategories": {
     "http://data.europa.eu/bna/c_1e787364": "Referentiegegevens voor waterstandmeters die relevant zijn voor de binnenvaart",
     "http://data.europa.eu/bna/c_b151a0ba": "Datasets over binnenwateren",
     "http://data.europa.eu/bna/c_b79e35eb": "Mobiliteit",
@@ -71,151 +71,151 @@
   },
   "protocols": {
     "csw": {
-      "service_protocol_url": "http://www.opengis.net/def/serviceType/ogc/csw",
-      "service_protocol": "OGC:CSW",
-      "protocol_release_date": "2007-02-23",
-      "protocol_version": "2.0.2",
-      "service_protocol_name": "Web Catalog service",
-      "spatial_dataservice_category": "infoCatalogueService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoCatalogueService",
-      "spatial_dataservice_category_label": "Catalogusdienst",
-      "service_access_point_operation": "GetCapabilities"
+      "serviceProtocolUrl": "http://www.opengis.net/def/serviceType/ogc/csw",
+      "serviceProtocol": "OGC:CSW",
+      "protocolReleaseDate": "2007-02-23",
+      "protocolVersion": "2.0.2",
+      "serviceProtocolName": "Web Catalog service",
+      "spatialDataserviceCategory": "infoCatalogueService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoCatalogueService",
+      "spatialDataserviceCategoryLabel": "Catalogusdienst",
+      "serviceAccessPointOperation": "GetCapabilities"
     },
     "wms": {
-      "service_protocol_url": "http://www.opengis.net/def/serviceType/ogc/wms",
-      "service_protocol": "OGC:WMS",
-      "protocol_release_date": "2006-03-15",
-      "protocol_version": "1.3.0",
-      "service_protocol_name": "Web Map Service",
-      "spatial_dataservice_category": "infoMapAccessService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoMapAccessService",
-      "spatial_dataservice_category_label": "Dienst kaarttoegang",
-      "service_access_point_operation": "GetCapabilities"
+      "serviceProtocolUrl": "http://www.opengis.net/def/serviceType/ogc/wms",
+      "serviceProtocol": "OGC:WMS",
+      "protocolReleaseDate": "2006-03-15",
+      "protocolVersion": "1.3.0",
+      "serviceProtocolName": "Web Map Service",
+      "spatialDataserviceCategory": "infoMapAccessService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoMapAccessService",
+      "spatialDataserviceCategoryLabel": "Dienst kaarttoegang",
+      "serviceAccessPointOperation": "GetCapabilities"
     },
     "wmts": {
-      "service_protocol_url": "http://www.opengis.net/def/serviceType/ogc/wmts",
-      "service_protocol": "OGC:WMTS",
-      "protocol_release_date": " 2010-04-06",
-      "protocol_version": "1.0.0",
-      "service_protocol_name": "Web Map Tile Service",
-      "spatial_dataservice_category": "infoMapAccessService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoMapAccessService",
-      "spatial_dataservice_category_label": "Dienst kaarttoegang",
-      "service_access_point_operation": "GetCapabilities"
+      "serviceProtocolUrl": "http://www.opengis.net/def/serviceType/ogc/wmts",
+      "serviceProtocol": "OGC:WMTS",
+      "protocolReleaseDate": " 2010-04-06",
+      "protocolVersion": "1.0.0",
+      "serviceProtocolName": "Web Map Tile Service",
+      "spatialDataserviceCategory": "infoMapAccessService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoMapAccessService",
+      "spatialDataserviceCategoryLabel": "Dienst kaarttoegang",
+      "serviceAccessPointOperation": "GetCapabilities"
     },
     "wfs": {
-      "service_protocol_url": "http://www.opengis.net/def/serviceType/ogc/wfs",
-      "service_protocol": "OGC:WFS",
-      "protocol_release_date": "2010-11-02",
-      "protocol_version": "2.0",
-      "service_protocol_name": "Web Feature Service",
-      "spatial_dataservice_category": "infoFeatureAccessService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoFeatureAccessService",
-      "spatial_dataservice_category_label": "Dienst objecttoegang",
-      "service_access_point_operation": "GetCapabilities"
+      "serviceProtocolUrl": "http://www.opengis.net/def/serviceType/ogc/wfs",
+      "serviceProtocol": "OGC:WFS",
+      "protocolReleaseDate": "2010-11-02",
+      "protocolVersion": "2.0",
+      "serviceProtocolName": "Web Feature Service",
+      "spatialDataserviceCategory": "infoFeatureAccessService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoFeatureAccessService",
+      "spatialDataserviceCategoryLabel": "Dienst objecttoegang",
+      "serviceAccessPointOperation": "GetCapabilities"
     },
     "wcs": {
-      "service_protocol_url": "http://www.opengis.net/def/serviceType/ogc/wcs",
-      "service_protocol": "OGC:WCS",
-      "protocol_release_date": "2018-08-16",
-      "protocol_version": "2.1",
-      "service_protocol_name": "Web Coverage Service",
-      "spatial_dataservice_category": "infoCoverageAccessService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoCoverageAccessService",
-      "spatial_dataservice_category_label": "Dienst rastergegevenstoegang",
-      "service_access_point_operation": "GetCapabilities"
+      "serviceProtocolUrl": "http://www.opengis.net/def/serviceType/ogc/wcs",
+      "serviceProtocol": "OGC:WCS",
+      "protocolReleaseDate": "2018-08-16",
+      "protocolVersion": "2.1",
+      "serviceProtocolName": "Web Coverage Service",
+      "spatialDataserviceCategory": "infoCoverageAccessService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoCoverageAccessService",
+      "spatialDataserviceCategoryLabel": "Dienst rastergegevenstoegang",
+      "serviceAccessPointOperation": "GetCapabilities"
     },
     "oaf": {
-      "service_protocol_url": "http://www.opengis.net/def/interface/ogcapi-features",
-      "service_protocol": "OGC:API features",
-      "protocol_release_date": "2022-05-11",
-      "service_protocol_name": "OGC API features",
-      "spatial_dataservice_category": "infoFeatureAccessService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoFeatureAccessService",
-      "spatial_dataservice_category_label": "Dienst objecttoegang",
-      "service_access_point_operation": "HTTPGet"
+      "serviceProtocolUrl": "http://www.opengis.net/def/interface/ogcapi-features",
+      "serviceProtocol": "OGC:API features",
+      "protocolReleaseDate": "2022-05-11",
+      "serviceProtocolName": "OGC API features",
+      "spatialDataserviceCategory": "infoFeatureAccessService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoFeatureAccessService",
+      "spatialDataserviceCategoryLabel": "Dienst objecttoegang",
+      "serviceAccessPointOperation": "HTTPGet"
     },
     "oat": {
-      "service_protocol_url": "http://www.opengis.net/def/interface/ogcapi-tiles",
-      "service_protocol": "OGC:API tiles",
-      "protocol_release_date": "2022-05-11",
-      "service_protocol_name": "OGC API tiles",
-      "spatial_dataservice_category": "infoMapAccessService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoMapAccessService",
-      "spatial_dataservice_category_label": "Dienst kaarttoegang",
-      "service_access_point_operation": "HTTPGet"
+      "serviceProtocolUrl": "http://www.opengis.net/def/interface/ogcapi-tiles",
+      "serviceProtocol": "OGC:API tiles",
+      "protocolReleaseDate": "2022-05-11",
+      "serviceProtocolName": "OGC API tiles",
+      "spatialDataserviceCategory": "infoMapAccessService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoMapAccessService",
+      "spatialDataserviceCategoryLabel": "Dienst kaarttoegang",
+      "serviceAccessPointOperation": "HTTPGet"
     },
     "oas": {
-      "service_protocol_url": "https://github.com/OAI/OpenAPI-Specification/",
-      "service_protocol": "OAS",
-      "protocol_release_date": "2017-07-26",
-      "service_protocol_name": "Open API Specification",
-      "spatial_dataservice_category": "infoFeatureAccessService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoFeatureAccessService",
-      "spatial_dataservice_category_label": "Dienst objecttoegang",
-      "service_access_point_operation": "HTTPGet"
+      "serviceProtocolUrl": "https://github.com/OAI/OpenAPI-Specification/",
+      "serviceProtocol": "OAS",
+      "protocolReleaseDate": "2017-07-26",
+      "serviceProtocolName": "Open API Specification",
+      "spatialDataserviceCategory": "infoFeatureAccessService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoFeatureAccessService",
+      "spatialDataserviceCategoryLabel": "Dienst objecttoegang",
+      "serviceAccessPointOperation": "HTTPGet"
     },
     "sos": {
-      "service_protocol_url": "http://www.opengis.net/def/serviceType/ogc/sos",
-      "protocol_release_date": "2012-04-20",
-      "protocol_version": "2.0",
-      "service_protocol": "OGC:SOS",
-      "service_protocol_name": "Sensor Observation Service",
-      "spatial_dataservice_category": "infoSensorDescriptionService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoSensorDescriptionService",
-      "spatial_dataservice_category_label": "Dienst sensorbeschrijving",
-      "service_access_point_operation": "GetCapabilities"
+      "serviceProtocolUrl": "http://www.opengis.net/def/serviceType/ogc/sos",
+      "protocolReleaseDate": "2012-04-20",
+      "protocolVersion": "2.0",
+      "serviceProtocol": "OGC:SOS",
+      "serviceProtocolName": "Sensor Observation Service",
+      "spatialDataserviceCategory": "infoSensorDescriptionService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoSensorDescriptionService",
+      "spatialDataserviceCategoryLabel": "Dienst sensorbeschrijving",
+      "serviceAccessPointOperation": "GetCapabilities"
     },
     "atom": {
-      "service_protocol_url": "https://tools.ietf.org/html/rfc4287",
-      "protocol_release_date": "2005-12-01",
-      "service_protocol": "INSPIRE Atom",
-      "service_protocol_name": "The Atom Syndication Format",
-      "spatial_dataservice_category": "infoFeatureAccessService",
-      "spatial_dataservice_category_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoFeatureAccessService",
-      "spatial_dataservice_category_label": "Dienst objecttoegang",
-      "service_access_point_operation": "HTTPGet"
+      "serviceProtocolUrl": "https://tools.ietf.org/html/rfc4287",
+      "protocolReleaseDate": "2005-12-01",
+      "serviceProtocol": "INSPIRE Atom",
+      "serviceProtocolName": "The Atom Syndication Format",
+      "spatialDataserviceCategory": "infoFeatureAccessService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoFeatureAccessService",
+      "spatialDataserviceCategoryLabel": "Dienst objecttoegang",
+      "serviceAccessPointOperation": "HTTPGet"
     },
     "wps": {
-      "service_protocol_url": "http://www.opengis.net/def/serviceType/ogc/wps",
-      "service_protocol": "OGC:WPS",
-      "protocol_release_date": "2015-03-05",
-      "protocol_version": "2.0",
-      "service_protocol_name": "Web Processing Service",
-      "service_access_point_operation": "GetCapabilities"
+      "serviceProtocolUrl": "http://www.opengis.net/def/serviceType/ogc/wps",
+      "serviceProtocol": "OGC:WPS",
+      "protocolReleaseDate": "2015-03-05",
+      "protocolVersion": "2.0",
+      "serviceProtocolName": "Web Processing Service",
+      "serviceAccessPointOperation": "GetCapabilities"
     }
   },
-  "inspire_service_types": [
+  "inspireServiceTypes": [
     {
-      "ogc_service_types": ["csw"],
-      "inspire_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/discovery",
-      "inspire_servicetype": "discovery",
-      "inspire_technicalguidance": "https://inspire.ec.europa.eu/documents/technical-guidance-implementation-inspire-discovery-services-0",
-      "inspire_technicalguidance_date": "2011-11-07"
+      "ogcServiceTypes": ["csw"],
+      "inspireUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/discovery",
+      "inspireServiceType": "discovery",
+      "inspireTechnicalGuidance": "https://inspire.ec.europa.eu/documents/technical-guidance-implementation-inspire-discovery-services-0",
+      "inspireTechnicalGuidanceDate": "2011-11-07"
     },
     {
-      "ogc_service_types": ["wms", "wmts", "tms", "oat"],
-      "inspire_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/view",
-      "inspire_servicetype": "view",
-      "inspire_technicalguidance": "https://inspire.ec.europa.eu/documents/technical-guidance-implementation-inspire-view-services-1",
-      "inspire_technicalguidance_date": "2013-04-04"
+      "ogcServiceTypes": ["wms", "wmts", "tms", "oat"],
+      "inspireUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/view",
+      "inspireServiceType": "view",
+      "inspireTechnicalGuidance": "https://inspire.ec.europa.eu/documents/technical-guidance-implementation-inspire-view-services-1",
+      "inspireTechnicalGuidanceDate": "2013-04-04"
     },
     {
-      "ogc_service_types": ["wfs", "wcs", "sos", "atom", "oaf", "oas"],
-      "inspire_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/download",
-      "inspire_servicetype": "download",
-      "inspire_technicalguidance": "https://inspire.ec.europa.eu/documents/technical-guidance-implementation-inspire-download-services",
-      "inspire_technicalguidance_date": "2013-08-09"
+      "ogcServiceTypes": ["wfs", "wcs", "sos", "atom", "oaf", "oas"],
+      "inspireUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/download",
+      "inspireServiceType": "download",
+      "inspireTechnicalGuidance": "https://inspire.ec.europa.eu/documents/technical-guidance-implementation-inspire-download-services",
+      "inspireTechnicalGuidanceDate": "2013-08-09"
     },
     {
-      "ogc_service_types": ["wps"],
-      "inspire_uri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/transformation",
-      "inspire_servicetype": "transformation",
-      "inspire_technicalguidance": "https://inspire.ec.europa.eu/documents/technical-guidance-inspire-schema-transformation-network-service",
-      "inspire_technicalguidance_date": "2010-12-15"
+      "ogcServiceTypes": ["wps"],
+      "inspireUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/transformation",
+      "inspireServiceType": "transformation",
+      "inspireTechnicalGuidance": "https://inspire.ec.europa.eu/documents/technical-guidance-inspire-schema-transformation-network-service",
+      "inspireTechnicalGuidanceDate": "2010-12-15"
     }
   ],
-  "sds_service_categories": {
+  "sdsServiceCategories": {
     "invocable": {
       "uri": "http://inspire.ec.europa.eu/id/ats/metadata/2.0/sds-invocable",
       "value": "invocable",
@@ -232,52 +232,52 @@
       "description": "Geharmoniseerde datadienst"
     }
   },
-  "data_licenses": [
+  "dataLicenses": [
     {
       "uri": "http://creativecommons.org/publicdomain/mark/*/deed.nl",
-      "uri_regex": "^https?://creativecommons\\.org/publicdomain/mark/[^/]+/deed\\.nl$",
+      "uriRegex": "^https?://creativecommons\\.org/publicdomain/mark/[^/]+/deed\\.nl$",
       "value": "Open data (publiek)",
       "description": "Geen beperkingen"
     },
     {
       "uri": "http://creativecommons.org/publicdomain/zero/*/deed.nl",
-      "uri_regex": "^https?://creativecommons\\.org/publicdomain/zero/[^/]+/deed\\.nl$",
+      "uriRegex": "^https?://creativecommons\\.org/publicdomain/zero/[^/]+/deed\\.nl$",
       "value": "Open data (CCO)",
       "description": "Geen beperkingen"
     },
     {
       "uri": "http://creativecommons.org/licenses/by/*/deed.nl",
-      "uri_regex": "^https?://creativecommons\\.org/licenses/by/[^/]+/deed\\.nl$",
+      "uriRegex": "^https?://creativecommons\\.org/licenses/by/[^/]+/deed\\.nl$",
       "value": "Open data (CC-BY)",
       "description": "Naamsvermelding verplicht, organisatienaam"
     },
     {
       "uri": "http://creativecommons.org/licenses/by-sa/*/deed.nl",
-      "uri_regex": "^https?://creativecommons\\.org/licenses/by-sa/[^/]+/deed\\.nl$",
+      "uriRegex": "^https?://creativecommons\\.org/licenses/by-sa/[^/]+/deed\\.nl$",
       "value": "Gebruiksvoorwaarden (CC-by-sa)",
       "description": "Gelijk Delen, Naamsvermelding verplicht, organisatienaam"
     },
     {
       "uri": "http://creativecommons.org/licenses/by-nc/*/deed.nl",
-      "uri_regex": "^https?://creativecommons\\.org/licenses/by-nc/[^/]+/deed\\.nl$",
+      "uriRegex": "^https?://creativecommons\\.org/licenses/by-nc/[^/]+/deed\\.nl$",
       "value": "Gebruiksvoorwaarden (CC-by-nc)",
       "description": "Niet Commercieel, Naamsvermelding verplicht, organisatienaam"
     },
     {
       "uri": "http://creativecommons.org/licenses/by-nc-sa/*/deed.nl",
-      "uri_regex": "^https?://creativecommons\\.org/licenses/by-nc-sa/[^/]+/deed\\.nl$",
+      "uriRegex": "^https?://creativecommons\\.org/licenses/by-nc-sa/[^/]+/deed\\.nl$",
       "value": "Gebruiksvoorwaarden (CC-by-nc-sa)",
       "description": "Niet Commercieel, Gelijk Delen, Naamsvermelding verplicht, organisatienaam"
     },
     {
       "uri": "http://creativecommons.org/licenses/by-nd/*/deed.nl",
-      "uri_regex": "^https?://creativecommons\\.org/licenses/by-nd/[^/]+/deed\\.nl$",
+      "uriRegex": "^https?://creativecommons\\.org/licenses/by-nd/[^/]+/deed\\.nl$",
       "value": "Gebruiksvoorwaarden (CC-by-nd)",
       "description": "Geen Afgeleide Werken, Naamsvermelding verplicht, organisatienaam"
     },
     {
       "uri": "http://creativecommons.org/licenses/by-nc-nd/*/deed.nl",
-      "uri_regex": "^https?://creativecommons\\.org/licenses/by-nc-nd/[^/]+/deed\\.nl$",
+      "uriRegex": "^https?://creativecommons\\.org/licenses/by-nc-nd/[^/]+/deed\\.nl$",
       "value": "Gebruiksvoorwaarden (CC-by-nc-nd)",
       "description": "Niet Commercieel, Geen Afgeleide Werken, Naamsvermelding verplicht, organisatienaam"
     }
