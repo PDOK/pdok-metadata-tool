@@ -96,7 +96,6 @@ func getInspireListCommand() *cli.Command {
 	}
 }
 
-//nolint:gocognit
 func getInspireCSVCommand() *cli.Command {
 	return &cli.Command{
 		Name:  "csv",
