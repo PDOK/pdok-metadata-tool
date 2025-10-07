@@ -109,6 +109,9 @@ linters:
           - nestif        # Reports deeply nested if statements.
           - paralleltest  # Detects missing usage of t.Parallel() method in your Go test.
           - testpackage   # Linter that makes you use a separate _test package.
+      - linters:
+          - revive
+        text: "var-naming: .* should be .*ID"
 
   settings:
     testifylint:
@@ -193,8 +196,3 @@ run:
 
   # Modules download mode (do not modify go.mod)
   modules-download-mode: readonly
-
-exclude-rules:
-  - linters:
-      - revive
-    text: "var-naming: .* should be .*ID"
