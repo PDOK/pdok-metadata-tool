@@ -9,8 +9,6 @@ import (
 const InspireEndpoint = "https://inspire.ec.europa.eu"
 
 // InspireRegisterKind values.
-//
-//nolint:revive
 type InspireRegisterKind string
 
 // Values for InspireRegisterKind.
@@ -20,8 +18,6 @@ const (
 )
 
 // InspireRegisterLanguage values.
-//
-//nolint:revive
 type InspireRegisterLanguage string
 
 // Values for InspireRegisterLanguage.
@@ -34,8 +30,6 @@ const (
 var InspireRegisterKinds = []InspireRegisterKind{Theme, Layer}
 
 // InspireVariant values.
-//
-//nolint:revive
 type InspireVariant string
 
 // Values for InspireVariant.
@@ -45,8 +39,6 @@ const (
 )
 
 // InspireItem is an interface that both InspireLayer and InspireTheme implement.
-//
-//nolint:revive
 type InspireItem interface {
 	GetId() string
 	GetLabelDutch() string

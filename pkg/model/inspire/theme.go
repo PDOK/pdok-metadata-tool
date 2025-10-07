@@ -1,8 +1,6 @@
 package inspire
 
 // InspireTheme represents an INSPIRE theme with both English and Dutch labels.
-//
-//nolint:revive
 type InspireTheme struct {
 	ID           string `json:"id"`           // Primary Key, Unique, 2 characters
 	Order        int    `json:"order"`        // Order number
@@ -12,8 +10,6 @@ type InspireTheme struct {
 }
 
 // InspireThemeRaw represents the raw structure of an INSPIRE theme as received from the API.
-//
-//nolint:revive
 type InspireThemeRaw struct {
 	Register struct {
 		ContainedItems []struct {

@@ -1,8 +1,6 @@
 package inspire
 
 // InspireLayer represents an INSPIRE layer with both English and Dutch labels.
-//
-//nolint:revive
 type InspireLayer struct {
 	ID           string `json:"id"`           // Primary Key, Unique, up to 100 characters
 	LabelDutch   string `json:"labelDutch"`   // Dutch label
@@ -10,8 +8,6 @@ type InspireLayer struct {
 }
 
 // InspireLayerRaw represents the raw structure of an INSPIRE layer as received from the API.
-//
-//nolint:revive
 type InspireLayerRaw struct {
 	Register struct {
 		Registry struct {

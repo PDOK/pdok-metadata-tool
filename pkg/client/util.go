@@ -12,7 +12,7 @@ import (
 )
 
 func getUnmarshalledXMLResponse(
-	resultStruct interface{},
+	resultStruct any,
 	url string,
 	method string,
 	requestBody *string,
@@ -31,7 +31,7 @@ func getUnmarshalledXMLResponse(
 	return nil
 }
 
-func getUnmarshalledJSONResponse(resultStruct interface{}, url string, client http.Client) error {
+func getUnmarshalledJSONResponse(resultStruct any, url string, client http.Client) error {
 	responseBody, err := getResponseBody(url, "GET", nil, client)
 	if err != nil {
 		return err

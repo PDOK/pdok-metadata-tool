@@ -47,7 +47,7 @@ const (
 )
 
 // UnmarshalYAML unmarshalls the expected string for INSPIRE types.
-func (iv *InspireType) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (iv *InspireType) UnmarshalYAML(unmarshal func(any) error) error {
 	var s string
 	if err := unmarshal(&s); err != nil {
 		return err
@@ -164,8 +164,6 @@ func (s *ServiceSpecifics) Validate() error {
 }
 
 // Validate the ServiceSpecifics on service level.
-//
-//nolint:cyclop
 func (sc *ServiceConfig) Validate() error {
 	var errors []string
 

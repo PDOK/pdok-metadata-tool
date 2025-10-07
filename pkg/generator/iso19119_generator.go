@@ -260,7 +260,7 @@ func (g *ISO19119Generator) setGeneralInfo() error {
 	return nil
 }
 
-//nolint:cyclop,funlen,maintidx
+//nolint:funlen,maintidx
 func (g *ISO19119Generator) setIdentificationInfo() error {
 	entry, err := g.CurrentEntry()
 	if err != nil {
