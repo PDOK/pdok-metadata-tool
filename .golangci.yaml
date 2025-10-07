@@ -194,8 +194,7 @@ run:
   # Modules download mode (do not modify go.mod)
   modules-download-mode: readonly
 
-issues:
-  exclude-rules:
-    - linters:
-        - revive
-      text: "var-naming: .* should be .*ID"
+exclude-rules:
+  - linters:
+      - revive
+    text: "var-naming: .* should be .*ID"
