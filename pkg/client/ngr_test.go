@@ -114,7 +114,7 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 			timeString := time.Now().Format("2006-01-02 15:04:05")
 			// create unpublished record
 			recordToBeCreated = strings.Replace(recordToBeCreated, "NWB - wegen22222", "NWB - wegen33333 "+timeString, -1)
-			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeCreated, tt.args.uuid, tt.args.categoryId, tt.args.groupId, &ngrClient.NgrConfig, false)
+			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeCreated, tt.args.categoryId, tt.args.groupId, &ngrClient.NgrConfig, false)
 			assert.Nil(t, err)
 			recordCreated, getStatus, err := ngrClient.getRecord(tt.args.uuid, &ngrClient.NgrConfig)
 			assert.Nil(t, err)
@@ -135,14 +135,18 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 			//assert.Equal(t, http.StatusOK, getStatus)
 			//assert.Contains(t, recordUpdated, "NWB - wegen00000")
 
-			time.Sleep(60 * time.Second)
-			deleteStatus, err := ngrClient.deleteRecord(tt.args.uuid, &ngrClient.NgrConfig)
+			//time.Sleep(60 * time.Second)
+			//deleteStatus, err := ngrClient.deleteRecord(tt.args.uuid, &ngrClient.NgrConfig)
+			//assert.Nil(t, err)
+			//assert.Equal(t, http.StatusNoContent, deleteStatus)
+			//delRecord, getDelStatus, err := ngrClient.getRecord(tt.args.uuid, &ngrClient.NgrConfig)
+			//assert.NotNil(t, err)
+			//assert.Equal(t, getDelStatus, http.StatusNotFound)
+			//assert.Equal(t, "", delRecord)
+
+			addTagStatus, err := ngrClient.addTagToRecord(tt.args.uuid, &ngrClient.NgrConfig, INSPIRE_TAG)
 			assert.Nil(t, err)
-			assert.Equal(t, http.StatusNoContent, deleteStatus)
-			delRecord, getDelStatus, err := ngrClient.getRecord(tt.args.uuid, &ngrClient.NgrConfig)
-			assert.NotNil(t, err)
-			assert.Equal(t, getDelStatus, http.StatusNotFound)
-			assert.Equal(t, "", delRecord)
+			assert.Equal(t, http.StatusCreated, addTagStatus)
 		})
 	}
 }

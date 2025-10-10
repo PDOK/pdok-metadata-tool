@@ -27,6 +27,7 @@ type NgrConfig struct {
 
 const API_RECORDS_TEMPlATE = "/geonetwork/srv/api/records"
 const API_LOGIN_PART = "/geonetwork/srv/dut/info?type=me"
+const INSPIRE_TAG = 224342
 
 func NewNgrClient(config NgrConfig) NgrClient {
 	client := &http.Client{
@@ -36,6 +37,28 @@ func NewNgrClient(config NgrConfig) NgrClient {
 		NgrConfig: config,
 		NgrClient: client,
 	}
+}
+
+func (c *NgrClient) getHeaders(ngrConfig *NgrConfig) (http.Header, error) {
+	xsrfToken, err := obtainXSRFToken(ngrConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to obtain XSRF token: %w", err)
+	}
+
+	// In the old selfservice was a check to block update for published records.
+	// In the new selfservice we need to update the record regardless of publish state
+
+	username := c.NgrConfig.NgrUserName
+	password := c.NgrConfig.NgrPassword
+	auth := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
+
+	headers := http.Header{}
+	headers.Set("Authorization", "Basic "+auth)
+	headers.Set("X-XSRF-TOKEN", xsrfToken)
+	headers.Set("Cookie", "XSRF-TOKEN="+xsrfToken)
+	headers.Set("Content-Type", "application/xml")
+	headers.Set("Accept", "application/json, application/xml")
+	return headers, nil
 }
 
 // TODO Use this for harvesting only INSPIRE service metadata in ETF-validator-go
@@ -50,8 +73,6 @@ func (c NgrClient) GetRecordTags(uuid string) (ngr.RecordTagsResponse, error) {
 	}
 	return recordTagsResponse, nil
 }
-
-// TODO: UNDER DEVELOPEMENT
 
 func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
 	// Build URL
@@ -106,7 +127,6 @@ func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
 
 func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 	record string,
-	uuid string,
 	categoryId *string,
 	groupId *string,
 	ngrConfig *NgrConfig,
@@ -160,7 +180,6 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 }
 
 func (c *NgrClient) getRecord(uuid string, ngrConfig *NgrConfig) (string, int, error) {
-	// 1. Check if record is already published
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPlATE,
@@ -194,9 +213,7 @@ func (c *NgrClient) getRecord(uuid string, ngrConfig *NgrConfig) (string, int, e
 			bodyString = string(bodyBytes)
 			return bodyString, http.StatusOK, nil
 		case http.StatusNotFound:
-			// ok, record does not exist
 		case http.StatusForbidden:
-			// ok, record is unpublished
 		default:
 			return bodyString, getResp.StatusCode, fmt.Errorf(
 				"unexpected http status %d retrieving sharing info for record %s",
@@ -213,13 +230,11 @@ func (c *NgrClient) getRecord(uuid string, ngrConfig *NgrConfig) (string, int, e
 }
 
 func (c *NgrClient) deleteRecord(uuid string, ngrConfig *NgrConfig) (int, error) {
-	// 1. Check if record is already published
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPlATE,
 		uuid,
 	)
-
 	deleteReq, err := http.NewRequest(http.MethodDelete, ngrUrl, nil)
 
 	headers, err := c.getHeaders(ngrConfig)
@@ -227,10 +242,6 @@ func (c *NgrClient) deleteRecord(uuid string, ngrConfig *NgrConfig) (int, error)
 		return http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
 	}
 	deleteReq.Header = headers
-
-	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("failed to make http request: %w", err)
-	}
 	deleteResp, err := c.NgrClient.Do(deleteReq)
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("failed to send http request: %w", err)
@@ -241,9 +252,7 @@ func (c *NgrClient) deleteRecord(uuid string, ngrConfig *NgrConfig) (int, error)
 		case http.StatusNoContent:
 			return http.StatusNoContent, nil
 		case http.StatusNotFound:
-			// ok, record does not exist
 		case http.StatusForbidden:
-			// ok, record is unpublished
 		default:
 			return deleteResp.StatusCode, fmt.Errorf(
 				"unexpected http status %d retrieving sharing info for record %s",
@@ -259,24 +268,42 @@ func (c *NgrClient) deleteRecord(uuid string, ngrConfig *NgrConfig) (int, error)
 	)
 }
 
-func (c *NgrClient) getHeaders(ngrConfig *NgrConfig) (http.Header, error) {
-	xsrfToken, err := obtainXSRFToken(ngrConfig)
+func (c *NgrClient) addTagToRecord(uuid string, ngrConfig *NgrConfig, tagId int) (int, error) {
+	ngrUrl := fmt.Sprintf("%s%s/%s/tags?id=%d",
+		c.NgrConfig.NgrUrl,
+		API_RECORDS_TEMPlATE,
+		uuid,
+		tagId,
+	)
+	putTagReq, err := http.NewRequest(http.MethodPut, ngrUrl, nil)
+
+	headers, err := c.getHeaders(ngrConfig)
 	if err != nil {
-		return nil, fmt.Errorf("failed to obtain XSRF token: %w", err)
+		return http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
 	}
-
-	// In the old selfservice was a check to block update for published records.
-	// In the new selfservice we need to update the record regardless of publish state
-
-	username := c.NgrConfig.NgrUserName
-	password := c.NgrConfig.NgrPassword
-	auth := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
-
-	headers := http.Header{}
-	headers.Set("Authorization", "Basic "+auth)
-	headers.Set("X-XSRF-TOKEN", xsrfToken)
-	headers.Set("Cookie", "XSRF-TOKEN="+xsrfToken)
-	headers.Set("Content-Type", "application/xml")
-	headers.Set("Accept", "application/json, application/xml")
-	return headers, nil
+	putTagReq.Header = headers
+	putTagResp, err := c.NgrClient.Do(putTagReq)
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("failed to send http request: %w", err)
+	}
+	if err == nil {
+		defer putTagResp.Body.Close()
+		switch putTagResp.StatusCode {
+		case http.StatusCreated:
+			return http.StatusCreated, nil
+		case http.StatusNotFound:
+		case http.StatusForbidden:
+		default:
+			return putTagResp.StatusCode, fmt.Errorf(
+				"unexpected http status %d retrieving sharing info for record %s",
+				putTagResp.StatusCode,
+				uuid,
+			)
+		}
+	}
+	return putTagResp.StatusCode, fmt.Errorf(
+		"unexpected http status %d retrieving sharing info for record %s",
+		putTagResp.StatusCode,
+		uuid,
+	)
 }
