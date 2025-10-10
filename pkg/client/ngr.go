@@ -39,8 +39,8 @@ func NewNgrClient(config NgrConfig) NgrClient {
 	}
 }
 
-func (c *NgrClient) getHeaders(ngrConfig *NgrConfig) (http.Header, error) {
-	xsrfToken, err := obtainXSRFToken(ngrConfig)
+func (c *NgrClient) getHeaders() (http.Header, error) {
+	xsrfToken, err := obtainXSRFToken(&c.NgrConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtain XSRF token: %w", err)
 	}
@@ -158,7 +158,7 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 	if err != nil {
 		return fmt.Errorf("failed to create PUT request: %w", err)
 	}
-	headers, err := c.getHeaders(ngrConfig)
+	headers, err := c.getHeaders()
 	if err != nil {
 		return fmt.Errorf("failed to create headers request: %w", err)
 	}
@@ -179,7 +179,7 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 	return nil
 }
 
-func (c *NgrClient) getRecord(uuid string, ngrConfig *NgrConfig) (string, int, error) {
+func (c *NgrClient) getRecord(uuid string) (string, int, error) {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPlATE,
@@ -189,7 +189,7 @@ func (c *NgrClient) getRecord(uuid string, ngrConfig *NgrConfig) (string, int, e
 
 	getReq, err := http.NewRequest(http.MethodGet, ngrUrl, nil)
 
-	headers, err := c.getHeaders(ngrConfig)
+	headers, err := c.getHeaders()
 	if err != nil {
 		return "", http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
 	}
@@ -225,7 +225,7 @@ func (c *NgrClient) getRecord(uuid string, ngrConfig *NgrConfig) (string, int, e
 	)
 }
 
-func (c *NgrClient) deleteRecord(uuid string, ngrConfig *NgrConfig) (int, error) {
+func (c *NgrClient) deleteRecord(uuid string) (int, error) {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPlATE,
@@ -233,7 +233,7 @@ func (c *NgrClient) deleteRecord(uuid string, ngrConfig *NgrConfig) (int, error)
 	)
 	deleteReq, err := http.NewRequest(http.MethodDelete, ngrUrl, nil)
 
-	headers, err := c.getHeaders(ngrConfig)
+	headers, err := c.getHeaders()
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
 	}
@@ -264,7 +264,7 @@ func (c *NgrClient) deleteRecord(uuid string, ngrConfig *NgrConfig) (int, error)
 	)
 }
 
-func (c *NgrClient) addTagToRecord(uuid string, ngrConfig *NgrConfig, tagId int) (int, error) {
+func (c *NgrClient) addTagToRecord(uuid string, tagId int) (int, error) {
 	ngrUrl := fmt.Sprintf("%s%s/%s/tags?id=%d",
 		c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPlATE,
@@ -273,7 +273,7 @@ func (c *NgrClient) addTagToRecord(uuid string, ngrConfig *NgrConfig, tagId int)
 	)
 	putTagReq, err := http.NewRequest(http.MethodPut, ngrUrl, nil)
 
-	headers, err := c.getHeaders(ngrConfig)
+	headers, err := c.getHeaders()
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
 	}
@@ -304,7 +304,7 @@ func (c *NgrClient) addTagToRecord(uuid string, ngrConfig *NgrConfig, tagId int)
 	)
 }
 
-func (c *NgrClient) getTagsByRecord(uuid string, ngrConfig *NgrConfig) (string, int, error) {
+func (c *NgrClient) getTagsByRecord(uuid string) (string, int, error) {
 	ngrUrl := fmt.Sprintf("%s%s/%s/tags",
 		c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPlATE,
@@ -313,7 +313,7 @@ func (c *NgrClient) getTagsByRecord(uuid string, ngrConfig *NgrConfig) (string, 
 	bodyString := ""
 	getTagReq, err := http.NewRequest(http.MethodGet, ngrUrl, nil)
 
-	headers, err := c.getHeaders(ngrConfig)
+	headers, err := c.getHeaders()
 	if err != nil {
 		return bodyString, http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
 	}

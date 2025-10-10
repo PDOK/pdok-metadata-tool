@@ -65,7 +65,6 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 }
 
 func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
-	//categoryId := "224342"
 	mockedNGRServer := preTestSetup()
 	ngrClient := getNgrClient(t, mockedNGRServer)
 
@@ -100,7 +99,7 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 			recordToBeCreated = strings.Replace(recordToBeCreated, "NWB - wegen22222", "NWB - wegen33333 "+timeString, -1)
 			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeCreated, tt.args.categoryId, tt.args.groupId, &ngrClient.NgrConfig, false)
 			assert.Nil(t, err)
-			recordCreated, getStatus, err := ngrClient.getRecord(tt.args.uuid, &ngrClient.NgrConfig)
+			recordCreated, getStatus, err := ngrClient.getRecord(tt.args.uuid)
 			assert.Nil(t, err)
 			assert.Equal(t, http.StatusOK, getStatus)
 			assert.Contains(t, recordCreated, timeString)
@@ -128,10 +127,10 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 			//assert.Equal(t, getDelStatus, http.StatusNotFound)
 			//assert.Equal(t, "", delRecord)
 
-			addTagStatus, err := ngrClient.addTagToRecord(tt.args.uuid, &ngrClient.NgrConfig, INSPIRE_TAG)
+			addTagStatus, err := ngrClient.addTagToRecord(tt.args.uuid, INSPIRE_TAG)
 			assert.Nil(t, err)
 			assert.Equal(t, http.StatusCreated, addTagStatus)
-			tagsList, getStatus, err := ngrClient.getTagsByRecord(tt.args.uuid, &ngrClient.NgrConfig)
+			tagsList, getStatus, err := ngrClient.getTagsByRecord(tt.args.uuid)
 			assert.Nil(t, err)
 			assert.Equal(t, http.StatusOK, getStatus)
 			assert.Contains(t, tagsList, "224342")
@@ -148,8 +147,8 @@ func getNgrClient(t *testing.T, mockedNGRServer *httptest.Server) *NgrClient {
 
 	config := NgrConfig{
 		NgrUrl:      accUrl.String(),
-		NgrUserName: NGR_USER_NAME,
-		NgrPassword: NGR_PASSWORD,
+		NgrUserName: "NGR_USER_NAME",
+		NgrPassword: "NGR_PASSWORD",
 	}
 	ngrClient := NewNgrClient(config)
 	return &ngrClient
