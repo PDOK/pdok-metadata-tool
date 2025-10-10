@@ -64,22 +64,6 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 	}
 }
 
-func getNgrClient(t *testing.T, mockedNGRServer *httptest.Server) *NgrClient {
-	//hostURL, err := url.Parse(mockedNGRServer.URL)
-	accUrl, err := url.Parse("https://ngr.acceptatie.nationaalgeoregister.nl")
-	if err != nil {
-		t.Fatalf("Failed to parse mocked NGR server URL: %v", err)
-	}
-
-	config := NgrConfig{
-		NgrUrl:      accUrl.String(),
-		NgrUserName: "TESTME",
-		NgrPassword: "TESTME",
-	}
-	ngrClient := NewNgrClient(config)
-	return &ngrClient
-}
-
 func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 	//categoryId := "224342"
 	mockedNGRServer := preTestSetup()
@@ -147,6 +131,26 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 			addTagStatus, err := ngrClient.addTagToRecord(tt.args.uuid, &ngrClient.NgrConfig, INSPIRE_TAG)
 			assert.Nil(t, err)
 			assert.Equal(t, http.StatusCreated, addTagStatus)
+			tagsList, getStatus, err := ngrClient.getTagsByRecord(tt.args.uuid, &ngrClient.NgrConfig)
+			assert.Nil(t, err)
+			assert.Equal(t, http.StatusOK, getStatus)
+			assert.Contains(t, tagsList, "224342")
 		})
 	}
+}
+
+func getNgrClient(t *testing.T, mockedNGRServer *httptest.Server) *NgrClient {
+	//hostURL, err := url.Parse(mockedNGRServer.URL)
+	accUrl, err := url.Parse("https://ngr.acceptatie.nationaalgeoregister.nl")
+	if err != nil {
+		t.Fatalf("Failed to parse mocked NGR server URL: %v", err)
+	}
+
+	config := NgrConfig{
+		NgrUrl:      accUrl.String(),
+		NgrUserName: NGR_USER_NAME,
+		NgrPassword: NGR_PASSWORD,
+	}
+	ngrClient := NewNgrClient(config)
+	return &ngrClient
 }

@@ -194,10 +194,6 @@ func (c *NgrClient) getRecord(uuid string, ngrConfig *NgrConfig) (string, int, e
 		return "", http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
 	}
 	getReq.Header = headers
-
-	if err != nil {
-		return "", http.StatusInternalServerError, fmt.Errorf("failed to make http request: %w", err)
-	}
 	getResp, err := c.NgrClient.Do(getReq)
 	if err != nil {
 		return "", http.StatusInternalServerError, fmt.Errorf("failed to send http request: %w", err)
@@ -304,6 +300,51 @@ func (c *NgrClient) addTagToRecord(uuid string, ngrConfig *NgrConfig, tagId int)
 	return putTagResp.StatusCode, fmt.Errorf(
 		"unexpected http status %d retrieving sharing info for record %s",
 		putTagResp.StatusCode,
+		uuid,
+	)
+}
+
+func (c *NgrClient) getTagsByRecord(uuid string, ngrConfig *NgrConfig) (string, int, error) {
+	ngrUrl := fmt.Sprintf("%s%s/%s/tags",
+		c.NgrConfig.NgrUrl,
+		API_RECORDS_TEMPlATE,
+		uuid,
+	)
+	bodyString := ""
+	getTagReq, err := http.NewRequest(http.MethodGet, ngrUrl, nil)
+
+	headers, err := c.getHeaders(ngrConfig)
+	if err != nil {
+		return bodyString, http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
+	}
+	getTagReq.Header = headers
+	getTagResp, err := c.NgrClient.Do(getTagReq)
+	if err != nil {
+		return bodyString, http.StatusInternalServerError, fmt.Errorf("failed to send http request: %w", err)
+	}
+	if err == nil {
+		defer getTagResp.Body.Close()
+		switch getTagResp.StatusCode {
+		case http.StatusOK:
+			bodyBytes, err := io.ReadAll(getTagResp.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			bodyString = string(bodyBytes)
+			return bodyString, http.StatusOK, nil
+		case http.StatusNotFound:
+		case http.StatusForbidden:
+		default:
+			return bodyString, getTagResp.StatusCode, fmt.Errorf(
+				"unexpected http status %d retrieving sharing info for record %s",
+				getTagResp.StatusCode,
+				uuid,
+			)
+		}
+	}
+	return bodyString, getTagResp.StatusCode, fmt.Errorf(
+		"unexpected http status %d retrieving sharing info for record %s",
+		getTagResp.StatusCode,
 		uuid,
 	)
 }
