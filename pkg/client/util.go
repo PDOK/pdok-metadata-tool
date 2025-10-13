@@ -97,6 +97,7 @@ func getNgrResponseBody(
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtain XSRF token: %w", err)
 	}
+	req.Header.Set("X-XSRF-TOKEN", xsrfToken)
 	req.Header.Set("Cookie", "XSRF-TOKEN="+xsrfToken)
 	username := ngrConfig.NgrUserName
 	password := ngrConfig.NgrPassword
