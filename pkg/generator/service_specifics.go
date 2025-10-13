@@ -20,8 +20,9 @@ type ServiceSpecifics struct {
 
 // GlobalConfig struct for unmarshalling service specifics input.
 type GlobalConfig struct {
-	InspireDatasetType *InspireDatasetType `yaml:"inspireDatasetType"`
 	OverrideableFields `yaml:",inline"`
+
+	InspireDatasetType *InspireDatasetType `yaml:"inspireDatasetType"`
 }
 
 // ServiceConfig struct for unmarshalling service specifics input.
@@ -171,47 +172,6 @@ func (s *ServiceSpecifics) LoadFromYAML(filename string) error {
 	return nil
 }
 
-// setInspireTypes sets INSPIRE Service types based on INSPIRE Dataset type
-func (s *ServiceSpecifics) setInspireTypes() {
-	inspireDatasetType := s.Globals.InspireDatasetType
-	if inspireDatasetType == nil {
-		return
-	}
-
-	// INSPIRE type mapping
-	typeMap := map[string]InspireServiceType{}
-	switch *inspireDatasetType {
-	case AsIs:
-		typeMap = map[string]InspireServiceType{
-			"wms":    NetworkService,
-			"atom":   NetworkService,
-			"wfs":    Invocable,
-			"ogcapi": Invocable,
-		}
-	case Harmonised:
-		typeMap = map[string]InspireServiceType{
-			"wms":    NetworkService,
-			"atom":   NetworkService,
-			"wfs":    Interoperable,
-			"ogcapi": Interoperable,
-		}
-	}
-
-	for i := range s.Services {
-		service := &s.Services[i]
-
-		if service.ServiceInspireType != nil {
-			// Don't touch ServiceInspireType if it is already set through an override
-			continue
-		}
-
-		serviceType := strings.ToLower(service.Type)
-		if inspireType, ok := typeMap[serviceType]; ok {
-			service.ServiceInspireType = common.Ptr(inspireType)
-		}
-	}
-}
-
 // Validate the ServiceSpecifics on a global level, also calls Validate on service level.
 func (s *ServiceSpecifics) Validate() error {
 	var validationErrors []string
@@ -246,6 +206,8 @@ func (s *ServiceSpecifics) Validate() error {
 }
 
 // Validate the ServiceSpecifics on service level.
+//
+//nolint:cyclop
 func (sc *ServiceConfig) Validate() error {
 	var errors []string
 
@@ -335,8 +297,11 @@ func (sc *ServiceConfig) Validate() error {
 		errors = append(errors, "inspireType is required when inspireThemes are set")
 	}
 
-	if sc.Globals.InspireDatasetType != nil && *sc.Globals.InspireDatasetType == Harmonised && len(sc.GetInspireThemes()) != 1 {
-		errors = append(errors, "exactly 1 inspireTheme must be set if InspireDatasetType is 'harmonised'")
+	if sc.Globals.InspireDatasetType != nil &&
+		*sc.Globals.InspireDatasetType == Harmonised &&
+		len(sc.GetInspireThemes()) != 1 {
+		errors = append(errors,
+			"exactly 1 inspireTheme must be set if InspireDatasetType is 'harmonised'")
 	}
 
 	if len(errors) > 0 {
@@ -592,4 +557,46 @@ func (sc *ServiceConfig) GetQosCapacity() string {
 	}
 
 	return strconv.Itoa(value)
+}
+
+// setInspireTypes sets INSPIRE Service types based on INSPIRE Dataset type
+func (s *ServiceSpecifics) setInspireTypes() {
+	inspireDatasetType := s.Globals.InspireDatasetType
+	if inspireDatasetType == nil {
+		return
+	}
+
+	// INSPIRE type mapping
+	typeMap := map[string]InspireServiceType{}
+
+	switch *inspireDatasetType {
+	case AsIs:
+		typeMap = map[string]InspireServiceType{
+			"wms":    NetworkService,
+			"atom":   NetworkService,
+			"wfs":    Invocable,
+			"ogcapi": Invocable,
+		}
+	case Harmonised:
+		typeMap = map[string]InspireServiceType{
+			"wms":    NetworkService,
+			"atom":   NetworkService,
+			"wfs":    Interoperable,
+			"ogcapi": Interoperable,
+		}
+	}
+
+	for i := range s.Services {
+		service := &s.Services[i]
+
+		if service.ServiceInspireType != nil {
+			// Don't touch ServiceInspireType if it is already set through an override
+			continue
+		}
+
+		serviceType := strings.ToLower(service.Type)
+		if inspireType, ok := typeMap[serviceType]; ok {
+			service.ServiceInspireType = common.Ptr(inspireType)
+		}
+	}
 }
