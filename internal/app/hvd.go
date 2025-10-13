@@ -66,7 +66,7 @@ func getHvdDownloadCommand() *cli.Command {
 				),
 			)
 
-			repo, ok := ctx.Value("HVDRepoKey").(*repository.HVDRepository)
+			repo, ok := ctx.Value(hvdRepoKey).(*repository.HVDRepository)
 			if !ok {
 				return errors.New("failed to get HVDRepository from context")
 			}
@@ -85,7 +85,7 @@ func getHvdListCommand() *cli.Command {
 		Action: func(ctx context.Context, _ *cli.Command) error {
 			fmt.Println("pmt hvd list invoked")
 
-			hvdRepo, ok := ctx.Value("HVDRepoKey").(*repository.HVDRepository)
+			hvdRepo, ok := ctx.Value(hvdRepoKey).(*repository.HVDRepository)
 			if !ok {
 				return errors.New("failed to get HVDRepository from context")
 			}
@@ -141,7 +141,7 @@ func getHvdCSVCommand() *cli.Command {
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			fmt.Println("pmt hvd csv invoked")
 
-			hvdRepo, ok := ctx.Value("HVDRepoKey").(*repository.HVDRepository)
+			hvdRepo, ok := ctx.Value(hvdRepoKey).(*repository.HVDRepository)
 			if !ok {
 				return errors.New("failed to get HVDRepository from context")
 			}
