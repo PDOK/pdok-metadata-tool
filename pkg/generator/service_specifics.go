@@ -41,9 +41,9 @@ type InspireType string
 
 // Values for InspireType.
 const (
-	Harmonised    InspireType = "HARMONISED"
-	Interoperable InspireType = "INTEROPERABLE"
-	Invocable     InspireType = "INVOCABLE"
+	NetworkService InspireType = "NETWORKSERVICE"
+	Interoperable  InspireType = "INTEROPERABLE"
+	Invocable      InspireType = "INVOCABLE"
 )
 
 // UnmarshalYAML unmarshalls the expected string for INSPIRE types.
@@ -54,8 +54,8 @@ func (iv *InspireType) UnmarshalYAML(unmarshal func(any) error) error {
 	}
 
 	switch strings.ToUpper(s) {
-	case "HARMONIZED", "HARMONISED":
-		*iv = Harmonised
+	case "NETWORKSERVICE", "NETWORK SERVICE", "NETWORK-SERVICE", "NETWORKSERVICES", "NETWORK SERVICES", "NETWORK-SERVICES":
+		*iv = NetworkService
 	case "INTEROPERABLE":
 		*iv = Interoperable
 	case "INVOCABLE":
@@ -124,7 +124,7 @@ func (s *ServiceSpecifics) LoadFromYAML(filename string) error {
 	// Set default INSPIRE type
 	for _, service := range s.Services {
 		if len(service.GetInspireThemes()) > 0 && service.InspireType == nil {
-			service.InspireType = common.Ptr(Harmonised)
+			service.InspireType = common.Ptr(NetworkService)
 		}
 	}
 

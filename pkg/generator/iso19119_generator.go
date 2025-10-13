@@ -876,7 +876,7 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 	}
 
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-service-metadata
-	if config.InspireType != nil && *config.InspireType == Harmonised {
+	if config.InspireType != nil && *config.InspireType == NetworkService {
 		entry.Metadata.DataQualityInfo.DataQuality.Report = []iso1911x.ReportTag{
 			{
 				DomainConsistency: &iso1911x.DomainConsistencyTag{

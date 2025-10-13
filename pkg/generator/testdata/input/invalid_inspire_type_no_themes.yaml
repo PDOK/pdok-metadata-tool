@@ -31,7 +31,7 @@ services:
   - type: wfs
     id: "00000000-0000-0000-0000-000000000001"
     accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
-    inspireType: "harmonised"
+    inspireType: "networkservice"
     keywords:
       - "AA"
       - "BB"

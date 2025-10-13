@@ -45,7 +45,7 @@ services:
   - type: atom
     id: "00000000-0000-0000-0000-000000000010"
     accessPoint: "https://test.nl/test/atom/index.xml"
-    inspireType: "harmonised"
+    inspireType: "networkservice"
   - type: wfs
     id: "00000000-0000-0000-0000-000000000011"
     accessPoint: "https://test.nl/test-invocable/wfs?request=GetCapabilities&service=WFS"
