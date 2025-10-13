@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -87,12 +88,13 @@ func getNgrResponseBody(
 	requestBody *string,
 	client http.Client,
 ) ([]byte, error) {
-	var body io.Reader
-	if method == "POST" && requestBody != nil {
-		body = strings.NewReader(*requestBody)
-	}
+	var req *http.Request
+	if requestBody != nil {
+		req, _ = http.NewRequest(method, url, bytes.NewBufferString(*requestBody))
 
-	req, _ := http.NewRequest(method, url, body)
+	} else {
+		req, _ = http.NewRequest(method, url, nil)
+	}
 	xsrfToken, err := obtainXSRFToken(ngrConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtain XSRF token: %w", err)
@@ -115,7 +117,7 @@ func getNgrResponseBody(
 	}
 	defer common.SafeClose(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
 		return nil, fmt.Errorf(
 			"error while calling NGR using url %s\nhttp status is %d",
 			url,

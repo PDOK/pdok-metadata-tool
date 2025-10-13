@@ -5,7 +5,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
+	"time"
 )
 
 func TestNgrClient_GetRecordTags(t *testing.T) {
@@ -81,7 +83,6 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 			args: args{
 				uuid:          "689c413e-a057-11f0-8de9-0242ac120002",
 				pathRecordXml: "testdata/nwbwegen222-wms.xml",
-				//categoryId:    &categoryId,
 			},
 		},
 	}
@@ -93,24 +94,33 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 			// create unpublished record
 			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeCreated, tt.args.categoryId, tt.args.groupId, false)
 			assert.Nil(t, err)
-			//recordCreated, err := ngrClient.getRecord(tt.args.uuid)
-			//assert.Nil(t, err)
-			//assert.Contains(t, recordCreated, "NWB - wegen22222")
+			recordCreated, err := ngrClient.getRecord(tt.args.uuid)
+			assert.Nil(t, err)
+			assert.Contains(t, recordCreated, "NWB - wegen22222")
 
-			//time.Sleep(60 * time.Second)
-			//deleteStatus, err := ngrClient.deleteRecord(tt.args.uuid, &ngrClient.NgrConfig)
-			//assert.Nil(t, err)
-			//assert.Equal(t, http.StatusNoContent, deleteStatus)
-			//delRecord, getDelStatus, err := ngrClient.getRecord(tt.args.uuid, &ngrClient.NgrConfig)
-			//assert.NotNil(t, err)
-			//assert.Equal(t, getDelStatus, http.StatusNotFound)
-			//assert.Equal(t, "", delRecord)
+			time.Sleep(10 * time.Second)
+			recordToBeUpdated := strings.Replace(recordToBeCreated, "NWB - wegen22222", "NWB - wegen33333", -1)
+			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeUpdated, tt.args.categoryId, tt.args.groupId, true)
+			assert.Nil(t, err)
+			recordUpdated, err := ngrClient.getRecord(tt.args.uuid)
+			assert.Nil(t, err)
+			assert.Contains(t, recordUpdated, "NWB - wegen33333")
 
-			//err = ngrClient.addTagToRecord(tt.args.uuid, INSPIRE_TAG)
-			//assert.Nil(t, err)
-			//tagsList, err := ngrClient.GetRecordTags(tt.args.uuid)
-			//assert.Nil(t, err)
-			//assert.Contains(t, tagsList, "224342")
+			time.Sleep(10 * time.Second)
+			err = ngrClient.addTagToRecord(tt.args.uuid, INSPIRE_TAG)
+			assert.Nil(t, err)
+
+			time.Sleep(10 * time.Second)
+			tagsList, err := ngrClient.GetRecordTags(tt.args.uuid)
+			assert.Nil(t, err)
+			assert.Equal(t, tagsList[0].ID, 224342)
+
+			time.Sleep(10 * time.Second)
+			err = ngrClient.deleteRecord(tt.args.uuid)
+			assert.Nil(t, err)
+			delRecord, err := ngrClient.getRecord(tt.args.uuid)
+			assert.NotNil(t, err)
+			assert.Equal(t, "", delRecord)
 		})
 	}
 }
@@ -118,27 +128,12 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 func getNgrClient(t *testing.T, mockedNGRServer *httptest.Server) *NgrClient {
 	config := NgrConfig{
 		//NgrUrl: "https://ngr.acceptatie.nationaalgeoregister.nl",
+		//NgrUserName: NGR_USER_NAME,
+		//NgrPassword: NGR_PASSWORD,
 		NgrUrl:      mockedNGRServer.URL,
-		NgrUserName: NGR_USER_NAME,
-		NgrPassword: NGR_PASSWORD,
+		NgrUserName: "NGR_USER_NAME",
+		NgrPassword: "NGR_PASSWORD",
 	}
 	ngrClient := NewNgrClient(config)
 	return &ngrClient
 }
-
-//  gebruik het volgende functie als je wil testen met de ngr.acceptatie omgeving
-//func getNgrClient(t *testing.T, mockedNGRServer *httptest.Server) *NgrClient {
-//	//hostURL, err := url.Parse(mockedNGRServer.URL)
-//	accUrl, err := url.Parse("https://ngr.acceptatie.nationaalgeoregister.nl")
-//	if err != nil {
-//		t.Fatalf("Failed to parse mocked NGR server URL: %v", err)
-//	}
-//
-//	config := NgrConfig{
-//		NgrUrl:      accUrl.String(),
-//		NgrUserName: "NGR_USER_NAME",
-//		NgrPassword: "NGR_PASSWORD",
-//	}
-//	ngrClient := NewNgrClient(config)
-//	return &ngrClient
-//}
