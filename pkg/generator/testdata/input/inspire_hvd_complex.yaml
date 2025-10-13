@@ -43,18 +43,18 @@ globals:
       description: "thumbnail"
 services:
   - type: atom
-    id: "00000000-0000-0000-0000-000000000010"
-    accessPoint: "https://test.nl/test/atom/index.xml"
-    inspireType: "networkservice"
-  - type: wfs
-    id: "00000000-0000-0000-0000-000000000011"
-    accessPoint: "https://test.nl/test-invocable/wfs?request=GetCapabilities&service=WFS"
-    inspireType: "invocable"
-  - type: wfs
-    id: "00000000-0000-0000-0000-000000000012"
-    accessPoint: "https://test.nl/test-interoperable/wfs?request=GetCapabilities&service=WFS"
-    inspireType: "interoperable"
-  - type: oaf
     id: "00000000-0000-0000-0000-000000000013"
+    accessPoint: "https://test.nl/test/atom/index.xml"
+    serviceInspireType: "networkservice"
+  - type: wfs
+    id: "00000000-0000-0000-0000-000000000014"
+    accessPoint: "https://test.nl/test-invocable/wfs?request=GetCapabilities&service=WFS"
+    serviceInspireType: "invocable"
+  - type: wfs
+    id: "00000000-0000-0000-0000-000000000015"
+    accessPoint: "https://test.nl/test-interoperable/wfs?request=GetCapabilities&service=WFS"
+    serviceInspireType: "interoperable"
+  - type: oaf
+    id: "00000000-0000-0000-0000-000000000016"
     accessPoint: "https://test.nl/test-interoperable/ogc/v1"
-    inspireType: "interoperable"
+    serviceInspireType: "interoperable"

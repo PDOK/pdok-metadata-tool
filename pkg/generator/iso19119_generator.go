@@ -647,7 +647,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 		},
 	}
 
-	if config.InspireType != nil {
+	if config.ServiceInspireType != nil {
 		inspireOtherConstraint := iso1911x.OtherConstraintTag{
 			Anchor: iso1911x.AnchorTag{
 				Href:  "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply",
@@ -665,7 +665,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 		resourceConstraint,
 	)
 
-	if config.InspireType != nil {
+	if config.ServiceInspireType != nil {
 		// For INSPIRE, also include a code from the LimitationsOnPublicAccess code list in an additional MD_LegalConstraints element
 		inspireResourceConstraint := iso1911x.ResourceConstraint{
 			MDLegalConstraints: &iso1911x.MDLegalConstraints{
@@ -876,7 +876,7 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 	}
 
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-service-metadata
-	if config.InspireType != nil && *config.InspireType == NetworkService {
+	if config.ServiceInspireType != nil && *config.ServiceInspireType == NetworkService {
 		entry.Metadata.DataQualityInfo.DataQuality.Report = []iso1911x.ReportTag{
 			{
 				DomainConsistency: &iso1911x.DomainConsistencyTag{
@@ -973,10 +973,10 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-invocable-sds-metadata
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-interoperable-sds-metadata
-	if config.InspireType != nil &&
-		(*config.InspireType == Invocable || *config.InspireType == Interoperable) {
+	if config.ServiceInspireType != nil &&
+		(*config.ServiceInspireType == Invocable || *config.ServiceInspireType == Interoperable) {
 		SDSServiceCategory, ok := g.Codelist.GetSDSServiceCategoryBySDSCategory(
-			string(*config.InspireType),
+			string(*config.ServiceInspireType),
 		)
 		if !ok {
 			return fmt.Errorf("no INSPIRE service type found for type: %s", config.Type)
@@ -1110,7 +1110,7 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 			},
 		}
 
-		if *config.InspireType == Interoperable {
+		if *config.ServiceInspireType == Interoperable {
 			qosAvailabilityReport := iso1911x.ReportTag{
 				ConceptualConsistency: &iso1911x.ConceptualConsistencyTag{
 					NameOfMeasure: iso1911x.AnchorTag{

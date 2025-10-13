@@ -26,16 +26,14 @@ globals:
   linkedDatasets:
     - "40000000-0000-0000-0000-000000000000"
   coordinateReferenceSystem: "EPSG:28992"
+  inspireDatasetType: "asis"
 services:
   - type: wms
-    id: "00000000-0000-0000-0000-000000000005"
-    accessPoint: "https://test.nl/test/wms?request=GetCapabilities&service=WMS"
-    inspireType: "networkservice"
-  - type: wfs
-    id: "00000000-0000-0000-0000-000000000006"
-    accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
-    inspireType: "invocable"
-  - type: atom
     id: "00000000-0000-0000-0000-000000000007"
+    accessPoint: "https://test.nl/test/wms?request=GetCapabilities&service=WMS"
+  - type: wfs
+    id: "00000000-0000-0000-0000-000000000008"
+    accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
+  - type: atom
+    id: "00000000-0000-0000-0000-000000000009"
     accessPoint: "https://test.nl/test/atom/index.xml"
-    inspireType: "networkservice"

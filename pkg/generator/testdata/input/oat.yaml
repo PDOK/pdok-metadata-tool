@@ -25,7 +25,7 @@ globals:
   coordinateReferenceSystem: "EPSG:28992"
 services:
   - type: oat
-    id: "00000000-0000-0000-0000-000000000009"
+    id: "00000000-0000-0000-0000-000000000006"
     accessPoint: "https://test.nl/test/ogc/v1"
     keywords:
       - "A"
