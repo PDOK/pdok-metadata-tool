@@ -6,13 +6,16 @@ globals:
   qosAvailability: 99.999
   qosPerformance: 1
   qosCapacity: 100
-  title: "Test regular"
-  creationDate: "2019-09-26"
+  title: "Test inspire"
+  creationDate: "2018-08-16"
   revisionDate: "2025-01-09"
-  abstract: "Unit test regular"
+  abstract: "Unit test inspire"
   keywords:
-    - "AA"
-    - "BB"
+    - "A"
+    - "B"
+    - "C"
+  inspireThemes:
+    - "https://www.eionet.europa.eu/gemet/nl/inspire-theme/ps"
   serviceLicense: "https://creativecommons.org/licenses/by/4.0/deed.nl"
   useLimitation: "Geen beperkingen"
   boundingBox:
@@ -21,24 +24,16 @@ globals:
     minY: "50.733607"
     maxY: "53.582979"
   linkedDatasets:
-    - "00000000-0000-0000-0000-000000000003"
+    - "40000000-0000-0000-0000-000000000000"
   coordinateReferenceSystem: "EPSG:28992"
-  thumbnails:
-    - file: "https://test.nl/thumb.png"
-      description: "thumbnail"
-      filetype: "png"
+  inspireDatasetType: "harmonised"
 services:
-  - type: wfs
-    id: "ThisIsNo-UUID-0000-0000-000000000001"
-    accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
-    keywords:
-      - "AA"
-      - "BB"
-      - "CCC"
   - type: wms
-    id: "00000000-0000-0000-0000-000000000002"
+    id: "00000000-0000-0000-0000-000000000010"
     accessPoint: "https://test.nl/test/wms?request=GetCapabilities&service=WMS"
-    keywords:
-      - "AA"
-      - "BB"
-      - "CCC"
+  - type: wfs
+    id: "00000000-0000-0000-0000-000000000011"
+    accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
+  - type: atom
+    id: "00000000-0000-0000-0000-000000000012"
+    accessPoint: "https://test.nl/test/atom/index.xml"

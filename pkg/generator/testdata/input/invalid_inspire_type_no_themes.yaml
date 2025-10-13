@@ -8,6 +8,7 @@ globals:
   qosCapacity: 100
   title: "Test regular"
   creationDate: "2019-09-26"
+  revisionDate: "2025-01-09"
   abstract: "Unit test regular"
   keywords:
     - "AA"
@@ -30,7 +31,7 @@ services:
   - type: wfs
     id: "00000000-0000-0000-0000-000000000001"
     accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
-    inspireType: "harmonised"
+    serviceInspireType: "networkservice"
     keywords:
       - "AA"
       - "BB"

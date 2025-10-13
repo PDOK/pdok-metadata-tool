@@ -8,6 +8,7 @@ globals:
   qosCapacity: 100
   title: "Test HVD simple"
   creationDate: "2018-08-16"
+  revisionDate: "2025-01-09"
   abstract: "Unit test hvd simple"
   keywords:
     - "A"

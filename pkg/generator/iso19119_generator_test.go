@@ -21,53 +21,61 @@ func TestGenerateMetadata(t *testing.T) {
 		configFileName string
 		fileOutput     map[string]string
 	}{
-		0: {
+		{
 			configFileName: filepath.Join(inputPath, "regular.yaml"),
 			fileOutput: map[string]string{
 				"00000000-0000-0000-0000-000000000001.xml": "regular_wfs.xml",
 				"00000000-0000-0000-0000-000000000002.xml": "regular_wms.xml",
 			},
 		},
-		1: {
+		{
 			configFileName: filepath.Join(inputPath, "hvd_simple.yaml"),
 			fileOutput: map[string]string{
 				"00000000-0000-0000-0000-000000000003.xml": "hvd_simple_wms.xml",
 			},
 		},
-		2: {
+		{
 			configFileName: filepath.Join(inputPath, "hvd_complex.yaml"),
 			fileOutput: map[string]string{
 				"00000000-0000-0000-0000-000000000004.xml": "hvd_complex_wms.xml",
 			},
 		},
 
-		3: {
+		{
 			configFileName: filepath.Join(inputPath, "oaf.yaml"),
 			fileOutput: map[string]string{
-				"00000000-0000-0000-0000-000000000008.xml": "oaf_oaf.xml",
+				"00000000-0000-0000-0000-000000000005.xml": "oaf_oaf.xml",
 			},
 		},
-		4: {
+		{
 			configFileName: filepath.Join(inputPath, "oat.yaml"),
 			fileOutput: map[string]string{
-				"00000000-0000-0000-0000-000000000009.xml": "oat_oat.xml",
+				"00000000-0000-0000-0000-000000000006.xml": "oat_oat.xml",
 			},
 		},
-		5: {
-			configFileName: filepath.Join(inputPath, "inspire.yaml"),
+		{
+			configFileName: filepath.Join(inputPath, "inspire_asis.yaml"),
 			fileOutput: map[string]string{
-				"00000000-0000-0000-0000-000000000005.xml": "inspire_wms.xml",
-				"00000000-0000-0000-0000-000000000006.xml": "inspire_wfs.xml",
-				"00000000-0000-0000-0000-000000000007.xml": "inspire_atom.xml",
+				"00000000-0000-0000-0000-000000000007.xml": "inspire_asis_wms.xml",
+				"00000000-0000-0000-0000-000000000008.xml": "inspire_asis_wfs.xml",
+				"00000000-0000-0000-0000-000000000009.xml": "inspire_asis_atom.xml",
 			},
 		},
-		6: {
+		{
+			configFileName: filepath.Join(inputPath, "inspire_harmonised.yaml"),
+			fileOutput: map[string]string{
+				"00000000-0000-0000-0000-000000000010.xml": "inspire_harmonised_wms.xml",
+				"00000000-0000-0000-0000-000000000011.xml": "inspire_harmonised_wfs.xml",
+				"00000000-0000-0000-0000-000000000012.xml": "inspire_harmonised_atom.xml",
+			},
+		},
+		{
 			configFileName: filepath.Join(inputPath, "inspire_hvd_complex.yaml"),
 			fileOutput: map[string]string{
-				"00000000-0000-0000-0000-000000000010.xml": "inspire_hvd_complex_atom.xml",
-				"00000000-0000-0000-0000-000000000011.xml": "inspire_hvd_complex_wfs_invocable.xml",
-				"00000000-0000-0000-0000-000000000012.xml": "inspire_hvd_complex_wfs_interoperable.xml",
-				"00000000-0000-0000-0000-000000000013.xml": "inspire_hvd_complex_oaf_interoperable.xml",
+				"00000000-0000-0000-0000-000000000013.xml": "inspire_hvd_complex_atom.xml",
+				"00000000-0000-0000-0000-000000000014.xml": "inspire_hvd_complex_wfs_invocable.xml",
+				"00000000-0000-0000-0000-000000000015.xml": "inspire_hvd_complex_wfs_interoperable.xml",
+				"00000000-0000-0000-0000-000000000016.xml": "inspire_hvd_complex_oaf_interoperable.xml",
 			},
 		},
 	}
@@ -83,9 +91,6 @@ func TestGenerateMetadata(t *testing.T) {
 
 		generator, err := NewISO19119Generator(serviceSpecifics, outputFolder)
 		require.NoError(t, err)
-
-		// Overwrite revisionDate for testing
-		generator.revisionDate = "2025-01-09"
 
 		err = generator.Generate()
 		require.NoError(t, err)

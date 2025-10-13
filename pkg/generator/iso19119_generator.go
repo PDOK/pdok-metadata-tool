@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/codelist"
@@ -19,7 +18,6 @@ import (
 type ISO19119Generator struct {
 	MetadataHolder map[string]*MetadataEntry
 	currentID      *string
-	revisionDate   string
 	Codelist       *codelist.Codelist
 	HVDRepository  *repository.HVDRepository
 	outputDir      string
@@ -50,7 +48,6 @@ func NewISO19119Generator(
 		Codelist:       codelists,
 		HVDRepository:  hvdRepo,
 		outputDir:      outputDir,
-		revisionDate:   time.Now().Format("2006-01-02"),
 	}, nil
 }
 
@@ -245,7 +242,7 @@ func (g *ISO19119Generator) setGeneralInfo() error {
 		DateStamp: iso1911x.DateTag{
 			// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#metadatadatum -->
 			// Date on which the metadata was created or modified (format YYYY-MM-DD)
-			Date: g.getRevisionDate(),
+			Date: config.GetRevisionDate(),
 		},
 		MetadataStandardName: iso1911x.CharacterStringTag{
 			// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#metadata-standaard-naam
@@ -302,7 +299,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 								// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#x5-2-2-datum-van-de-bron
 								// Date on which the service was last revised, format YYYY-MM-DD
 								Date: iso1911x.DateTag{
-									Date: g.getRevisionDate(),
+									Date: config.GetRevisionDate(),
 								},
 								// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#datum-type-van-de-bron
 								DateType: iso1911x.DateTypeTag{
@@ -650,7 +647,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 		},
 	}
 
-	if config.InspireType != nil {
+	if config.ServiceInspireType != nil {
 		inspireOtherConstraint := iso1911x.OtherConstraintTag{
 			Anchor: iso1911x.AnchorTag{
 				Href:  "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply",
@@ -668,7 +665,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 		resourceConstraint,
 	)
 
-	if config.InspireType != nil {
+	if config.ServiceInspireType != nil {
 		// For INSPIRE, also include a code from the LimitationsOnPublicAccess code list in an additional MD_LegalConstraints element
 		inspireResourceConstraint := iso1911x.ResourceConstraint{
 			MDLegalConstraints: &iso1911x.MDLegalConstraints{
@@ -879,7 +876,7 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 	}
 
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-service-metadata
-	if config.InspireType != nil && *config.InspireType == Harmonised {
+	if config.ServiceInspireType != nil && *config.ServiceInspireType == NetworkService {
 		entry.Metadata.DataQualityInfo.DataQuality.Report = []iso1911x.ReportTag{
 			{
 				DomainConsistency: &iso1911x.DomainConsistencyTag{
@@ -976,10 +973,10 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-invocable-sds-metadata
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-interoperable-sds-metadata
-	if config.InspireType != nil &&
-		(*config.InspireType == Invocable || *config.InspireType == Interoperable) {
+	if config.ServiceInspireType != nil &&
+		(*config.ServiceInspireType == Invocable || *config.ServiceInspireType == Interoperable) {
 		SDSServiceCategory, ok := g.Codelist.GetSDSServiceCategoryBySDSCategory(
-			string(*config.InspireType),
+			string(*config.ServiceInspireType),
 		)
 		if !ok {
 			return fmt.Errorf("no INSPIRE service type found for type: %s", config.Type)
@@ -1113,7 +1110,7 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 			},
 		}
 
-		if *config.InspireType == Interoperable {
+		if *config.ServiceInspireType == Interoperable {
 			qosAvailabilityReport := iso1911x.ReportTag{
 				ConceptualConsistency: &iso1911x.ConceptualConsistencyTag{
 					NameOfMeasure: iso1911x.AnchorTag{
@@ -1198,8 +1195,4 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 	}
 
 	return nil
-}
-
-func (g *ISO19119Generator) getRevisionDate() string {
-	return g.revisionDate
 }

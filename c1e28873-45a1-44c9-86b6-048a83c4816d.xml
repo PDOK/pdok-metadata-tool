@@ -1,6 +1,6 @@
 <gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.isotc211.org/2005/gmd  http://schemas.opengis.net/csw/2.0.2/profiles/apiso/1.0.0/apiso.xsd">
   <gmd:fileIdentifier>
-    <gco:CharacterString>00000000-0000-0000-0000-000000000015</gco:CharacterString>
+    <gco:CharacterString>c1e28873-45a1-44c9-86b6-048a83c4816d</gco:CharacterString>
   </gmd:fileIdentifier>
   <gmd:language>
     <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="dut">Nederlands; Vlaams</gmd:LanguageCode>
@@ -43,7 +43,7 @@
     </gmd:CI_ResponsibleParty>
   </gmd:contact>
   <gmd:dateStamp>
-    <gco:Date>2025-01-09</gco:Date>
+    <gco:Date>2025-10-09</gco:Date>
   </gmd:dateStamp>
   <gmd:metadataStandardName>
     <gco:CharacterString>ISO 19119</gco:CharacterString>
@@ -56,12 +56,12 @@
       <gmd:citation>
         <gmd:CI_Citation>
           <gmd:title>
-            <gco:CharacterString>Test INSPIRE HVD complex WFS</gco:CharacterString>
+            <gco:CharacterString>BRO Bodemkundig Booronderzoek (BHR-P) WMS</gco:CharacterString>
           </gmd:title>
           <gmd:date>
             <gmd:CI_Date>
               <gmd:date>
-                <gco:Date>2025-09-30</gco:Date>
+                <gco:Date>2020-12-21</gco:Date>
               </gmd:date>
               <gmd:dateType>
                 <gmd:CI_DateTypeCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation">creatie</gmd:CI_DateTypeCode>
@@ -71,7 +71,7 @@
           <gmd:date>
             <gmd:CI_Date>
               <gmd:date>
-                <gco:Date>2025-01-09</gco:Date>
+                <gco:Date>2025-10-09</gco:Date>
               </gmd:date>
               <gmd:dateType>
                 <gmd:CI_DateTypeCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision">revisie</gmd:CI_DateTypeCode>
@@ -81,7 +81,7 @@
         </gmd:CI_Citation>
       </gmd:citation>
       <gmd:abstract>
-        <gco:CharacterString>Unit test INSPIRE HVD complex</gco:CharacterString>
+        <gco:CharacterString>Bodemkundig booronderzoek omvat de gegevens die voortkomen uit een bodemkundig georienteerde boring. In veel gevlen bestaat het bodemkundig booronderzoek uit niet meer dan een boormonsterprofiel. In het meest uitgebreide geval omvat het booronderzoek ook de resultaten van boormonsteronderzoek en boorgatmeetgegevens. Het boormonsterprofiel komt tot stand door de samenstelling van de monsters uit een booronderzoek macroscopisch te beschrijven.</gco:CharacterString>
       </gmd:abstract>
       <gmd:pointOfContact>
         <gmd:CI_ResponsibleParty>
@@ -114,26 +114,32 @@
       <gmd:graphicOverview>
         <gmd:MD_BrowseGraphic>
           <gmd:fileName>
-            <gco:CharacterString>https://test.nl/thumb.png</gco:CharacterString>
+            <gco:CharacterString>https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/c1e28873-45a1-44c9-86b6-048a83c4816d/attachments/BHR-P.png</gco:CharacterString>
           </gmd:fileName>
           <gmd:fileDescription>
-            <gco:CharacterString>thumbnail</gco:CharacterString>
+            <gco:CharacterString>BHR-P</gco:CharacterString>
           </gmd:fileDescription>
         </gmd:MD_BrowseGraphic>
       </gmd:graphicOverview>
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
-            <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoFeatureAccessService">infoFeatureAccessService</gmx:Anchor>
+            <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoMapAccessService">infoMapAccessService</gmx:Anchor>
           </gmd:keyword>
           <gmd:keyword>
-            <gco:CharacterString>AAAA</gco:CharacterString>
+            <gco:CharacterString>grondonderzoek</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
-            <gco:CharacterString>BBBB</gco:CharacterString>
+            <gco:CharacterString>bodemonderzoek</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
-            <gco:CharacterString>CCCC</gco:CharacterString>
+            <gco:CharacterString>booronderzoek</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>bodemkundig boormonsterprofiel</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>boormonsterprofiel</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
             <gmx:Anchor xlink:href="http://data.europa.eu/eli/reg_impl/2023/138/oj">HVD</gmx:Anchor>
@@ -143,22 +149,10 @@
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-theme/hy">Hydrografie</gmx:Anchor>
+            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-theme/ge">Geologie</gmx:Anchor>
           </gmd:keyword>
           <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-theme/bu">Gebouwen</gmx:Anchor>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-theme/tn">Vervoersnetwerken</gmx:Anchor>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-theme/lc">Bodemgebruik</gmx:Anchor>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-theme/sr">Zeegebieden</gmx:Anchor>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-theme/gn">Geografische namen</gmx:Anchor>
+            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-theme/so">Bodem</gmx:Anchor>
           </gmd:keyword>
           <gmd:type>
             <gmd:MD_KeywordTypeCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>
@@ -192,7 +186,13 @@
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
-            <gmx:Anchor xlink:href="http://data.europa.eu/bna/c_ac64a52d">Geospatiale data</gmx:Anchor>
+            <gmx:Anchor xlink:href="http://data.europa.eu/bna/c_dd313021">Aardobservatie en milieu</gmx:Anchor>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gmx:Anchor xlink:href="http://data.europa.eu/bna/c_e3f55603">Geologie</gmx:Anchor>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gmx:Anchor xlink:href="http://data.europa.eu/bna/c_87a129d9">Bodem</gmx:Anchor>
           </gmd:keyword>
           <gmd:thesaurusName>
             <gmd:CI_Citation>
@@ -226,7 +226,7 @@
             <gmd:MD_RestrictionCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">anders</gmd:MD_RestrictionCode>
           </gmd:accessConstraints>
           <gmd:otherConstraints>
-            <gmx:Anchor xlink:href="http://creativecommons.org/licenses/by/4.0/deed.nl">Naamsvermelding verplicht, organisatienaam</gmx:Anchor>
+            <gmx:Anchor xlink:href="https://creativecommons.org/publicdomain/mark/1.0/deed.nl">Geen beperkingen</gmx:Anchor>
           </gmd:otherConstraints>
           <gmd:otherConstraints>
             <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply">Geen condities voor toegang en gebruik</gmx:Anchor>
@@ -244,23 +244,23 @@
         </gmd:MD_LegalConstraints>
       </gmd:resourceConstraints>
       <srv:serviceType>
-        <gco:LocalName codeSpace="http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType">download</gco:LocalName>
+        <gco:LocalName codeSpace="http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType">view</gco:LocalName>
       </srv:serviceType>
       <srv:extent>
         <gmd:EX_Extent>
           <gmd:geographicElement>
             <gmd:EX_GeographicBoundingBox>
               <gmd:westBoundLongitude>
-                <gco:Decimal>0.6312</gco:Decimal>
+                <gco:Decimal>3.206252918228434</gco:Decimal>
               </gmd:westBoundLongitude>
               <gmd:eastBoundLongitude>
-                <gco:Decimal>9.4514</gco:Decimal>
+                <gco:Decimal>7.245258336784366</gco:Decimal>
               </gmd:eastBoundLongitude>
               <gmd:southBoundLatitude>
-                <gco:Decimal>50.2455</gco:Decimal>
+                <gco:Decimal>50.73360719554353</gco:Decimal>
               </gmd:southBoundLatitude>
               <gmd:northBoundLatitude>
-                <gco:Decimal>54.0469</gco:Decimal>
+                <gco:Decimal>53.58297893748843</gco:Decimal>
               </gmd:northBoundLatitude>
             </gmd:EX_GeographicBoundingBox>
           </gmd:geographicElement>
@@ -280,18 +280,13 @@
           <srv:connectPoint>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
-                <gmd:URL>https://test.nl/test-interoperable/wfs?request=GetCapabilities&amp;service=WFS</gmd:URL>
+                <gmd:URL>https://service.pdok.nl/bzk/brobhrpkenset/wms/v1_0?request=GetCapabilities&amp;service=WMS</gmd:URL>
               </gmd:linkage>
             </gmd:CI_OnlineResource>
           </srv:connectPoint>
         </srv:SV_OperationMetadata>
       </srv:containsOperations>
-      <srv:operatesOn uuidref="10000000-0000-0000-0000-000000000000" xlink:href="https://nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=10000000-0000-0000-0000-000000000000#MD_DataIdentification"></srv:operatesOn>
-      <srv:operatesOn uuidref="20000000-0000-0000-0000-000000000000" xlink:href="https://nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=20000000-0000-0000-0000-000000000000#MD_DataIdentification"></srv:operatesOn>
-      <srv:operatesOn uuidref="30000000-0000-0000-0000-000000000000" xlink:href="https://nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=30000000-0000-0000-0000-000000000000#MD_DataIdentification"></srv:operatesOn>
-      <srv:operatesOn uuidref="40000000-0000-0000-0000-000000000000" xlink:href="https://nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=40000000-0000-0000-0000-000000000000#MD_DataIdentification"></srv:operatesOn>
-      <srv:operatesOn uuidref="50000000-0000-0000-0000-000000000000" xlink:href="https://nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=50000000-0000-0000-0000-000000000000#MD_DataIdentification"></srv:operatesOn>
-      <srv:operatesOn uuidref="60000000-0000-0000-0000-000000000000" xlink:href="https://nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=60000000-0000-0000-0000-000000000000#MD_DataIdentification"></srv:operatesOn>
+      <srv:operatesOn uuidref="562127a6-0381-46b3-9ed7-10e61ec5ecb5" xlink:href="https://nationaalgeoregister.nl/geonetwork/srv/dut/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;outputSchema=http://www.isotc211.org/2005/gmd&amp;elementSetName=full&amp;id=562127a6-0381-46b3-9ed7-10e61ec5ecb5#MD_DataIdentification"></srv:operatesOn>
     </srv:SV_ServiceIdentification>
   </gmd:identificationInfo>
   <gmd:distributionInfo>
@@ -301,10 +296,10 @@
           <gmd:onLine>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
-                <gmd:URL>https://test.nl/test-interoperable/wfs?request=GetCapabilities&amp;service=WFS</gmd:URL>
+                <gmd:URL>https://service.pdok.nl/bzk/brobhrpkenset/wms/v1_0?request=GetCapabilities&amp;service=WMS</gmd:URL>
               </gmd:linkage>
               <gmd:protocol>
-                <gmx:Anchor xlink:href="http://www.opengis.net/def/serviceType/ogc/wfs">OGC:WFS</gmx:Anchor>
+                <gmx:Anchor xlink:href="http://www.opengis.net/def/serviceType/ogc/wms">OGC:WMS</gmx:Anchor>
               </gmd:protocol>
               <gmd:description>
                 <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/OnLineDescriptionCode/accessPoint">accessPoint</gmx:Anchor>
@@ -338,12 +333,12 @@
               <gmd:specification>
                 <gmd:CI_Citation>
                   <gmd:title>
-                    <gmx:Anchor xlink:href="https://data.europa.eu/eli/reg/2010/1089">VERORDENING (EU) Nr. 1089/2010 VAN DE COMMISSIE van 23 november 2010 ter uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad betreffende de interoperabiliteit van verzamelingen ruimtelijke gegevens en van diensten met betrekking tot ruimtelijke gegevens</gmx:Anchor>
+                    <gmx:Anchor xlink:href="https://data.europa.eu/eli/reg/2009/976">VERORDENING (EG) Nr. 976/2009 VAN DE COMMISSIE van 19 oktober 2009 tot uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad wat betreft de netwerkdiensten</gmx:Anchor>
                   </gmd:title>
                   <gmd:date>
                     <gmd:CI_Date>
                       <gmd:date>
-                        <gco:Date>2010-12-08</gco:Date>
+                        <gco:Date>2009-10-19</gco:Date>
                       </gmd:date>
                       <gmd:dateType>
                         <gmd:CI_DateTypeCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publicatie</gmd:CI_DateTypeCode>
@@ -369,43 +364,12 @@
               <gmd:specification>
                 <gmd:CI_Citation>
                   <gmd:title>
-                    <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/id/ats/metadata/2.0/sds-interoperable">interoperable</gmx:Anchor>
+                    <gmx:Anchor xlink:href="https://inspire.ec.europa.eu/documents/technical-guidance-implementation-inspire-view-services-1">Technical Guidance for the implementation of INSPIRE view Services</gmx:Anchor>
                   </gmd:title>
                   <gmd:date>
                     <gmd:CI_Date>
                       <gmd:date>
-                        <gco:Date>2014-12-11</gco:Date>
-                      </gmd:date>
-                      <gmd:dateType>
-                        <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode" codeListValue="publication">publicatie</gmd:CI_DateTypeCode>
-                      </gmd:dateType>
-                    </gmd:CI_Date>
-                  </gmd:date>
-                </gmd:CI_Citation>
-              </gmd:specification>
-              <gmd:explanation>
-                <gco:CharacterString>De service voldoet aan de requirements van de interoperable conformance class</gco:CharacterString>
-              </gmd:explanation>
-              <gmd:pass>
-                <gco:Boolean>true</gco:Boolean>
-              </gmd:pass>
-            </gmd:DQ_ConformanceResult>
-          </gmd:result>
-        </gmd:DQ_DomainConsistency>
-      </gmd:report>
-      <gmd:report>
-        <gmd:DQ_DomainConsistency>
-          <gmd:result>
-            <gmd:DQ_ConformanceResult>
-              <gmd:specification>
-                <gmd:CI_Citation>
-                  <gmd:title>
-                    <gmx:Anchor xlink:href="http://www.opengis.net/def/serviceType/ogc/wfs">Web Feature Service</gmx:Anchor>
-                  </gmd:title>
-                  <gmd:date>
-                    <gmd:CI_Date>
-                      <gmd:date>
-                        <gco:Date>2010-11-02</gco:Date>
+                        <gco:Date>2013-04-04</gco:Date>
                       </gmd:date>
                       <gmd:dateType>
                         <gmd:CI_DateTypeCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publicatie</gmd:CI_DateTypeCode>
@@ -415,7 +379,7 @@
                 </gmd:CI_Citation>
               </gmd:specification>
               <gmd:explanation>
-                <gco:CharacterString>is conform Web Feature Service specificatie</gco:CharacterString>
+                <gco:CharacterString>Conform technische specificatie</gco:CharacterString>
               </gmd:explanation>
               <gmd:pass>
                 <gco:Boolean>true</gco:Boolean>
@@ -423,48 +387,6 @@
             </gmd:DQ_ConformanceResult>
           </gmd:result>
         </gmd:DQ_DomainConsistency>
-      </gmd:report>
-      <gmd:report>
-        <gmd:DQ_ConceptualConsistency>
-          <gmd:nameOfMeasure xlink:href="http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/availability">beschikbaarheid</gmd:nameOfMeasure>
-          <gmd:measureDescription>
-            <gco:CharacterString>Beschikbaarheid op jaarbasis, uitgedrukt in percentage in tijd</gco:CharacterString>
-          </gmd:measureDescription>
-          <gmd:result>
-            <gmd:DQ_QuantitativeResult>
-              <gmd:valueUnit xlink:href="urn:ogc:def:uom:OGC::percent"></gmd:valueUnit>
-              <gmd:value xsi:type="xs:double">99.999</gmd:value>
-            </gmd:DQ_QuantitativeResult>
-          </gmd:result>
-        </gmd:DQ_ConceptualConsistency>
-      </gmd:report>
-      <gmd:report>
-        <gmd:DQ_ConceptualConsistency>
-          <gmd:nameOfMeasure xlink:href="http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/performance">performance</gmd:nameOfMeasure>
-          <gmd:measureDescription>
-            <gco:CharacterString>Gemiddelde response tijd, uitgedrukt in seconden</gco:CharacterString>
-          </gmd:measureDescription>
-          <gmd:result>
-            <gmd:DQ_QuantitativeResult>
-              <gmd:valueUnit xlink:href="http://www.opengis.net/def/uom/SI/second"></gmd:valueUnit>
-              <gmd:value xsi:type="xs:double">1</gmd:value>
-            </gmd:DQ_QuantitativeResult>
-          </gmd:result>
-        </gmd:DQ_ConceptualConsistency>
-      </gmd:report>
-      <gmd:report>
-        <gmd:DQ_ConceptualConsistency>
-          <gmd:nameOfMeasure xlink:href="http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/capacity">capaciteit</gmd:nameOfMeasure>
-          <gmd:measureDescription>
-            <gco:CharacterString>Maximum aantal gelijktijdige requests per seconde die aan de performance criteria voldoen, uitgedrukt als aantal requests per seconde</gco:CharacterString>
-          </gmd:measureDescription>
-          <gmd:result>
-            <gmd:DQ_QuantitativeResult>
-              <gmd:valueUnit xlink:href="http://www.opengis.net/def/uom/OGC/1.0/unity"></gmd:valueUnit>
-              <gmd:value xsi:type="xs:integer">100</gmd:value>
-            </gmd:DQ_QuantitativeResult>
-          </gmd:result>
-        </gmd:DQ_ConceptualConsistency>
       </gmd:report>
     </gmd:DQ_DataQuality>
   </gmd:dataQualityInfo>
