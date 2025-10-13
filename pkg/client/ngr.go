@@ -1,12 +1,8 @@
 package client
 
 import (
-	"bytes"
-	"encoding/base64"
 	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -37,28 +33,6 @@ func NewNgrClient(config NgrConfig) NgrClient {
 		NgrConfig: config,
 		NgrClient: client,
 	}
-}
-
-func (c *NgrClient) getHeaders() (http.Header, error) {
-	xsrfToken, err := obtainXSRFToken(&c.NgrConfig)
-	if err != nil {
-		return nil, fmt.Errorf("failed to obtain XSRF token: %w", err)
-	}
-
-	// In the old selfservice was a check to block update for published records.
-	// In the new selfservice we need to update the record regardless of publish state
-
-	username := c.NgrConfig.NgrUserName
-	password := c.NgrConfig.NgrPassword
-	auth := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
-
-	headers := http.Header{}
-	headers.Set("Authorization", "Basic "+auth)
-	headers.Set("X-XSRF-TOKEN", xsrfToken)
-	headers.Set("Cookie", "XSRF-TOKEN="+xsrfToken)
-	headers.Set("Content-Type", "application/xml")
-	headers.Set("Accept", "application/json, application/xml")
-	return headers, nil
 }
 
 // TODO Use this for harvesting only INSPIRE service metadata in ETF-validator-go
@@ -96,11 +70,6 @@ func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	// In Kotlin, success (200) is considered wrong and should throw an error
-	if resp.StatusCode < 400 {
-		return "", errors.New("cannot obtain XSRF token, server shouldn't allow POST action")
-	}
-
 	// Look for 403 Forbidden
 	if resp.StatusCode == http.StatusForbidden {
 		// Parse cookies from headers
@@ -129,7 +98,6 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 	record string,
 	categoryId *string,
 	groupId *string,
-	ngrConfig *NgrConfig,
 	toBePublished bool,
 ) error {
 	// Build URL with query params
@@ -153,198 +121,42 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 		params,
 	)
 
-	// PUT the record
-	putReq, err := http.NewRequest(http.MethodPut, url, bytes.NewBufferString(record))
-	if err != nil {
-		return fmt.Errorf("failed to create PUT request: %w", err)
-	}
-	headers, err := c.getHeaders()
-	if err != nil {
-		return fmt.Errorf("failed to create headers request: %w", err)
-	}
-	putReq.Header = headers
-	putResp, err := c.NgrClient.Do(putReq)
-	if err != nil {
-		return fmt.Errorf("PUT request error: %w", err)
-	}
-	defer putResp.Body.Close()
-	body, _ := io.ReadAll(putResp.Body)
-	if putResp.StatusCode < 200 || putResp.StatusCode >= 300 {
-		return fmt.Errorf(
-			"PUT request failed with status %d: %s",
-			putResp.StatusCode,
-			string(body),
-		)
-	}
-	return nil
+	_, err := getNgrResponseBody(&c.NgrConfig, url, http.MethodPut, &record, *c.NgrClient)
+	return err
 }
 
-func (c *NgrClient) getRecord(uuid string) (string, int, error) {
+func (c *NgrClient) getRecord(uuid string) (string, error) {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPlATE,
 		uuid,
 	)
-	bodyString := ""
-
-	getReq, err := http.NewRequest(http.MethodGet, ngrUrl, nil)
-
-	headers, err := c.getHeaders()
+	responseBodyByteArr, err := getNgrResponseBody(&c.NgrConfig, ngrUrl, http.MethodGet, nil, *c.NgrClient)
 	if err != nil {
-		return "", http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
+		return "", err
+	} else {
+		responseBodyString := string(responseBodyByteArr)
+		return responseBodyString, err
 	}
-	getReq.Header = headers
-	getResp, err := c.NgrClient.Do(getReq)
-	if err != nil {
-		return "", http.StatusInternalServerError, fmt.Errorf("failed to send http request: %w", err)
-	}
-	if err == nil {
-		defer getResp.Body.Close()
-		switch getResp.StatusCode {
-		case http.StatusOK:
-			bodyBytes, err := io.ReadAll(getResp.Body)
-			if err != nil {
-				log.Fatal(err)
-			}
-			bodyString = string(bodyBytes)
-			return bodyString, http.StatusOK, nil
-		case http.StatusNotFound:
-		case http.StatusForbidden:
-		default:
-			return bodyString, getResp.StatusCode, fmt.Errorf(
-				"unexpected http status %d retrieving sharing info for record %s",
-				getResp.StatusCode,
-				uuid,
-			)
-		}
-	}
-	return bodyString, getResp.StatusCode, fmt.Errorf(
-		"unexpected http status %d retrieving sharing info for record %s",
-		getResp.StatusCode,
-		uuid,
-	)
 }
 
-func (c *NgrClient) deleteRecord(uuid string) (int, error) {
+func (c *NgrClient) deleteRecord(uuid string) error {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPlATE,
 		uuid,
 	)
-	deleteReq, err := http.NewRequest(http.MethodDelete, ngrUrl, nil)
-
-	headers, err := c.getHeaders()
-	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
-	}
-	deleteReq.Header = headers
-	deleteResp, err := c.NgrClient.Do(deleteReq)
-	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("failed to send http request: %w", err)
-	}
-	if err == nil {
-		defer deleteResp.Body.Close()
-		switch deleteResp.StatusCode {
-		case http.StatusNoContent:
-			return http.StatusNoContent, nil
-		case http.StatusNotFound:
-		case http.StatusForbidden:
-		default:
-			return deleteResp.StatusCode, fmt.Errorf(
-				"unexpected http status %d retrieving sharing info for record %s",
-				deleteResp.StatusCode,
-				uuid,
-			)
-		}
-	}
-	return deleteResp.StatusCode, fmt.Errorf(
-		"unexpected http status %d retrieving sharing info for record %s",
-		deleteResp.StatusCode,
-		uuid,
-	)
+	_, err := getNgrResponseBody(&c.NgrConfig, ngrUrl, http.MethodDelete, nil, *c.NgrClient)
+	return err
 }
 
-func (c *NgrClient) addTagToRecord(uuid string, tagId int) (int, error) {
+func (c *NgrClient) addTagToRecord(uuid string, tagId int) error {
 	ngrUrl := fmt.Sprintf("%s%s/%s/tags?id=%d",
 		c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPlATE,
 		uuid,
 		tagId,
 	)
-	putTagReq, err := http.NewRequest(http.MethodPut, ngrUrl, nil)
-
-	headers, err := c.getHeaders()
-	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
-	}
-	putTagReq.Header = headers
-	putTagResp, err := c.NgrClient.Do(putTagReq)
-	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("failed to send http request: %w", err)
-	}
-	if err == nil {
-		defer putTagResp.Body.Close()
-		switch putTagResp.StatusCode {
-		case http.StatusCreated:
-			return http.StatusCreated, nil
-		case http.StatusNotFound:
-		case http.StatusForbidden:
-		default:
-			return putTagResp.StatusCode, fmt.Errorf(
-				"unexpected http status %d retrieving sharing info for record %s",
-				putTagResp.StatusCode,
-				uuid,
-			)
-		}
-	}
-	return putTagResp.StatusCode, fmt.Errorf(
-		"unexpected http status %d retrieving sharing info for record %s",
-		putTagResp.StatusCode,
-		uuid,
-	)
-}
-
-func (c *NgrClient) getTagsByRecord(uuid string) (string, int, error) {
-	ngrUrl := fmt.Sprintf("%s%s/%s/tags",
-		c.NgrConfig.NgrUrl,
-		API_RECORDS_TEMPlATE,
-		uuid,
-	)
-	bodyString := ""
-	getTagReq, err := http.NewRequest(http.MethodGet, ngrUrl, nil)
-
-	headers, err := c.getHeaders()
-	if err != nil {
-		return bodyString, http.StatusInternalServerError, fmt.Errorf("failed to create headers request: %w", err)
-	}
-	getTagReq.Header = headers
-	getTagResp, err := c.NgrClient.Do(getTagReq)
-	if err != nil {
-		return bodyString, http.StatusInternalServerError, fmt.Errorf("failed to send http request: %w", err)
-	}
-	if err == nil {
-		defer getTagResp.Body.Close()
-		switch getTagResp.StatusCode {
-		case http.StatusOK:
-			bodyBytes, err := io.ReadAll(getTagResp.Body)
-			if err != nil {
-				log.Fatal(err)
-			}
-			bodyString = string(bodyBytes)
-			return bodyString, http.StatusOK, nil
-		case http.StatusNotFound:
-		case http.StatusForbidden:
-		default:
-			return bodyString, getTagResp.StatusCode, fmt.Errorf(
-				"unexpected http status %d retrieving sharing info for record %s",
-				getTagResp.StatusCode,
-				uuid,
-			)
-		}
-	}
-	return bodyString, getTagResp.StatusCode, fmt.Errorf(
-		"unexpected http status %d retrieving sharing info for record %s",
-		getTagResp.StatusCode,
-		uuid,
-	)
+	_, err := getNgrResponseBody(&c.NgrConfig, ngrUrl, http.MethodPut, nil, *c.NgrClient)
+	return err
 }

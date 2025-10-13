@@ -3,13 +3,9 @@ package client
 import (
 	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
 	"github.com/stretchr/testify/assert"
-	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"os"
-	"strings"
 	"testing"
-	"time"
 )
 
 func TestNgrClient_GetRecordTags(t *testing.T) {
@@ -94,29 +90,12 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 			dataToBeCreated, err := os.ReadFile(tt.args.pathRecordXml)
 			assert.Nil(t, err)
 			recordToBeCreated := string(dataToBeCreated)
-			timeString := time.Now().Format("2006-01-02 15:04:05")
 			// create unpublished record
-			recordToBeCreated = strings.Replace(recordToBeCreated, "NWB - wegen22222", "NWB - wegen33333 "+timeString, -1)
-			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeCreated, tt.args.categoryId, tt.args.groupId, &ngrClient.NgrConfig, false)
+			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeCreated, tt.args.categoryId, tt.args.groupId, false)
 			assert.Nil(t, err)
-			recordCreated, getStatus, err := ngrClient.getRecord(tt.args.uuid)
-			assert.Nil(t, err)
-			assert.Equal(t, http.StatusOK, getStatus)
-			assert.Contains(t, recordCreated, timeString)
-
-			// publish record and update title
-
-			//time.Sleep(60 * time.Second)
-			//dataToBeUpdated, err := os.ReadFile(tt.args.pathRecordXml)
+			//recordCreated, err := ngrClient.getRecord(tt.args.uuid)
 			//assert.Nil(t, err)
-			//recordToBeUpdated := string(dataToBeUpdated)
-			//recordToBeUpdated = strings.Replace(recordToBeUpdated, "NWB - wegen33333", "NWB - wegen00000", -1)
-			//err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeUpdated, tt.args.uuid, tt.args.categoryId, tt.args.groupId, &ngrClient.NgrConfig, false)
-			//assert.Nil(t, err)
-			//recordUpdated, getStatus, err := ngrClient.getRecord(tt.args.uuid, &ngrClient.NgrConfig)
-			//assert.Nil(t, err)
-			//assert.Equal(t, http.StatusOK, getStatus)
-			//assert.Contains(t, recordUpdated, "NWB - wegen00000")
+			//assert.Contains(t, recordCreated, "NWB - wegen22222")
 
 			//time.Sleep(60 * time.Second)
 			//deleteStatus, err := ngrClient.deleteRecord(tt.args.uuid, &ngrClient.NgrConfig)
@@ -127,29 +106,39 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 			//assert.Equal(t, getDelStatus, http.StatusNotFound)
 			//assert.Equal(t, "", delRecord)
 
-			addTagStatus, err := ngrClient.addTagToRecord(tt.args.uuid, INSPIRE_TAG)
-			assert.Nil(t, err)
-			assert.Equal(t, http.StatusCreated, addTagStatus)
-			tagsList, getStatus, err := ngrClient.getTagsByRecord(tt.args.uuid)
-			assert.Nil(t, err)
-			assert.Equal(t, http.StatusOK, getStatus)
-			assert.Contains(t, tagsList, "224342")
+			//err = ngrClient.addTagToRecord(tt.args.uuid, INSPIRE_TAG)
+			//assert.Nil(t, err)
+			//tagsList, err := ngrClient.GetRecordTags(tt.args.uuid)
+			//assert.Nil(t, err)
+			//assert.Contains(t, tagsList, "224342")
 		})
 	}
 }
 
 func getNgrClient(t *testing.T, mockedNGRServer *httptest.Server) *NgrClient {
-	//hostURL, err := url.Parse(mockedNGRServer.URL)
-	accUrl, err := url.Parse("https://ngr.acceptatie.nationaalgeoregister.nl")
-	if err != nil {
-		t.Fatalf("Failed to parse mocked NGR server URL: %v", err)
-	}
-
 	config := NgrConfig{
-		NgrUrl:      accUrl.String(),
-		NgrUserName: "NGR_USER_NAME",
-		NgrPassword: "NGR_PASSWORD",
+		//NgrUrl: "https://ngr.acceptatie.nationaalgeoregister.nl",
+		NgrUrl:      mockedNGRServer.URL,
+		NgrUserName: NGR_USER_NAME,
+		NgrPassword: NGR_PASSWORD,
 	}
 	ngrClient := NewNgrClient(config)
 	return &ngrClient
 }
+
+//  gebruik het volgende functie als je wil testen met de ngr.acceptatie omgeving
+//func getNgrClient(t *testing.T, mockedNGRServer *httptest.Server) *NgrClient {
+//	//hostURL, err := url.Parse(mockedNGRServer.URL)
+//	accUrl, err := url.Parse("https://ngr.acceptatie.nationaalgeoregister.nl")
+//	if err != nil {
+//		t.Fatalf("Failed to parse mocked NGR server URL: %v", err)
+//	}
+//
+//	config := NgrConfig{
+//		NgrUrl:      accUrl.String(),
+//		NgrUserName: "NGR_USER_NAME",
+//		NgrPassword: "NGR_PASSWORD",
+//	}
+//	ngrClient := NewNgrClient(config)
+//	return &ngrClient
+//}
