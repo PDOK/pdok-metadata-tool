@@ -8,6 +8,7 @@ globals:
   qosCapacity: 100
   title: "Test regular"
   creationDate: "2019-09-26"
+  revisionDate: "2025-01-09"
   abstract: "Unit test regular"
   keywords:
     - "AA"

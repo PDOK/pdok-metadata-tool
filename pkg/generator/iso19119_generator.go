@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/codelist"
@@ -19,7 +18,6 @@ import (
 type ISO19119Generator struct {
 	MetadataHolder map[string]*MetadataEntry
 	currentID      *string
-	revisionDate   string
 	Codelist       *codelist.Codelist
 	HVDRepository  *repository.HVDRepository
 	outputDir      string
@@ -50,7 +48,6 @@ func NewISO19119Generator(
 		Codelist:       codelists,
 		HVDRepository:  hvdRepo,
 		outputDir:      outputDir,
-		revisionDate:   time.Now().Format("2006-01-02"),
 	}, nil
 }
 
@@ -245,7 +242,7 @@ func (g *ISO19119Generator) setGeneralInfo() error {
 		DateStamp: iso1911x.DateTag{
 			// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#metadatadatum -->
 			// Date on which the metadata was created or modified (format YYYY-MM-DD)
-			Date: g.getRevisionDate(),
+			Date: config.GetRevisionDate(),
 		},
 		MetadataStandardName: iso1911x.CharacterStringTag{
 			// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#metadata-standaard-naam
@@ -302,7 +299,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 								// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#x5-2-2-datum-van-de-bron
 								// Date on which the service was last revised, format YYYY-MM-DD
 								Date: iso1911x.DateTag{
-									Date: g.getRevisionDate(),
+									Date: config.GetRevisionDate(),
 								},
 								// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#datum-type-van-de-bron
 								DateType: iso1911x.DateTypeTag{
@@ -1198,8 +1195,4 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 	}
 
 	return nil
-}
-
-func (g *ISO19119Generator) getRevisionDate() string {
-	return g.revisionDate
 }

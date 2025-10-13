@@ -8,6 +8,7 @@ globals:
   qosCapacity: 100
   title: "Test INSPIRE HVD complex"
   creationDate: "2025-09-30"
+  revisionDate: "2025-01-09"
   abstract: "Unit test INSPIRE HVD complex"
   keywords:
     - "AAAA"

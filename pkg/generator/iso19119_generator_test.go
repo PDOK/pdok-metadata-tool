@@ -84,9 +84,6 @@ func TestGenerateMetadata(t *testing.T) {
 		generator, err := NewISO19119Generator(serviceSpecifics, outputFolder)
 		require.NoError(t, err)
 
-		// Overwrite revisionDate for testing
-		generator.revisionDate = "2025-01-09"
-
 		err = generator.Generate()
 		require.NoError(t, err)
 

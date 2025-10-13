@@ -69,6 +69,7 @@ func (iv *InspireType) UnmarshalYAML(unmarshal func(any) error) error {
 type OverrideableFields struct {
 	Title                     *string      `yaml:"title,omitempty"`
 	CreationDate              *string      `yaml:"creationDate,omitempty"`
+	RevisionDate              *string      `yaml:"revisionDate,omitempty"`
 	Abstract                  *string      `yaml:"abstract,omitempty"`
 	Keywords                  []string     `yaml:"keywords,omitempty"`
 	ContactOrganisationName   *string      `yaml:"contactOrganisationName,omitempty"`
@@ -192,6 +193,15 @@ func (sc *ServiceConfig) Validate() error {
 		}
 	}
 
+	if sc.GetRevisionDate() == "" {
+		errors = append(errors, "revisionDate is required (either local or global)")
+	} else {
+		_, err := time.Parse("2006-01-02", sc.GetRevisionDate())
+		if err != nil {
+			errors = append(errors, "revisionDate does not match the date format 'YYYY-MM-DD'")
+		}
+	}
+
 	if sc.GetAbstract() == "" {
 		errors = append(errors, "abstract is required (either local or global)")
 	}
@@ -283,6 +293,19 @@ func (sc *ServiceConfig) GetCreationDate() string {
 
 	if sc.Globals.CreationDate != nil {
 		return *sc.Globals.CreationDate
+	}
+
+	return ""
+}
+
+// GetRevisionDate returns the (overrideable) revision date.
+func (sc *ServiceConfig) GetRevisionDate() string {
+	if sc.RevisionDate != nil {
+		return *sc.RevisionDate
+	}
+
+	if sc.Globals.RevisionDate != nil {
+		return *sc.Globals.RevisionDate
 	}
 
 	return ""
