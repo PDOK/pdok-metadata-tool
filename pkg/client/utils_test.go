@@ -21,7 +21,6 @@ const (
 
 func preTestSetup() *httptest.Server {
 	ngrServer := buildMockWebserverNgr()
-	//ngrServer.URL = "https://ngr.acceptatie.nationaalgeoregister.nl"
 	return ngrServer
 }
 
