@@ -25,6 +25,8 @@ func preTestSetup() *httptest.Server {
 	return ngrServer
 }
 
+var getCreated = true
+
 func buildMockWebserverNgr() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		switch url := req.URL.String(); {
@@ -38,11 +40,18 @@ func buildMockWebserverNgr() *httptest.Server {
 			writeOkResponse("./testdata/API_Records_Tags_Empty.json", rw, ContentTypeJSON)
 		case strings.EqualFold(url, "/geonetwork/srv/api/records/?metadataType=METADATA&uuidProcessing=REMOVE_AND_REPLACE&publishToAll=false"):
 			writeOkResponse("./testdata/API_Records_Tags_Empty.json", rw, ContentTypeJSON)
+		case strings.EqualFold(url, "/geonetwork/srv/api/records/?metadataType=METADATA&uuidProcessing=REMOVE_AND_REPLACE&publishToAll=true"):
+			writeOkResponse("./testdata/API_Records_Tags_Empty.json", rw, ContentTypeJSON)
 		case strings.EqualFold(url, "/geonetwork/srv/api/records/689c413e-a057-11f0-8de9-0242ac120002/tags?id=224342"):
 			writeOkResponse("./testdata/API_Records_Tags_Inspire.json", rw, ContentTypeJSON)
 
 		case strings.EqualFold(url, "/geonetwork/srv/api/records/689c413e-a057-11f0-8de9-0242ac120002"):
-			writeOkResponse("./testdata/nwbwegen222-wms.xml", rw, ContentTypeXML)
+			if getCreated {
+				writeOkResponse("./testdata/nwbwegen222-wms.xml", rw, ContentTypeXML)
+			} else {
+				writeOkResponse("./testdata/nwbwegen333-wms.xml", rw, ContentTypeXML)
+			}
+			getCreated = !getCreated
 		case strings.HasPrefix(url, GetRecordByID):
 			var responsePath string
 
