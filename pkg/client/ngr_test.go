@@ -12,11 +12,12 @@ import (
 
 func TestNgrClient_GetRecordTags(t *testing.T) {
 	mockedNGRServer := preTestSetup()
-	ngrClient := getNgrClient(t, mockedNGRServer)
+	ngrClient := getNgrClient(mockedNGRServer)
 
 	type args struct {
 		uuid string
 	}
+
 	tests := []struct {
 		name         string
 		args         args
@@ -55,7 +56,7 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ngrClient.GetRecordTags(tt.args.uuid)
 
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 			assert.Len(t, got, tt.wantNrOfTags)
 			assert.Equal(t, tt.want, got)
 		})
@@ -64,7 +65,7 @@ func TestNgrClient_GetRecordTags(t *testing.T) {
 
 func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 	mockedNGRServer := preTestSetup()
-	ngrClient := getNgrClient(t, mockedNGRServer)
+	ngrClient := getNgrClient(mockedNGRServer)
 
 	type args struct {
 		pathRecordXml string
@@ -72,6 +73,7 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 		categoryId    *string
 		groupId       *string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -89,45 +91,46 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			dataToBeCreated, err := os.ReadFile(tt.args.pathRecordXml)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
+
 			recordToBeCreated := string(dataToBeCreated)
 			// create unpublished record
 			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeCreated, tt.args.categoryId, tt.args.groupId, false)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 			recordCreated, err := ngrClient.getRecord(tt.args.uuid)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 			assert.Contains(t, recordCreated, "NWB - wegen22222")
 
 			time.Sleep(10 * time.Second)
-			recordToBeUpdated := strings.Replace(recordToBeCreated, "NWB - wegen22222", "NWB - wegen33333", -1)
+			recordToBeUpdated := strings.ReplaceAll(recordToBeCreated, "NWB - wegen22222", "NWB - wegen33333")
 			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeUpdated, tt.args.categoryId, tt.args.groupId, true)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 			recordUpdated, err := ngrClient.getRecord(tt.args.uuid)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 			assert.Contains(t, recordUpdated, "NWB - wegen33333")
 
 			time.Sleep(10 * time.Second)
+
 			err = ngrClient.addTagToRecord(tt.args.uuid, INSPIRE_TAG)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 
 			time.Sleep(10 * time.Second)
+
 			tagsList, err := ngrClient.GetRecordTags(tt.args.uuid)
-			assert.Nil(t, err)
-			assert.Equal(t, tagsList[0].ID, 224342)
+			assert.NoError(t, err)
+			assert.Equal(t, 224342, tagsList[0].ID)
 
 			time.Sleep(10 * time.Second)
+
 			err = ngrClient.deleteRecord(tt.args.uuid)
-			assert.Nil(t, err)
-			//delRecord, err := ngrClient.getRecord(tt.args.uuid)
-			//assert.NotNil(t, err)
-			//assert.Equal(t, "", delRecord)
+			assert.NoError(t, err)
 		})
 	}
 }
 
-func getNgrClient(t *testing.T, mockedNGRServer *httptest.Server) *NgrClient {
+func getNgrClient(mockedNGRServer *httptest.Server) *NgrClient {
 	config := NgrConfig{
-		//NgrUrl: "https://ngr.acceptatie.nationaalgeoregister.nl",
+		//NgrUrl:      "https://ngr.acceptatie.nationaalgeoregister.nl",
 		//NgrUserName: NGR_USER_NAME,
 		//NgrPassword: NGR_PASSWORD,
 		NgrUrl:      mockedNGRServer.URL,

@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"net/http"
 	"strings"
 	"time"
@@ -12,7 +13,7 @@ import (
 
 type NgrClient struct {
 	NgrClient *http.Client
-	NgrConfig NgrConfig
+	NgrConfig *NgrConfig
 }
 
 type NgrConfig struct {
@@ -21,16 +22,18 @@ type NgrConfig struct {
 	NgrPassword string
 }
 
-const API_RECORDS_TEMPlATE = "/geonetwork/srv/api/records"
+const API_RECORDS_TEMPLATE = "/geonetwork/srv/api/records"
 const API_LOGIN_PART = "/geonetwork/srv/dut/info?type=me"
 const INSPIRE_TAG = 224342
+const NGR_CLIENT_TIMEOUT = 20 * time.Second
 
 func NewNgrClient(config NgrConfig) NgrClient {
 	client := &http.Client{
-		Timeout: 20 * time.Second,
+		Timeout: NGR_CLIENT_TIMEOUT,
 	}
+
 	return NgrClient{
-		NgrConfig: config,
+		NgrConfig: &config,
 		NgrClient: client,
 	}
 }
@@ -45,6 +48,7 @@ func (c NgrClient) GetRecordTags(uuid string) (ngr.RecordTagsResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return recordTagsResponse, nil
 }
 
@@ -68,8 +72,7 @@ func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error executing request: %w", err)
 	}
-	defer resp.Body.Close()
-
+	defer common.SafeClose(resp.Body)
 	// Look for 403 Forbidden
 	if resp.StatusCode == http.StatusForbidden {
 		// Parse cookies from headers
@@ -80,14 +83,17 @@ func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
 				for _, part := range parts {
 					part = strings.TrimSpace(part)
 					if strings.HasPrefix(part, "XSRF-TOKEN=") {
-						split := strings.SplitN(part, "=", 2)
-						if len(split) == 2 {
+						two := 2
+
+						split := strings.SplitN(part, "=", two)
+						if len(split) == two {
 							return split[1], nil
 						}
 					}
 				}
 			}
 		}
+
 		return "", errors.New("cannot obtain XSRF token from cookie")
 	}
 
@@ -107,9 +113,11 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 	} else {
 		params += "&publishToAll=false"
 	}
+
 	if groupId != nil {
 		params += "&group=" + *groupId
 	}
+
 	if categoryId != nil {
 		params += "&category=" + *categoryId
 	}
@@ -117,46 +125,49 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 	url := fmt.Sprintf(
 		"%s%s/%s",
 		c.NgrConfig.NgrUrl,
-		API_RECORDS_TEMPlATE,
+		API_RECORDS_TEMPLATE,
 		params,
 	)
 
-	_, err := getNgrResponseBody(&c.NgrConfig, url, http.MethodPut, &record, *c.NgrClient)
+	_, err := getNgrResponseBody(c.NgrConfig, url, http.MethodPut, &record, *c.NgrClient)
+
 	return err
 }
 
 func (c *NgrClient) getRecord(uuid string) (string, error) {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		c.NgrConfig.NgrUrl,
-		API_RECORDS_TEMPlATE,
+		API_RECORDS_TEMPLATE,
 		uuid,
 	)
-	responseBodyByteArr, err := getNgrResponseBody(&c.NgrConfig, ngrUrl, http.MethodGet, nil, *c.NgrClient)
-	if err != nil {
-		return "", err
-	} else {
-		responseBodyString := string(responseBodyByteArr)
-		return responseBodyString, err
+
+	var responseBodyString = ""
+	responseBodyByteArr, err := getNgrResponseBody(c.NgrConfig, ngrUrl, http.MethodGet, nil, *c.NgrClient)
+	if responseBodyByteArr != nil {
+		responseBodyString = string(responseBodyByteArr)
 	}
+
+	return responseBodyString, err
 }
 
 func (c *NgrClient) deleteRecord(uuid string) error {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		c.NgrConfig.NgrUrl,
-		API_RECORDS_TEMPlATE,
+		API_RECORDS_TEMPLATE,
 		uuid,
 	)
-	_, err := getNgrResponseBody(&c.NgrConfig, ngrUrl, http.MethodDelete, nil, *c.NgrClient)
+	_, err := getNgrResponseBody(c.NgrConfig, ngrUrl, http.MethodDelete, nil, *c.NgrClient)
+
 	return err
 }
 
 func (c *NgrClient) addTagToRecord(uuid string, tagId int) error {
 	ngrUrl := fmt.Sprintf("%s%s/%s/tags?id=%d",
 		c.NgrConfig.NgrUrl,
-		API_RECORDS_TEMPlATE,
+		API_RECORDS_TEMPLATE,
 		uuid,
 		tagId,
 	)
-	_, err := getNgrResponseBody(&c.NgrConfig, ngrUrl, http.MethodPut, nil, *c.NgrClient)
+	_, err := getNgrResponseBody(c.NgrConfig, ngrUrl, http.MethodPut, nil, *c.NgrClient)
 	return err
 }

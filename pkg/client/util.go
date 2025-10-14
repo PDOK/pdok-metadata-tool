@@ -91,20 +91,21 @@ func getNgrResponseBody(
 	var req *http.Request
 	if requestBody != nil {
 		req, _ = http.NewRequest(method, url, bytes.NewBufferString(*requestBody))
-
 	} else {
 		req, _ = http.NewRequest(method, url, nil)
 	}
+
 	xsrfToken, err := obtainXSRFToken(ngrConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtain XSRF token: %w", err)
 	}
-	req.Header.Set("X-XSRF-TOKEN", xsrfToken)
+
+	req.Header.Set("X-Xsrf-Token", xsrfToken)
 	req.Header.Set("Cookie", "XSRF-TOKEN="+xsrfToken)
+
 	username := ngrConfig.NgrUserName
 	password := ngrConfig.NgrPassword
-	//auth := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
-	req.SetBasicAuth(username, password) //Header.Set("Authorization", "Basic "+auth)
+	req.SetBasicAuth(username, password)
 
 	req.Header.Set("User-Agent", "pdok.nl (pdok-metadata-tool)")
 	req.Header.Set("Accept", "*/*;q=0.8,application/signed-exchange")

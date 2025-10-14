@@ -50,6 +50,7 @@ func buildMockWebserverNgr() *httptest.Server {
 			} else {
 				writeOkResponse("./testdata/nwbwegen333-wms.xml", rw, ContentTypeXML)
 			}
+
 			getCreated = !getCreated
 		case strings.HasPrefix(url, GetRecordByID):
 			var responsePath string
