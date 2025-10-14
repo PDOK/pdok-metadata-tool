@@ -105,7 +105,7 @@ func getNgrResponseBody(
 
 	username := ngrConfig.NgrUserName
 	password := ngrConfig.NgrPassword
-	req.SetBasicAuth(username, password)
+	req.SetBasicAuth(*username, *password)
 
 	req.Header.Set("User-Agent", "pdok.nl (pdok-metadata-tool)")
 	req.Header.Set("Accept", "*/*;q=0.8,application/signed-exchange")
@@ -118,7 +118,8 @@ func getNgrResponseBody(
 	}
 	defer common.SafeClose(resp.Body)
 
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated &&
+		resp.StatusCode != http.StatusNoContent {
 		return nil, fmt.Errorf(
 			"error while calling NGR using url %s\nhttp status is %d",
 			url,

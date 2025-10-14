@@ -1,13 +1,14 @@
 package client
 
 import (
-	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
-	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNgrClient_GetRecordTags(t *testing.T) {
@@ -95,15 +96,30 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 
 			recordToBeCreated := string(dataToBeCreated)
 			// create unpublished record
-			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeCreated, tt.args.categoryId, tt.args.groupId, false)
+			err = ngrClient.createOrUpdateServiceMetadataRecord(
+				recordToBeCreated,
+				tt.args.categoryId,
+				tt.args.groupId,
+				false,
+			)
 			assert.NoError(t, err)
 			recordCreated, err := ngrClient.getRecord(tt.args.uuid)
 			assert.NoError(t, err)
 			assert.Contains(t, recordCreated, "NWB - wegen22222")
 
 			time.Sleep(10 * time.Second)
-			recordToBeUpdated := strings.ReplaceAll(recordToBeCreated, "NWB - wegen22222", "NWB - wegen33333")
-			err = ngrClient.createOrUpdateServiceMetadataRecord(recordToBeUpdated, tt.args.categoryId, tt.args.groupId, true)
+
+			recordToBeUpdated := strings.ReplaceAll(
+				recordToBeCreated,
+				"NWB - wegen22222",
+				"NWB - wegen33333",
+			)
+			err = ngrClient.createOrUpdateServiceMetadataRecord(
+				recordToBeUpdated,
+				tt.args.categoryId,
+				tt.args.groupId,
+				true,
+			)
 			assert.NoError(t, err)
 			recordUpdated, err := ngrClient.getRecord(tt.args.uuid)
 			assert.NoError(t, err)
@@ -129,14 +145,18 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 }
 
 func getNgrClient(mockedNGRServer *httptest.Server) *NgrClient {
+	NgrUrl := mockedNGRServer.URL
+	NgrUserName := "NGR_USER_NAME"
+	NgrPassword := "NGR_PASSWORD"
+	// NgrUrl := "https://ngr.acceptatie.nationaalgeoregister.nl"
+	// NgrUserName := NGR_USER_NAME
+	// NgrPassword := NGR_PASSWORD
 	config := NgrConfig{
-		//NgrUrl:      "https://ngr.acceptatie.nationaalgeoregister.nl",
-		//NgrUserName: NGR_USER_NAME,
-		//NgrPassword: NGR_PASSWORD,
-		NgrUrl:      mockedNGRServer.URL,
-		NgrUserName: "NGR_USER_NAME",
-		NgrPassword: "NGR_PASSWORD",
+		NgrUrl:      &NgrUrl,
+		NgrUserName: &NgrUserName,
+		NgrPassword: &NgrPassword,
 	}
 	ngrClient := NewNgrClient(config)
+
 	return &ngrClient
 }

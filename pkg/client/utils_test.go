@@ -21,11 +21,13 @@ const (
 
 func preTestSetup() *httptest.Server {
 	ngrServer := buildMockWebserverNgr()
+
 	return ngrServer
 }
 
 var getCreated = true
 
+//nolint:gocognit
 func buildMockWebserverNgr() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		switch url := req.URL.String(); {

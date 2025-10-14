@@ -3,23 +3,24 @@ package client
 import (
 	"errors"
 	"fmt"
-	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/pdok/pdok-metadata-tool/internal/common"
+
 	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
 )
 
-type NgrClient struct {
+type NgrClient struct { //nolint:recvcheck
 	NgrClient *http.Client
 	NgrConfig *NgrConfig
 }
 
 type NgrConfig struct {
-	NgrUrl      string
-	NgrUserName string
-	NgrPassword string
+	NgrUrl      *string
+	NgrUserName *string
+	NgrPassword *string
 }
 
 const API_RECORDS_TEMPLATE = "/geonetwork/srv/api/records"
@@ -40,7 +41,7 @@ func NewNgrClient(config NgrConfig) NgrClient {
 
 // TODO Use this for harvesting only INSPIRE service metadata in ETF-validator-go
 func (c NgrClient) GetRecordTags(uuid string) (ngr.RecordTagsResponse, error) {
-	mdTagUrl := fmt.Sprintf("%s/geonetwork/srv/api/records/%s/tags", c.NgrConfig.NgrUrl, uuid)
+	mdTagUrl := fmt.Sprintf("%s/geonetwork/srv/api/records/%s/tags", *c.NgrConfig.NgrUrl, uuid)
 
 	recordTagsResponse := ngr.RecordTagsResponse{}
 
@@ -54,7 +55,7 @@ func (c NgrClient) GetRecordTags(uuid string) (ngr.RecordTagsResponse, error) {
 
 func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
 	// Build URL
-	url := ngrConfig.NgrUrl + API_LOGIN_PART
+	url := *ngrConfig.NgrUrl + API_LOGIN_PART
 
 	// Create HTTP client and request
 	req, err := http.NewRequest(http.MethodPost, url, nil)
@@ -65,16 +66,18 @@ func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
 	// Set Basic Auth
 	username := ngrConfig.NgrUserName
 	password := ngrConfig.NgrPassword
-	req.SetBasicAuth(username, password)
+	req.SetBasicAuth(*username, *password)
 
 	client := &http.Client{}
+	//nolint:bodyclose // We use common.SafeClose to handle closing the response body
 	resp, err := client.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("error executing request: %w", err)
 	}
+
 	defer common.SafeClose(resp.Body)
 	// Look for 403 Forbidden
-	if resp.StatusCode == http.StatusForbidden {
+	if resp.StatusCode == http.StatusForbidden { //nolint:nestif
 		// Parse cookies from headers
 		cookies := resp.Header.Values("Set-Cookie")
 		for _, c := range cookies {
@@ -124,7 +127,7 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 
 	url := fmt.Sprintf(
 		"%s%s/%s",
-		c.NgrConfig.NgrUrl,
+		*c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPLATE,
 		params,
 	)
@@ -136,13 +139,21 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 
 func (c *NgrClient) getRecord(uuid string) (string, error) {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
-		c.NgrConfig.NgrUrl,
+		*c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPLATE,
 		uuid,
 	)
 
 	var responseBodyString = ""
-	responseBodyByteArr, err := getNgrResponseBody(c.NgrConfig, ngrUrl, http.MethodGet, nil, *c.NgrClient)
+
+	responseBodyByteArr, err := getNgrResponseBody(
+		c.NgrConfig,
+		ngrUrl,
+		http.MethodGet,
+		nil,
+		*c.NgrClient,
+	)
+
 	if responseBodyByteArr != nil {
 		responseBodyString = string(responseBodyByteArr)
 	}
@@ -152,7 +163,7 @@ func (c *NgrClient) getRecord(uuid string) (string, error) {
 
 func (c *NgrClient) deleteRecord(uuid string) error {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
-		c.NgrConfig.NgrUrl,
+		*c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPLATE,
 		uuid,
 	)
@@ -163,11 +174,12 @@ func (c *NgrClient) deleteRecord(uuid string) error {
 
 func (c *NgrClient) addTagToRecord(uuid string, tagId int) error {
 	ngrUrl := fmt.Sprintf("%s%s/%s/tags?id=%d",
-		c.NgrConfig.NgrUrl,
+		*c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPLATE,
 		uuid,
 		tagId,
 	)
 	_, err := getNgrResponseBody(c.NgrConfig, ngrUrl, http.MethodPut, nil, *c.NgrClient)
+
 	return err
 }
