@@ -25,14 +25,35 @@ func preTestSetup() *httptest.Server {
 	return ngrServer
 }
 
+var getCreated = true
+
+//nolint:gocognit
 func buildMockWebserverNgr() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		switch url := req.URL.String(); {
+		case strings.EqualFold(url, "/geonetwork/srv/dut/info?type=me"):
+			writeForbiddenResponse(rw, ContentTypeJSON)
 		case strings.EqualFold(url, "/geonetwork/srv/api/records/b4ae622c-6201-49d8-bd2e-f7fce9206a1e/tags"):
+			writeOkResponse("./testdata/API_Records_Tags_Inspire.json", rw, ContentTypeJSON)
+		case strings.EqualFold(url, "/geonetwork/srv/api/records/689c413e-a057-11f0-8de9-0242ac120002/tags"):
 			writeOkResponse("./testdata/API_Records_Tags_Inspire.json", rw, ContentTypeJSON)
 		case strings.EqualFold(url, "/geonetwork/srv/api/records/c4bda1aa-d6e6-482c-a6f1-bd519e3202d4/tags"):
 			writeOkResponse("./testdata/API_Records_Tags_Empty.json", rw, ContentTypeJSON)
+		case strings.EqualFold(url, "/geonetwork/srv/api/records/?metadataType=METADATA&uuidProcessing=REMOVE_AND_REPLACE&publishToAll=false"):
+			writeOkResponse("./testdata/API_Records_Tags_Empty.json", rw, ContentTypeJSON)
+		case strings.EqualFold(url, "/geonetwork/srv/api/records/?metadataType=METADATA&uuidProcessing=REMOVE_AND_REPLACE&publishToAll=true"):
+			writeOkResponse("./testdata/API_Records_Tags_Empty.json", rw, ContentTypeJSON)
+		case strings.EqualFold(url, "/geonetwork/srv/api/records/689c413e-a057-11f0-8de9-0242ac120002/tags?id=224342"):
+			writeOkResponse("./testdata/API_Records_Tags_Inspire.json", rw, ContentTypeJSON)
 
+		case strings.EqualFold(url, "/geonetwork/srv/api/records/689c413e-a057-11f0-8de9-0242ac120002"):
+			if getCreated {
+				writeOkResponse("./testdata/nwbwegen222-wms.xml", rw, ContentTypeXML)
+			} else {
+				writeOkResponse("./testdata/nwbwegen333-wms.xml", rw, ContentTypeXML)
+			}
+
+			getCreated = !getCreated
 		case strings.HasPrefix(url, GetRecordByID):
 			var responsePath string
 
@@ -140,4 +161,10 @@ func writeOkResponse(responsePath string, rw http.ResponseWriter, contentType st
 	rw.Header().Set("Content-Type", contentType)
 	rw.WriteHeader(http.StatusOK)
 	_, _ = fmt.Fprint(rw, response)
+}
+
+func writeForbiddenResponse(rw http.ResponseWriter, contentType string) {
+	rw.Header().Set("Content-Type", contentType)
+	rw.Header().Set("Set-Cookie", "XSRF-TOKEN=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+	rw.WriteHeader(http.StatusForbidden)
 }
