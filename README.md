@@ -1,6 +1,17 @@
-# PDOK metadata tool
-This tool is set up to handle various metadata related tasks.
-The scope for this toolset is internal usage for [PDOK](pdok.nl).
+# PDOK Metadata Tool
+This tool is designed to support a variety of metadata-related tasks, including:
+
+- Making CSW (Catalogue Service for the Web) requests
+- Generating service metadata
+- Handling specific INSPIRE and HVD requirements
+
+While it is primarily developed for use within [PDOK](pdok.nl), it may also be useful for other organizations working with geospatial metadata.
+
+
+## Metadata Generation
+
+The logic for generating metadata is located in `pkg/generator`.  
+See the [metadata generator documentation](pkg/generator/README.md) for details on how it works and how to use it.
 
 ## Building the Project
 
