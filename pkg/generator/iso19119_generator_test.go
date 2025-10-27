@@ -104,6 +104,20 @@ func TestGenerateMetadata(t *testing.T) {
 
 			assert.Equal(t, xml1, xml2, "Canonicalized XML files should be equal")
 		}
+
+		generatedMetadata, err := generator.GenerateAsStrings()
+		require.NoError(t, err)
+
+		// The generated metadata content has already been compared, see above
+		// For GenerateAsStrings we only need to check if the numbers match
+		assert.Len(t, generatedMetadata, len(test.fileOutput))
+
+		for id, metadata := range generatedMetadata {
+			assert.NotEmpty(t, metadata)
+
+			_, ok := test.fileOutput[id+".xml"]
+			assert.True(t, ok)
+		}
 	}
 }
 

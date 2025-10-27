@@ -65,6 +65,7 @@ func (g *ISO19119Generator) CurrentEntry() (*MetadataEntry, error) {
 type MetadataEntry struct {
 	Config   ServiceConfig
 	Metadata iso1911x.ISO19119
+	output   []byte
 	filename string
 }
 
@@ -72,15 +73,20 @@ func (e *MetadataEntry) setFilename() {
 	e.filename = e.Config.ID + ".xml"
 }
 
-// Generate generates the metadata for each entry in the metadata holder.
+func (e *MetadataEntry) getID() string {
+	return e.Config.ID
+}
+
+// Generate generates metadata and writes a file for each entry in the metadata holder.
 func (g *ISO19119Generator) Generate() error {
+	if err := g.generateMetadataEntries(); err != nil {
+		return err
+	}
+
 	for id := range g.MetadataHolder {
 		g.currentID = &id
-		if err := g.SetMetadata(); err != nil {
-			return err
-		}
 
-		if err := g.WriteToXML(); err != nil {
+		if err := g.WriteToFile(); err != nil {
 			return err
 		}
 
@@ -88,6 +94,21 @@ func (g *ISO19119Generator) Generate() error {
 	}
 
 	return nil
+}
+
+// GenerateAsStrings generates and returns metadata for each entry in the metadata holder.
+func (g *ISO19119Generator) GenerateAsStrings() (map[string]string, error) {
+	strings := make(map[string]string)
+
+	if err := g.generateMetadataEntries(); err != nil {
+		return nil, err
+	}
+
+	for _, entry := range g.MetadataHolder {
+		strings[entry.getID()] = string(entry.output)
+	}
+
+	return strings, nil
 }
 
 // SetMetadata sets all the values for the metadata.
@@ -111,14 +132,26 @@ func (g *ISO19119Generator) SetMetadata() error {
 	return nil
 }
 
-// WriteToXML writes the available metadata to XML.
-func (g *ISO19119Generator) WriteToXML() error {
+// CreateXML creates XML based on the available metadata.
+func (g *ISO19119Generator) CreateXML() error {
 	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err
 	}
 
 	output, err := xml.MarshalIndent(entry.Metadata, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	entry.output = output
+
+	return nil
+}
+
+// WriteToFile writes the available metadata to a file.
+func (g *ISO19119Generator) WriteToFile() error {
+	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err
 	}
@@ -133,7 +166,7 @@ func (g *ISO19119Generator) WriteToXML() error {
 	path := filepath.Join(g.outputDir, entry.filename)
 
 	perm = 0600
-	if err = os.WriteFile(path, output, os.FileMode(perm)); err != nil {
+	if err = os.WriteFile(path, entry.output, os.FileMode(perm)); err != nil {
 		return err
 	}
 
@@ -147,6 +180,24 @@ func (g *ISO19119Generator) PrintSummary() {
 	for _, entry := range g.MetadataHolder {
 		fmt.Printf("  - %s\n", entry.filename)
 	}
+}
+
+// generateMetadataEntries generates the metadata for each entry in the metadata holder.
+func (g *ISO19119Generator) generateMetadataEntries() error {
+	for id := range g.MetadataHolder {
+		g.currentID = &id
+		if err := g.SetMetadata(); err != nil {
+			return err
+		}
+
+		if err := g.CreateXML(); err != nil {
+			return err
+		}
+
+		g.currentID = nil
+	}
+
+	return nil
 }
 
 func (g *ISO19119Generator) setGeneralInfo() error {
