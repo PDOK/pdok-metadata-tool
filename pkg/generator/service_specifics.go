@@ -273,10 +273,6 @@ func (sc *ServiceConfig) Validate() error {
 		errors = append(errors, "serviceLicense is required (either local or global)")
 	}
 
-	if sc.GetCoordinateReferenceSystem() == "" {
-		errors = append(errors, "coordinateReferenceSystem is required (either local or global)")
-	}
-
 	if sc.GetQosAvailability() == "-999" {
 		errors = append(errors, "qosAvailability is required (either local or global)")
 	}
