@@ -74,6 +74,8 @@ func getGenerateServiceCommand() *cli.Command {
 			ISO19119generator, err := generator.NewISO19119Generator(
 				serviceSpecifics,
 				outputDir,
+				nil,
+				nil,
 			)
 			if err != nil {
 				return err

@@ -27,6 +27,8 @@ type ISO19119Generator struct {
 func NewISO19119Generator(
 	serviceSpecifics ServiceSpecifics,
 	outputDir string,
+	hvdEndpoint *string,
+	hvdLocalRDFPath *string,
 ) (*ISO19119Generator, error) {
 	// Setup holder for serviceSpecifics-config and output
 	holder := make(map[string]*MetadataEntry)
@@ -41,7 +43,17 @@ func NewISO19119Generator(
 		return nil, err
 	}
 
-	hvdRepo := repository.NewHVDRepository(hvd.HvdEndpoint, common.HvdLocalRDFPath)
+	thesaurusEndpoint := hvd.HvdEndpoint
+	if hvdEndpoint != nil {
+		thesaurusEndpoint = *hvdEndpoint
+	}
+
+	thesaurusLocalCachePath := common.HvdLocalRDFPath
+	if hvdLocalRDFPath != nil {
+		thesaurusLocalCachePath = *hvdLocalRDFPath
+	}
+
+	hvdRepo := repository.NewHVDRepository(thesaurusEndpoint, thesaurusLocalCachePath)
 
 	return &ISO19119Generator{
 		MetadataHolder: holder,
