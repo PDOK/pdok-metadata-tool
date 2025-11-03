@@ -568,17 +568,19 @@ func (s *ServiceSpecifics) setInspireTypes() {
 	switch *inspireDatasetType {
 	case AsIs:
 		typeMap = map[string]InspireServiceType{
-			"wms":    NetworkService,
-			"atom":   NetworkService,
-			"wfs":    Invocable,
-			"ogcapi": Invocable,
+			"wms":  NetworkService,
+			"atom": NetworkService,
+			"wfs":  Invocable,
+			"oaf":  Invocable,
+			"oat":  Invocable,
 		}
 	case Harmonised:
 		typeMap = map[string]InspireServiceType{
-			"wms":    NetworkService,
-			"atom":   NetworkService,
-			"wfs":    Interoperable,
-			"ogcapi": Interoperable,
+			"wms":  NetworkService,
+			"atom": NetworkService,
+			"wfs":  Interoperable,
+			"oaf":  Interoperable,
+			"oat":  Interoperable,
 		}
 	}
 
