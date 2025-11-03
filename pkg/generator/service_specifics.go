@@ -162,14 +162,19 @@ func (s *ServiceSpecifics) LoadFromYAML(filename string) error {
 		return err
 	}
 
+	s.InitializeFields()
+
+	return nil
+}
+
+// InitializeFields Sets pointers and inferred values
+func (s *ServiceSpecifics) InitializeFields() {
 	// Setup pointer to Globals for each service
 	for i := range s.Services {
 		s.Services[i].Globals = &s.Globals
 	}
 
 	s.setInspireTypes()
-
-	return nil
 }
 
 // Validate the ServiceSpecifics on a global level, also calls Validate on service level.
