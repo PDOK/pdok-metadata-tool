@@ -40,7 +40,8 @@ func NewNgrClient(config NgrConfig) NgrClient {
 }
 
 // TODO Use this for harvesting only INSPIRE service metadata in ETF-validator-go
-func (c NgrClient) GetRecordTags(uuid string) (ngr.RecordTagsResponse, error) {
+// GetRecordTags does a GET request on NGR to get the Tags for a record.
+func (c *NgrClient) GetRecordTags(uuid string) (ngr.RecordTagsResponse, error) {
 	mdTagUrl := fmt.Sprintf("%s/geonetwork/srv/api/records/%s/tags", *c.NgrConfig.NgrUrl, uuid)
 
 	recordTagsResponse := ngr.RecordTagsResponse{}
@@ -103,7 +104,8 @@ func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
 	return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 }
 
-func (c *NgrClient) createOrUpdateServiceMetadataRecord(
+// CreateOrUpdateServiceMetadataRecord does a PUT request on NGR to create or update a record.
+func (c *NgrClient) CreateOrUpdateServiceMetadataRecord(
 	record string,
 	categoryId *string,
 	groupId *string,
@@ -137,7 +139,8 @@ func (c *NgrClient) createOrUpdateServiceMetadataRecord(
 	return err
 }
 
-func (c *NgrClient) getRecord(uuid string) (string, error) {
+// GetRecord does a GET request on NGR to get a record.
+func (c *NgrClient) GetRecord(uuid string) (string, error) {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		*c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPLATE,
@@ -161,7 +164,8 @@ func (c *NgrClient) getRecord(uuid string) (string, error) {
 	return responseBodyString, err
 }
 
-func (c *NgrClient) deleteRecord(uuid string) error {
+// DeleteRecord does  DELETE request on NGR to delete a record.
+func (c *NgrClient) DeleteRecord(uuid string) error {
 	ngrUrl := fmt.Sprintf("%s%s/%s",
 		*c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPLATE,
@@ -172,7 +176,8 @@ func (c *NgrClient) deleteRecord(uuid string) error {
 	return err
 }
 
-func (c *NgrClient) addTagToRecord(uuid string, tagId int) error {
+// AddTagToRecord does a PUT request on NGR to add a Tag to a record.
+func (c *NgrClient) AddTagToRecord(uuid string, tagId int) error {
 	ngrUrl := fmt.Sprintf("%s%s/%s/tags?id=%d",
 		*c.NgrConfig.NgrUrl,
 		API_RECORDS_TEMPLATE,

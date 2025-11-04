@@ -96,14 +96,14 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 
 			recordToBeCreated := string(dataToBeCreated)
 			// create unpublished record
-			err = ngrClient.createOrUpdateServiceMetadataRecord(
+			err = ngrClient.CreateOrUpdateServiceMetadataRecord(
 				recordToBeCreated,
 				tt.args.categoryId,
 				tt.args.groupId,
 				false,
 			)
 			assert.NoError(t, err)
-			recordCreated, err := ngrClient.getRecord(tt.args.uuid)
+			recordCreated, err := ngrClient.GetRecord(tt.args.uuid)
 			assert.NoError(t, err)
 			assert.Contains(t, recordCreated, "NWB - wegen22222")
 
@@ -114,20 +114,20 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 				"NWB - wegen22222",
 				"NWB - wegen33333",
 			)
-			err = ngrClient.createOrUpdateServiceMetadataRecord(
+			err = ngrClient.CreateOrUpdateServiceMetadataRecord(
 				recordToBeUpdated,
 				tt.args.categoryId,
 				tt.args.groupId,
 				true,
 			)
 			assert.NoError(t, err)
-			recordUpdated, err := ngrClient.getRecord(tt.args.uuid)
+			recordUpdated, err := ngrClient.GetRecord(tt.args.uuid)
 			assert.NoError(t, err)
 			assert.Contains(t, recordUpdated, "NWB - wegen33333")
 
 			time.Sleep(10 * time.Second)
 
-			err = ngrClient.addTagToRecord(tt.args.uuid, INSPIRE_TAG)
+			err = ngrClient.AddTagToRecord(tt.args.uuid, INSPIRE_TAG)
 			assert.NoError(t, err)
 
 			time.Sleep(10 * time.Second)
@@ -138,7 +138,7 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 
 			time.Sleep(10 * time.Second)
 
-			err = ngrClient.deleteRecord(tt.args.uuid)
+			err = ngrClient.DeleteRecord(tt.args.uuid)
 			assert.NoError(t, err)
 		})
 	}
