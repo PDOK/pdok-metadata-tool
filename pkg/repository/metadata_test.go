@@ -1,12 +1,12 @@
 package repository
 
 import (
-	"github.com/pdok/pdok-metadata-tool/pkg/model/dataset"
 	"net/http/httptest"
 	"net/url"
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/dataset"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"github.com/stretchr/testify/assert"
@@ -67,8 +67,10 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 				"Trefwoord zonder thesaurus",
 				"Tweede trefwoord zonder thesaurus",
 			},
-			wantLicenceURL:     ptr("https://creativecommons.org/publicdomain/mark/*/deed.nl"),
-			wantUseLimitation:  ptr("Gebruiksbeperkingen (*), Toepassingen waarvoor de data niet geschikt is."),
+			wantLicenceURL: ptr("https://creativecommons.org/publicdomain/mark/*/deed.nl"),
+			wantUseLimitation: ptr(
+				"Gebruiksbeperkingen (*), Toepassingen waarvoor de data niet geschikt is.",
+			),
 			wantThumbnailURL:   ptr("URL naar voorbeeldweergave van de dataset"),
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"ps", "hb"},
@@ -103,10 +105,12 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 			args: args{
 				id: "07575774-57a1-4419-bab4-6c88fdeb02b2",
 			},
-			wantMetadataID:     "07575774-57a1-4419-bab4-6c88fdeb02b2",
-			wantSourceID:       "07575774-57a1-4419-bab4-6c88fdeb02b2",
-			wantTitle:          "Waterschappen Hydrografie INSPIRE (geharmoniseerd)",
-			wantUseLimitation:  ptr("Niet te gebruiken voor navigatie. Niet te gebruiken voor juridische bewijsvoering."),
+			wantMetadataID: "07575774-57a1-4419-bab4-6c88fdeb02b2",
+			wantSourceID:   "07575774-57a1-4419-bab4-6c88fdeb02b2",
+			wantTitle:      "Waterschappen Hydrografie INSPIRE (geharmoniseerd)",
+			wantUseLimitation: ptr(
+				"Niet te gebruiken voor navigatie. Niet te gebruiken voor juridische bewijsvoering.",
+			),
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"hy"},
 			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021"}},
