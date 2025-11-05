@@ -233,11 +233,17 @@ type MDMetadata struct {
 					} `xml:"thesaurusName>CI_Citation>title"`
 				} `xml:"MD_Keywords"`
 			} `xml:"descriptiveKeywords"`
-			ContactName  string   `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
-			ContactEmail string   `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>address>CI_Address>electronicMailAddress>CharacterString"`
-			LicenseURL   []Anchor `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
-
+			ContactName      string            `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
+			ContactEmail     string            `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>address>CI_Address>electronicMailAddress>CharacterString"`
+			LicenseURL       []Anchor          `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
+			UseLimitation    string            `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
 			ResponsibleParty *ResponsibleParty `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
+			Extent           struct {
+				WestBoundLongitude string `xml:"westBoundLongitude>Decimal"`
+				EastBoundLongitude string `xml:"eastBoundLongitude>Decimal"`
+				SouthBoundLatitude string `xml:"southBoundLatitude>Decimal"`
+				NorthBoundLatitude string `xml:"northBoundLatitude>Decimal"`
+			} `xml:"extent>EX_Extent>geographicElement>EX_GeographicBoundingBox"`
 		} `xml:"MD_DataIdentification"`
 	} `xml:"identificationInfo"`
 	OnLine []struct {

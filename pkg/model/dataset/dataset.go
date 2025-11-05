@@ -17,10 +17,19 @@ type NLDatasetMetadata struct {
 	ContactEmail   string
 	Keywords       []string
 	LicenceURL     string
+	UseLimitation  string
 	ThumbnailURL   *string
 	InspireVariant *inspire.InspireVariant
 	InspireThemes  []string
 	HVDCategories  []hvd.HVDCategory
+	BoundingBox    *BoundingBox
+}
+
+type BoundingBox struct {
+	WestBoundLongitude string
+	EastBoundLongitude string
+	SouthBoundLatitude string
+	NorthBoundLatitude string
 }
 
 // NewNLDatasetMetadataFromMDMetadata creates a new instance based on dataset metadata from a CSW response.
@@ -34,9 +43,16 @@ func NewNLDatasetMetadataFromMDMetadata(m *csw.MDMetadata) *NLDatasetMetadata {
 		ContactEmail:   m.IdentificationInfo.MDDataIdentification.ContactEmail,
 		Keywords:       m.GetKeywords(),
 		LicenceURL:     m.GetLicenseURL(),
+		UseLimitation:  m.IdentificationInfo.MDDataIdentification.UseLimitation,
 		ThumbnailURL:   m.GetThumbnailURL(),
 		InspireVariant: m.GetInspireVariant(),
 		InspireThemes:  m.GetInspireThemes(),
 		HVDCategories:  m.GetHVDCategories(),
+		BoundingBox: &BoundingBox{
+			WestBoundLongitude: m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude,
+			EastBoundLongitude: m.IdentificationInfo.MDDataIdentification.Extent.EastBoundLongitude,
+			SouthBoundLatitude: m.IdentificationInfo.MDDataIdentification.Extent.SouthBoundLatitude,
+			NorthBoundLatitude: m.IdentificationInfo.MDDataIdentification.Extent.NorthBoundLatitude,
+		},
 	}
 }

@@ -162,14 +162,19 @@ func (s *ServiceSpecifics) LoadFromYAML(filename string) error {
 		return err
 	}
 
+	s.InitializeFields()
+
+	return nil
+}
+
+// InitializeFields Sets pointers and inferred values
+func (s *ServiceSpecifics) InitializeFields() {
 	// Setup pointer to Globals for each service
 	for i := range s.Services {
 		s.Services[i].Globals = &s.Globals
 	}
 
 	s.setInspireTypes()
-
-	return nil
 }
 
 // Validate the ServiceSpecifics on a global level, also calls Validate on service level.
@@ -271,10 +276,6 @@ func (sc *ServiceConfig) Validate() error {
 
 	if sc.GetServiceLicense() == "" {
 		errors = append(errors, "serviceLicense is required (either local or global)")
-	}
-
-	if sc.GetCoordinateReferenceSystem() == "" {
-		errors = append(errors, "coordinateReferenceSystem is required (either local or global)")
 	}
 
 	if sc.GetQosAvailability() == "-999" {
@@ -572,17 +573,19 @@ func (s *ServiceSpecifics) setInspireTypes() {
 	switch *inspireDatasetType {
 	case AsIs:
 		typeMap = map[string]InspireServiceType{
-			"wms":    NetworkService,
-			"atom":   NetworkService,
-			"wfs":    Invocable,
-			"ogcapi": Invocable,
+			"wms":  NetworkService,
+			"atom": NetworkService,
+			"wfs":  Invocable,
+			"oaf":  Invocable,
+			"oat":  Invocable,
 		}
 	case Harmonised:
 		typeMap = map[string]InspireServiceType{
-			"wms":    NetworkService,
-			"atom":   NetworkService,
-			"wfs":    Interoperable,
-			"ogcapi": Interoperable,
+			"wms":  NetworkService,
+			"atom": NetworkService,
+			"wfs":  Interoperable,
+			"oaf":  Interoperable,
+			"oat":  Interoperable,
 		}
 	}
 

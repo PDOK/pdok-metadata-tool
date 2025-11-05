@@ -89,7 +89,7 @@ func TestGenerateMetadata(t *testing.T) {
 		err = serviceSpecifics.Validate()
 		require.NoError(t, err)
 
-		generator, err := NewISO19119Generator(serviceSpecifics, outputFolder)
+		generator, err := NewISO19119Generator(serviceSpecifics, outputFolder, nil, nil)
 		require.NoError(t, err)
 
 		err = generator.Generate()
