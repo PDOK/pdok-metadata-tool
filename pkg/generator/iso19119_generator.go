@@ -1176,9 +1176,11 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 		if *config.ServiceInspireType == Interoperable {
 			qosAvailabilityReport := iso1911x.ReportTag{
 				ConceptualConsistency: &iso1911x.ConceptualConsistencyTag{
-					NameOfMeasure: iso1911x.AnchorTag{
-						Href:  "http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/availability",
-						Value: "beschikbaarheid",
+					NameOfMeasure: iso1911x.NameOfMeasureTag{
+						Anchor: iso1911x.AnchorTag{
+							Href:  "http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/availability",
+							Value: "beschikbaarheid",
+						},
 					},
 					MeasureDescription: iso1911x.CharacterStringTag{
 						CharacterString: "Beschikbaarheid op jaarbasis, uitgedrukt in percentage in tijd",
@@ -1203,9 +1205,11 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 
 			qosPerformanceReport := iso1911x.ReportTag{
 				ConceptualConsistency: &iso1911x.ConceptualConsistencyTag{
-					NameOfMeasure: iso1911x.AnchorTag{
-						Href:  "http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/performance",
-						Value: "performance",
+					NameOfMeasure: iso1911x.NameOfMeasureTag{
+						Anchor: iso1911x.AnchorTag{
+							Href:  "http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/performance",
+							Value: "performance",
+						},
 					},
 					MeasureDescription: iso1911x.CharacterStringTag{
 						CharacterString: "Gemiddelde response tijd, uitgedrukt in seconden",
@@ -1230,9 +1234,11 @@ func (g *ISO19119Generator) setDataQualityInfo() error {
 
 			qosCapacityReport := iso1911x.ReportTag{
 				ConceptualConsistency: &iso1911x.ConceptualConsistencyTag{
-					NameOfMeasure: iso1911x.AnchorTag{
-						Href:  "http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/capacity",
-						Value: "capaciteit",
+					NameOfMeasure: iso1911x.NameOfMeasureTag{
+						Anchor: iso1911x.AnchorTag{
+							Href:  "http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/capacity",
+							Value: "capaciteit",
+						},
 					},
 					MeasureDescription: iso1911x.CharacterStringTag{
 						CharacterString: "Maximum aantal gelijktijdige requests per seconde die aan de performance criteria voldoen, uitgedrukt als aantal requests per seconde",

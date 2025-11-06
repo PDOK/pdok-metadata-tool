@@ -339,9 +339,14 @@ type DQConformanceResult struct {
 
 // ConceptualConsistencyTag struct for XML marshalling.
 type ConceptualConsistencyTag struct {
-	NameOfMeasure      AnchorTag          `xml:"gmd:nameOfMeasure"`
+	NameOfMeasure      NameOfMeasureTag   `xml:"gmd:nameOfMeasure"`
 	MeasureDescription CharacterStringTag `xml:"gmd:measureDescription"`
 	Result             QuantitativeResult `xml:"gmd:result"`
+}
+
+// NameOfMeasureTag struct for XML marshalling.
+type NameOfMeasureTag struct {
+	Anchor AnchorTag `xml:"gmx:Anchor"`
 }
 
 // QuantitativeResult struct for XML marshalling.

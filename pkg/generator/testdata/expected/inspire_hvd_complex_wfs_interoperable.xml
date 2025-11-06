@@ -426,7 +426,9 @@
       </gmd:report>
       <gmd:report>
         <gmd:DQ_ConceptualConsistency>
-          <gmd:nameOfMeasure xlink:href="http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/availability">beschikbaarheid</gmd:nameOfMeasure>
+          <gmd:nameOfMeasure>
+            <gmx:Anchor xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/availability">beschikbaarheid</gmx:Anchor>
+          </gmd:nameOfMeasure>
           <gmd:measureDescription>
             <gco:CharacterString>Beschikbaarheid op jaarbasis, uitgedrukt in percentage in tijd</gco:CharacterString>
           </gmd:measureDescription>
@@ -440,7 +442,9 @@
       </gmd:report>
       <gmd:report>
         <gmd:DQ_ConceptualConsistency>
-          <gmd:nameOfMeasure xlink:href="http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/performance">performance</gmd:nameOfMeasure>
+          <gmd:nameOfMeasure>
+            <gmx:Anchor xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/performance">performance</gmx:Anchor>
+          </gmd:nameOfMeasure>
           <gmd:measureDescription>
             <gco:CharacterString>Gemiddelde response tijd, uitgedrukt in seconden</gco:CharacterString>
           </gmd:measureDescription>
@@ -454,7 +458,9 @@
       </gmd:report>
       <gmd:report>
         <gmd:DQ_ConceptualConsistency>
-          <gmd:nameOfMeasure xlink:href="http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/capacity">capaciteit</gmd:nameOfMeasure>
+          <gmd:nameOfMeasure>
+            <gmx:Anchor xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/metadata-codelist/QualityOfServiceCriteria/capacity">capaciteit</gmx:Anchor>
+          </gmd:nameOfMeasure>
           <gmd:measureDescription>
             <gco:CharacterString>Maximum aantal gelijktijdige requests per seconde die aan de performance criteria voldoen, uitgedrukt als aantal requests per seconde</gco:CharacterString>
           </gmd:measureDescription>
