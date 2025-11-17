@@ -69,7 +69,6 @@ var codelistData []byte
 
 // NewCodelist creates a new instance of Codelist.
 func NewCodelist() (*Codelist, error) {
-
 	var codelist Codelist
 	if err := json.Unmarshal(codelistData, &codelist); err != nil {
 		return nil, fmt.Errorf("failed to parse codelist JSON: %w", err)
