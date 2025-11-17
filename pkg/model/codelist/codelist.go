@@ -2,12 +2,10 @@
 package codelist
 
 import (
+	_ "embed"
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"regexp"
-	"runtime"
 	"slices"
 	"strings"
 )
@@ -66,27 +64,18 @@ type SDSServiceCategory struct {
 	Description string `json:"description"`
 }
 
+//go:embed codelists.json
+var codelistData []byte
+
 // NewCodelist creates a new instance of Codelist.
 func NewCodelist() (*Codelist, error) {
-	data, err := os.ReadFile(getCodelistPath())
-	if err != nil {
-		return nil, fmt.Errorf("failed to read codelist file: %w", err)
-	}
 
 	var codelist Codelist
-	if err := json.Unmarshal(data, &codelist); err != nil {
+	if err := json.Unmarshal(codelistData, &codelist); err != nil {
 		return nil, fmt.Errorf("failed to parse codelist JSON: %w", err)
 	}
 
 	return &codelist, nil
-}
-
-func getCodelistPath() string {
-	//nolint:dogsled
-	_, filename, _, _ := runtime.Caller(0)
-	dir := filepath.Dir(filename)
-
-	return filepath.Join(dir, "codelists.json")
 }
 
 // GetReferenceSystemByEPSGCode returns a ReferenceSystem for a given EPSG code.
