@@ -14,28 +14,28 @@ import (
 
 // ServiceSpecifics struct for unmarshalling the input for metadata generation.
 type ServiceSpecifics struct {
-	Globals  GlobalConfig    `yaml:"globals"`
-	Services []ServiceConfig `yaml:"services"`
+	Globals  GlobalConfig    `yaml:"globals,omitempty"`
+	Services []ServiceConfig `yaml:"services,omitempty"`
 }
 
 // GlobalConfig struct for unmarshalling service specifics input.
 type GlobalConfig struct {
-	OverrideableFields `yaml:",inline"`
+	OverrideableFields `yaml:",inline,omitempty"`
 
-	InspireDatasetType *InspireDatasetType `yaml:"inspireDatasetType"`
+	InspireDatasetType *InspireDatasetType `yaml:"inspireDatasetType,omitempty"`
 }
 
 // ServiceConfig struct for unmarshalling service specifics input.
 type ServiceConfig struct {
-	OverrideableFields `yaml:",inline"`
+	OverrideableFields `yaml:",inline,omitempty"`
 
-	Type               string              `yaml:"type"`
-	ID                 string              `yaml:"id"`
-	AccessPoint        string              `yaml:"accessPoint"`
-	ServiceInspireType *InspireServiceType `yaml:"serviceInspireType"`
+	Type               string              `yaml:"type,omitempty"`
+	ID                 string              `yaml:"id,omitempty"`
+	AccessPoint        string              `yaml:"accessPoint,omitempty"`
+	ServiceInspireType *InspireServiceType `yaml:"serviceInspireType,omitempty"`
 
 	// Pointer to globals
-	Globals *GlobalConfig `yaml:"-"`
+	Globals *GlobalConfig `yaml:"-,omitempty"`
 }
 
 // InspireDatasetType struct for unmarshalling service specifics input.
@@ -137,17 +137,17 @@ type OverrideableFields struct {
 
 // BoundingBox struct for unmarshalling service specifics input.
 type BoundingBox struct {
-	MinX string `yaml:"minX"`
-	MaxX string `yaml:"maxX"`
-	MinY string `yaml:"minY"`
-	MaxY string `yaml:"maxY"`
+	MinX string `yaml:"minX,omitempty"`
+	MaxX string `yaml:"maxX,omitempty"`
+	MinY string `yaml:"minY,omitempty"`
+	MaxY string `yaml:"maxY,omitempty"`
 }
 
 // Thumbnail struct for unmarshalling service specifics input.
 type Thumbnail struct {
-	File        string `yaml:"file"`
-	Description string `yaml:"description"`
-	Filetype    string `yaml:"filetype"`
+	File        string `yaml:"file,omitempty"`
+	Description string `yaml:"description,omitempty"`
+	Filetype    string `yaml:"filetype,omitempty"`
 }
 
 // LoadFromYAML unmarshalls the input for the given input file.
