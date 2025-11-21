@@ -1,0 +1,16 @@
+{
+  "globals": {},
+  "services": [
+    {
+      "abstract": "Test abstract for atom",
+      "keywords": [
+        "keyword-1",
+        "keyword-2",
+        "keyword-3",
+        "keyword-4"
+      ],
+      "useLimitation": "Geen beperkingen",
+      "globals": {}
+    }
+  ]
+}
