@@ -1,11 +1,9 @@
 package generator
 
 import (
-	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -155,26 +153,15 @@ type Thumbnail struct {
 // LoadFromYamlOrJson unmarshalls the input for the given input file.
 func (s *ServiceSpecifics) LoadFromYamlOrJson(filename string) error {
 
-	ext := filepath.Ext(filename)
-	if ext != ".yaml" && ext != ".yml" {
-		//nolint:gosec
-		jsonFile, err := os.ReadFile(filename)
-		if err != nil {
-			return err
-		}
-		if err = json.Unmarshal(jsonFile, s); err != nil {
-			return err
-		}
-	} else {
-		//nolint:gosec
-		yamlFile, err := os.ReadFile(filename)
-		if err != nil {
-			return err
-		}
-		if err = yaml.Unmarshal(yamlFile, s); err != nil {
-			return err
-		}
+	//nolint:gosec
+	yamlFile, err := os.ReadFile(filename)
+	if err != nil {
+		return err
 	}
+	if err = yaml.Unmarshal(yamlFile, s); err != nil {
+		return err
+	}
+
 	s.InitializeFields()
 
 	return nil
