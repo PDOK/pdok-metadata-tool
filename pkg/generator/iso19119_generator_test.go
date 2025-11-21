@@ -83,7 +83,7 @@ func TestGenerateMetadata(t *testing.T) {
 	for _, test := range tests {
 		var serviceSpecifics ServiceSpecifics
 
-		err := serviceSpecifics.LoadFromYAML(test.configFileName)
+		err := serviceSpecifics.LoadFromYamlOrJson(test.configFileName)
 		require.NoError(t, err)
 
 		err = serviceSpecifics.Validate()

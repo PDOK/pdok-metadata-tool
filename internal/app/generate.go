@@ -61,7 +61,7 @@ func getGenerateServiceCommand() *cli.Command {
 			}
 
 			var serviceSpecifics generator.ServiceSpecifics
-			err := serviceSpecifics.LoadFromYAML(inputFile)
+			err := serviceSpecifics.LoadFromYamlOrJson(inputFile)
 			if err != nil {
 				return err
 			}

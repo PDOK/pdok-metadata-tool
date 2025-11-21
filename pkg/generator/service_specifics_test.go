@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -60,7 +62,7 @@ func TestServiceSpecificsLoadFromYAMLTestServiceSpecificsValidate(t *testing.T) 
 	for _, test := range tests {
 		var serviceSpecifics ServiceSpecifics
 
-		err := serviceSpecifics.LoadFromYAML(inputPath + test.filename)
+		err := serviceSpecifics.LoadFromYamlOrJson(inputPath + test.filename)
 		require.NoError(t, err)
 
 		err = serviceSpecifics.Validate()
@@ -75,4 +77,24 @@ func TestServiceSpecificsLoadFromYAMLTestServiceSpecificsValidate(t *testing.T) 
 			}
 		}
 	}
+}
+
+func TestParseAnnotations(t *testing.T) {
+	var serviceSpecifics ServiceSpecifics
+
+	err := serviceSpecifics.LoadFromYamlOrJson(inputPath + "annotations_minimum.json")
+	require.NoError(t, err)
+
+	out, err := json.MarshalIndent(serviceSpecifics, "", "  ")
+	require.NoError(t, err)
+
+	// Read expected JSON from file
+	expectedJSONBytes, err := os.ReadFile(expectedPath + "/annotations_minimum.json")
+	require.NoError(t, err)
+	require.JSONEq(
+		t,
+		string(expectedJSONBytes),
+		string(out),
+		"Generated JSON does not match expected JSON",
+	)
 }
