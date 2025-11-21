@@ -85,11 +85,16 @@ func TestParseAnnotations(t *testing.T) {
 	err := serviceSpecifics.LoadFromYamlOrJson(inputPath + "annotations_minimum.json")
 	require.NoError(t, err)
 
-	out, _ := json.MarshalIndent(serviceSpecifics, "", "  ")
+	out, err := json.MarshalIndent(serviceSpecifics, "", "  ")
+	require.NoError(t, err)
 
 	// Read expected JSON from file
 	expectedJSONBytes, err := os.ReadFile(expectedPath + "/annotations_minimum.json")
 	require.NoError(t, err)
-	require.Equal(t, expectedJSONBytes, out, "Generated JSON does not match expected JSON")
-
+	require.JSONEq(
+		t,
+		string(expectedJSONBytes),
+		string(out),
+		"Generated JSON does not match expected JSON",
+	)
 }

@@ -429,6 +429,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 
 	if thumbnails != nil {
 		entry.Metadata.IdentificationInfo.ServiceIdentification.GraphicOverview = []iso1911x.GraphicOverviewTag{}
+
 		for _, thumbnail := range thumbnails {
 			graphicOverview := iso1911x.GraphicOverviewTag{
 				BrowseGraphic: iso1911x.BrowseGraphic{

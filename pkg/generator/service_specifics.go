@@ -2,11 +2,12 @@ package generator
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/google/uuid"
 	"github.com/pdok/pdok-metadata-tool/internal/common"
@@ -14,7 +15,7 @@ import (
 
 // ServiceSpecifics struct for unmarshalling the input for metadata generation.
 type ServiceSpecifics struct {
-	Globals  GlobalConfig    `json:"globals,omitempty" yaml:"globals,omitempty"`
+	Globals  GlobalConfig    `json:"globals,omitempty"  yaml:"globals,omitempty"`
 	Services []ServiceConfig `json:"services,omitempty" yaml:"services,omitempty"`
 }
 
@@ -29,9 +30,9 @@ type GlobalConfig struct {
 type ServiceConfig struct {
 	OverrideableFields `json:",inline,omitempty" yaml:",inline,omitempty"`
 
-	Type               string              `json:"type,omitempty" yaml:"type,omitempty"`
-	ID                 string              `json:"id,omitempty" yaml:"id,omitempty"`
-	AccessPoint        string              `json:"accessPoint,omitempty" yaml:"accessPoint,omitempty"`
+	Type               string              `json:"type,omitempty"               yaml:"type,omitempty"`
+	ID                 string              `json:"id,omitempty"                 yaml:"id,omitempty"`
+	AccessPoint        string              `json:"accessPoint,omitempty"        yaml:"accessPoint,omitempty"`
 	ServiceInspireType *InspireServiceType `json:"serviceInspireType,omitempty" yaml:"serviceInspireType,omitempty"`
 
 	// Pointer to globals
@@ -113,26 +114,26 @@ func (st *InspireServiceType) UnmarshalYAML(unmarshal func(any) error) error {
 
 // OverrideableFields struct for unmarshalling service specifics input.
 type OverrideableFields struct {
-	Title                     *string      `json:"title,omitempty" yaml:"title,omitempty"`
-	CreationDate              *string      `json:"creationDate,omitempty" yaml:"creationDate,omitempty"`
-	RevisionDate              *string      `json:"revisionDate,omitempty" yaml:"revisionDate,omitempty"`
-	Abstract                  *string      `json:"abstract,omitempty" yaml:"abstract,omitempty"`
-	Keywords                  []string     `json:"keywords,omitempty" yaml:"keywords,omitempty"`
-	ContactOrganisationName   *string      `json:"contactOrganisationName,omitempty" yaml:"contactOrganisationName,omitempty"`
-	ContactOrganisationURI    *string      `json:"contactOrganisationUri,omitempty" yaml:"contactOrganisationUri,omitempty"`
-	ContactEmail              *string      `json:"contactEmail,omitempty" yaml:"contactEmail,omitempty"`
-	ContactURL                *string      `json:"contactUrl,omitempty" yaml:"contactUrl,omitempty"`
-	InspireThemes             []string     `json:"inspireThemes,omitempty" yaml:"inspireThemes,omitempty"`
-	HvdCategories             []string     `json:"hvdCategories,omitempty" yaml:"hvdCategories,omitempty"`
-	ServiceLicense            *string      `json:"serviceLicense,omitempty" yaml:"serviceLicense,omitempty"`
-	UseLimitation             *string      `json:"useLimitation,omitempty" yaml:"useLimitation,omitempty"`
-	BoundingBox               *BoundingBox `json:"boundingBox,omitempty" yaml:"boundingBox,omitempty"`
-	LinkedDatasets            []string     `json:"linkedDatasets,omitempty" yaml:"linkedDatasets,omitempty"`
+	Title                     *string      `json:"title,omitempty"                     yaml:"title,omitempty"`
+	CreationDate              *string      `json:"creationDate,omitempty"              yaml:"creationDate,omitempty"`
+	RevisionDate              *string      `json:"revisionDate,omitempty"              yaml:"revisionDate,omitempty"`
+	Abstract                  *string      `json:"abstract,omitempty"                  yaml:"abstract,omitempty"`
+	Keywords                  []string     `json:"keywords,omitempty"                  yaml:"keywords,omitempty"`
+	ContactOrganisationName   *string      `json:"contactOrganisationName,omitempty"   yaml:"contactOrganisationName,omitempty"`
+	ContactOrganisationURI    *string      `json:"contactOrganisationUri,omitempty"    yaml:"contactOrganisationUri,omitempty"`
+	ContactEmail              *string      `json:"contactEmail,omitempty"              yaml:"contactEmail,omitempty"`
+	ContactURL                *string      `json:"contactUrl,omitempty"                yaml:"contactUrl,omitempty"`
+	InspireThemes             []string     `json:"inspireThemes,omitempty"             yaml:"inspireThemes,omitempty"`
+	HvdCategories             []string     `json:"hvdCategories,omitempty"             yaml:"hvdCategories,omitempty"`
+	ServiceLicense            *string      `json:"serviceLicense,omitempty"            yaml:"serviceLicense,omitempty"`
+	UseLimitation             *string      `json:"useLimitation,omitempty"             yaml:"useLimitation,omitempty"`
+	BoundingBox               *BoundingBox `json:"boundingBox,omitempty"               yaml:"boundingBox,omitempty"`
+	LinkedDatasets            []string     `json:"linkedDatasets,omitempty"            yaml:"linkedDatasets,omitempty"`
 	CoordinateReferenceSystem *string      `json:"coordinateReferenceSystem,omitempty" yaml:"coordinateReferenceSystem,omitempty"`
-	Thumbnails                []Thumbnail  `json:"thumbnails,omitempty" yaml:"thumbnails,omitempty"`
-	QosAvailability           *float64     `json:"qosAvailability,omitempty" yaml:"qosAvailability,omitempty"`
-	QosPerformance            *float64     `json:"qosPerformance,omitempty" yaml:"qosPerformance,omitempty"`
-	QosCapacity               *int         `json:"qosCapacity,omitempty" yaml:"qosCapacity,omitempty"`
+	Thumbnails                []Thumbnail  `json:"thumbnails,omitempty"                yaml:"thumbnails,omitempty"`
+	QosAvailability           *float64     `json:"qosAvailability,omitempty"           yaml:"qosAvailability,omitempty"`
+	QosPerformance            *float64     `json:"qosPerformance,omitempty"            yaml:"qosPerformance,omitempty"`
+	QosCapacity               *int         `json:"qosCapacity,omitempty"               yaml:"qosCapacity,omitempty"`
 }
 
 // BoundingBox struct for unmarshalling service specifics input.
@@ -145,19 +146,19 @@ type BoundingBox struct {
 
 // Thumbnail struct for unmarshalling service specifics input.
 type Thumbnail struct {
-	File        string `json:"file,omitempty" yaml:"file,omitempty"`
+	File        string `json:"file,omitempty"        yaml:"file,omitempty"`
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Filetype    string `json:"filetype,omitempty" yaml:"filetype,omitempty"`
+	Filetype    string `json:"filetype,omitempty"    yaml:"filetype,omitempty"`
 }
 
 // LoadFromYamlOrJson unmarshalls the input for the given input file.
 func (s *ServiceSpecifics) LoadFromYamlOrJson(filename string) error {
-
 	//nolint:gosec
 	yamlFile, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
+
 	if err = yaml.Unmarshal(yamlFile, s); err != nil {
 		return err
 	}
