@@ -11,7 +11,7 @@ import (
 	log "github.com/sirupsen/logrus" //nolint:depguard
 )
 
-const GetRecordByID = "/?service=CSW&request=GetRecordByID"
+const GetRecordByID = "/?service=CSW&request=GetRecordById"
 const GetRecords = "/?service=CSW&request=GetRecords"
 
 const (

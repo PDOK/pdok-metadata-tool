@@ -34,7 +34,7 @@ func NewCswClient(host *url.URL) CswClient {
 func (c CswClient) GetRecordByID(uuid string) (csw.MDMetadata, error) {
 	cswURL := c.host.String() +
 		"?service=CSW" +
-		"&request=GetRecordByID" +
+		"&request=GetRecordById" +
 		"&version=2.0.2" +
 		"&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full" +
 		"&id=" + uuid + "#MD_DataIdentification"
