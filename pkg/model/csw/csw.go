@@ -235,6 +235,7 @@ type MDMetadata struct {
 			} `xml:"descriptiveKeywords"`
 			ContactName      string            `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
 			ContactEmail     string            `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>address>CI_Address>electronicMailAddress>CharacterString"`
+			ContactURL       string            `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>onlineResource>CI_OnlineResource>linkage>URL"`
 			LicenseURL       []Anchor          `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
 			UseLimitation    string            `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
 			ResponsibleParty *ResponsibleParty `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
