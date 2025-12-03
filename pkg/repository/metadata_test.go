@@ -35,6 +35,7 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 		wantMetadataID     string
 		wantSourceID       string
 		wantTitle          string
+		wantContactURL     *string
 		wantAbstract       *string
 		wantContactName    *string
 		wantContactEmail   *string
@@ -58,6 +59,7 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 			wantAbstract:     ptr("Samenvatting (*)"),
 			wantContactName:  ptr("persoon verantwoordelijk voor de dataset"),
 			wantContactEmail: ptr("Email@organisatie.nl"),
+			wantContactURL:   ptr("https://www.geonovum.nl/"),
 			wantKeywords: []string{
 				"Beschermde gebieden",
 				"Habitats en biotopen",
@@ -163,6 +165,10 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 
 			if tt.wantContactEmail != nil {
 				assert.Equal(t, *tt.wantContactEmail, metadataRecord.ContactEmail)
+			}
+
+			if tt.wantContactURL != nil {
+				assert.Equal(t, *tt.wantContactURL, metadataRecord.ContactURL)
 			}
 
 			if tt.wantKeywords != nil {

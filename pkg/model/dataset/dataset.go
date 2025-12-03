@@ -15,6 +15,7 @@ type NLDatasetMetadata struct {
 	Abstract       string
 	ContactName    string
 	ContactEmail   string
+	ContactURL     string
 	Keywords       []string
 	LicenceURL     string
 	UseLimitation  string
@@ -41,6 +42,7 @@ func NewNLDatasetMetadataFromMDMetadata(m *csw.MDMetadata) *NLDatasetMetadata {
 		Abstract:       m.IdentificationInfo.MDDataIdentification.Abstract,
 		ContactName:    m.IdentificationInfo.MDDataIdentification.ContactName,
 		ContactEmail:   m.IdentificationInfo.MDDataIdentification.ContactEmail,
+		ContactURL:     m.IdentificationInfo.MDDataIdentification.ContactURL,
 		Keywords:       m.GetKeywords(),
 		LicenceURL:     m.GetLicenseURL(),
 		UseLimitation:  m.IdentificationInfo.MDDataIdentification.UseLimitation,
