@@ -498,6 +498,7 @@ func (sc *ServiceConfig) GetBoundingBox() *BoundingBox {
 	if sc.Globals.BoundingBox != nil {
 		return sc.Globals.BoundingBox
 	}
+
 	return nil
 }
 

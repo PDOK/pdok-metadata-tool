@@ -89,6 +89,7 @@ func getInspireListCommand() *cli.Command {
 			if cmd.NArg() > 0 {
 				return
 			}
+
 			for _, t := range inspire.InspireRegisterKinds {
 				fmt.Println(t)
 			}
@@ -204,6 +205,7 @@ func getInspireCSVCommand() *cli.Command {
 			if cmd.NArg() > 0 {
 				return
 			}
+
 			for _, t := range inspire.InspireRegisterKinds {
 				fmt.Println(t)
 			}

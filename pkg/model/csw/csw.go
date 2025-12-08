@@ -60,21 +60,25 @@ func (c *GetRecordsCQLConstraint) ToQueryParameter() (constraint string) {
 	}
 
 	if len(constraints) == 0 {
-		return
+		return constraint
 	}
 
 	constraint += "&constraintLanguage=CQL_TEXT"
 	constraint += "&constraint_language_version=1.1.0"
 	constraint += "&constraint="
 
+	var constraintSb strings.Builder
 	for i, c := range constraints {
-		constraint += c
+		constraintSb.WriteString(c)
+
 		if i < len(constraints)-1 {
-			constraint += "+AND+"
+			constraintSb.WriteString("+AND+")
 		}
 	}
 
-	return
+	constraint += constraintSb.String()
+
+	return constraint
 }
 
 // GetRecordsOgcFilter struct for creating an OgcFilter for a CSW GetRecords request.

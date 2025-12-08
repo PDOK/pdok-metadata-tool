@@ -57,10 +57,12 @@ func getGenerateServiceCommand() *cli.Command {
 				if err != nil {
 					return fmt.Errorf("failed to get current working directory: %w", err)
 				}
+
 				outputDir = cwd
 			}
 
 			var serviceSpecifics generator.ServiceSpecifics
+
 			err := serviceSpecifics.LoadFromYamlOrJson(inputFile)
 			if err != nil {
 				return err
@@ -111,6 +113,7 @@ func getGenerateConfigExampleCommand() *cli.Command {
 			}
 
 			projRoot := common.GetProjectRoot()
+
 			var filename string
 
 			switch strings.ToLower(outputFormat) {
@@ -128,6 +131,7 @@ func getGenerateConfigExampleCommand() *cli.Command {
 			if err != nil {
 				return fmt.Errorf("failed to read input file: %w", err)
 			}
+
 			fmt.Print(string(data))
 
 			return nil
