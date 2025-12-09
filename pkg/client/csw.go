@@ -2,6 +2,7 @@
 package client
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -12,12 +13,12 @@ import (
 
 // CswClient is used as a client for doing CSW requests.
 type CswClient struct {
-	host   *url.URL
-	client *http.Client
+	endpoint *url.URL
+	client   *http.Client
 }
 
 // NewCswClient creates a new instance of NgrClient.
-func NewCswClient(host *url.URL) CswClient {
+func NewCswClient(endpoint *url.URL) CswClient {
 	const defaultTimeoutSeconds = 20
 
 	client := &http.Client{
@@ -25,14 +26,14 @@ func NewCswClient(host *url.URL) CswClient {
 	}
 
 	return CswClient{
-		host:   host,
-		client: client,
+		endpoint: endpoint,
+		client:   client,
 	}
 }
 
 // GetRecordByID returns a metadata record for a given id.
 func (c CswClient) GetRecordByID(uuid string) (csw.MDMetadata, error) {
-	cswURL := c.host.String() +
+	cswURL := c.endpoint.String() +
 		"?service=CSW" +
 		"&request=GetRecordById" +
 		"&version=2.0.2" +
@@ -51,19 +52,22 @@ func (c CswClient) GetRecordByID(uuid string) (csw.MDMetadata, error) {
 	return cswResponse.MDMetadata, nil
 }
 
-// GetRecords returns summary metadata records, possibly using a constraint.
+// GetRecordPage returns one page of summary metadata, possibly using a constraint.
 // TODO Use this for harvesting service metadata in ETF-validator-go.
-func (c CswClient) GetRecords(
-	constraint *csw.GetRecordsCQLConstraint,
-	offset int,
-) ([]csw.SummaryRecord, int, error) {
-	cswURL := c.host.String() +
+// todo: when the NumberOfRecordsMatched changed while paging, this could upset the paging. We should check during paging if the number of records has changed. If so we should restart paging from 1.
+func (c CswClient) GetRecordPage(constraint *csw.GetRecordsCQLConstraint, offset int) ([]csw.SummaryRecord, int, error) {
+	if offset == 0 {
+		offset = 1
+	}
+
+	cswURL := c.endpoint.String() +
 		"?service=CSW" +
 		"&request=GetRecords" +
 		"&version=2.0.2" +
 		"&typeNames=gmd:MD_Metadata" +
 		"&resultType=results" +
-		"&startPosition=" + strconv.Itoa(offset)
+		"&startPosition=" + strconv.Itoa(offset) +
+		"&maxRecords=50"
 
 	if constraint != nil {
 		cswURL += constraint.ToQueryParameter()
@@ -84,6 +88,35 @@ func (c CswClient) GetRecords(
 	return cswResponse.SearchResults.SummaryRecords, nextRecord, nil
 }
 
+func (c CswClient) getRecordsRecursive(constraint *csw.GetRecordsCQLConstraint, offset int, result *[]csw.SummaryRecord) (err error) {
+
+	fmt.Printf("recursing with offset %d\n", offset)
+	records, nextOffset, err := c.GetRecordPage(constraint, offset)
+	if err != nil {
+		return err
+	}
+
+	*result = append(*result, records...)
+
+	if nextOffset == 0 {
+		return
+	}
+
+	return c.getRecordsRecursive(constraint, nextOffset, result)
+}
+
+// GetAllRecords returns all metadata records based on recursive paging, possibly using a constraint.
+func (c CswClient) GetAllRecords(constraint *csw.GetRecordsCQLConstraint) ([]csw.SummaryRecord, error) {
+
+	var result []csw.SummaryRecord
+	err := c.getRecordsRecursive(constraint, 1, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // GetRecordsWithOGCFilter returns summary metadata records, using an OGC filter.
 func (c CswClient) GetRecordsWithOGCFilter(
 	filter *csw.GetRecordsOgcFilter,
@@ -95,7 +128,7 @@ func (c CswClient) GetRecordsWithOGCFilter(
 
 	var cswResponse = csw.GetRecordsResponse{}
 
-	err = getUnmarshalledXMLResponse(&cswResponse, c.host.String(), "POST", &requestBody, *c.client)
+	err = getUnmarshalledXMLResponse(&cswResponse, c.endpoint.String(), "POST", &requestBody, *c.client)
 	if err != nil {
 		return nil, err
 	}

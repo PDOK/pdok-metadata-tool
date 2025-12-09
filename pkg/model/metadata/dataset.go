@@ -1,5 +1,5 @@
 // Package dataset holds a model containing the relevant fields for dataset metadata.
-package dataset
+package metadata
 
 import (
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
@@ -24,13 +24,6 @@ type NLDatasetMetadata struct {
 	InspireThemes  []string
 	HVDCategories  []hvd.HVDCategory
 	BoundingBox    *BoundingBox
-}
-
-type BoundingBox struct {
-	WestBoundLongitude string
-	EastBoundLongitude string
-	SouthBoundLatitude string
-	NorthBoundLatitude string
 }
 
 // NewNLDatasetMetadataFromMDMetadata creates a new instance based on dataset metadata from a CSW response.

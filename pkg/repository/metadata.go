@@ -5,7 +5,7 @@ import (
 
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/dataset"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
 )
 
 // MetadataRepository is used for looking up metadata using the given CSW endpoint.
@@ -14,13 +14,11 @@ type MetadataRepository struct {
 }
 
 // NewMetadataRepository creates a new instance of MetadataRepository.
-func NewMetadataRepository(cswHost string, cswPath string) (*MetadataRepository, error) {
-	h, err := url.Parse(cswHost)
+func NewMetadataRepository(cswEndpoint string) (*MetadataRepository, error) {
+	h, err := url.Parse(cswEndpoint)
 	if err != nil {
 		return nil, err
 	}
-
-	h.Path = cswPath
 
 	cswClient := client.NewCswClient(h)
 
@@ -32,13 +30,13 @@ func NewMetadataRepository(cswHost string, cswPath string) (*MetadataRepository,
 // GetDatasetMetadataByID retrieves dataset metadata by id.
 func (mr *MetadataRepository) GetDatasetMetadataByID(
 	id string,
-) (datasetMetadata *dataset.NLDatasetMetadata, err error) {
+) (datasetMetadata *metadata.NLDatasetMetadata, err error) {
 	mdMetadata, err := mr.CswClient.GetRecordByID(id)
 	if err != nil {
 		return
 	}
 
-	datasetMetadata = dataset.NewNLDatasetMetadataFromMDMetadata(&mdMetadata)
+	datasetMetadata = metadata.NewNLDatasetMetadataFromMDMetadata(&mdMetadata)
 
 	return
 }

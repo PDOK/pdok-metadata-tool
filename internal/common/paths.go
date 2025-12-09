@@ -15,6 +15,8 @@ var (
 	HvdLocalCSVPath = CachePath + "/high-value-dataset-category.csv"
 	// InspireLocalPath is a local path for the INSPIRE files.
 	InspireLocalPath = CachePath
+	// MetadataCachePath is a local path for the metadata records cache.
+	MetadataCachePath = filepath.Join(CachePath, "records")
 )
 
 // GetProjectRoot returns the root of the project as a string.

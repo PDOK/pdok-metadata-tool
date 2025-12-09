@@ -1,6 +1,8 @@
 // Package ngr provides structs for handling NGR responses.
 package ngr
 
+const NgrEndpoint = "https://nationaalgeoregister.nl/geonetwork/srv/dut/csw"
+
 // RecordTagsResponse for retrieving tags from NGR.
 type RecordTagsResponse []Tag
 

@@ -4,6 +4,7 @@ package csw
 import (
 	"encoding/xml"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
@@ -65,14 +66,17 @@ func (c *GetRecordsCQLConstraint) ToQueryParameter() (constraint string) {
 
 	constraint += "&constraintLanguage=CQL_TEXT"
 	constraint += "&constraint_language_version=1.1.0"
-	constraint += "&constraint="
 
+	// Build the raw CQL expression and URL-encode it as a single query parameter value
+	var expr string
 	for i, c := range constraints {
-		constraint += c
+		expr += c
 		if i < len(constraints)-1 {
-			constraint += "+AND+"
+			expr += " AND "
 		}
 	}
+
+	constraint += "&constraint=" + url.QueryEscape(expr)
 
 	return
 }

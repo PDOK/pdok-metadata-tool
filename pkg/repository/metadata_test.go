@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/dataset"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -16,7 +16,7 @@ import (
 func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 	mockedNGRServer := preTestSetup()
 
-	mr, _ := NewMetadataRepository("", "")
+	mr, _ := NewMetadataRepository("")
 	if mr == nil {
 		assert.FailNow(t, "NewMetadataRepository is nil")
 
@@ -46,7 +46,7 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 		wantInspireVariant *inspire.InspireVariant
 		wantInspireThemes  []string
 		wantHVDCategories  []hvd.HVDCategory
-		wantBoundingBox    *dataset.BoundingBox
+		wantBoundingBox    *metadata.BoundingBox
 	}{
 		{
 			name: "Voorbeeld metadata Dataset",
@@ -77,7 +77,7 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"ps", "hb"},
 			wantHVDCategories:  nil,
-			wantBoundingBox: ptr(dataset.BoundingBox{
+			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "3.37087",
 				EastBoundLongitude: "7.21097",
 				SouthBoundLatitude: "50.7539",
@@ -95,7 +95,7 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"sd"},
 			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021"}},
-			wantBoundingBox: ptr(dataset.BoundingBox{
+			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "-3.5879",
 				EastBoundLongitude: "13.5757",
 				SouthBoundLatitude: "49.1241",
@@ -116,7 +116,7 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"hy"},
 			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021"}},
-			wantBoundingBox: ptr(dataset.BoundingBox{
+			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "2.65899516",
 				EastBoundLongitude: "7.83057492",
 				SouthBoundLatitude: "50.58707771",
@@ -138,7 +138,7 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"ps"},
 			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021"}},
-			wantBoundingBox: ptr(dataset.BoundingBox{
+			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "2.1339",
 				EastBoundLongitude: "8.16",
 				SouthBoundLatitude: "50.5591",
@@ -195,7 +195,7 @@ func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
 func TestMetadataRepository_SearchDatasetMetadata(t *testing.T) {
 	mockedNGRServer := preTestSetup()
 
-	mr, _ := NewMetadataRepository("", "")
+	mr, _ := NewMetadataRepository("")
 	if mr == nil {
 		assert.FailNow(t, "NewMetadataRepository is nil")
 
