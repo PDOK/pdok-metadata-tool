@@ -38,9 +38,11 @@ func NewCswClient(endpoint *url.URL) CswClient {
 	}
 }
 
-func (c *CswClient) SetCache(cacheDir string, ttl time.Duration) {
+// SetCache enables on-disk caching of raw CSW records.
+// ttlHours is the time-to-live expressed in hours.
+func (c *CswClient) SetCache(cacheDir string, ttlHours int) {
 	c.cacheDir = &cacheDir
-	c.cacheTTL = ttl
+	c.cacheTTL = time.Duration(ttlHours) * time.Hour
 }
 
 func (c *CswClient) UnsetCache() {

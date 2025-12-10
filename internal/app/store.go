@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"time"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
@@ -31,25 +30,27 @@ func init() {
 					&cli.StringFlag{
 						Name:  "cache-path",
 						Value: common.MetadataCachePath,
-						Usage: "Local path where the HVD Thesaurus is cached.",
+						Usage: "Local path where CSW metadata records are cached.",
+					},
+					&cli.IntFlag{
+						Name:  "cache-ttl",
+						Value: 168, // hours (7 days)
+						Usage: "Cache TTL in hours for CSW record cache (default: 168 hours = 7 days).",
 					},
 				},
 				Action: func(_ context.Context, cmd *cli.Command) error {
 
 					// todo: refactor MetadataRepository in kangaroo API to use endpoint ipv host + path
 
-					// todo: harvest metadata records from CSW
-					// 	- Get master page and recursively follow links so we get a list of all available records
-					//	- Iterate the list of records and download the metadata records
-					//	- Store the metadata records in the cache directory
-
-					ngrEndpoint, err := url.Parse(ngr.NgrEndpoint)
+					cswEndpoint := cmd.String("csw-endpoint")
+					ngrEndpoint, err := url.Parse(cswEndpoint)
 					if err != nil {
 						return err
 					}
-
 					cswClient := client.NewCswClient(ngrEndpoint)
-					cswClient.SetCache(common.MetadataCachePath, 7*24*time.Hour)
+					cachePath := cmd.String("cache-path")
+					cacheTTL := cmd.Int("cache-ttl")
+					cswClient.SetCache(cachePath, cacheTTL)
 					service := csw.Service
 
 					org := "Beheer PDOK"
@@ -81,13 +82,6 @@ func init() {
 					//}
 
 					// todo: find out how to discriminate between service metadata and dataset metadata
-
-					// todo: Add filters to the harvest command to only harvest certain metadata types
-					//	- Owner filter
-					//	- Dataset type filter
-
-					// todo: test marshaling of service data metadata
-					// todo: create a flat service model like NLDatasetMetadata but then NLServiceMetadata
 
 					// todo: create a tool to convert harvested records to NLServiceMetadata and load them into a database
 
