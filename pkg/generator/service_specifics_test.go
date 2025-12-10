@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -97,4 +98,83 @@ func TestParseAnnotations(t *testing.T) {
 		string(out),
 		"Generated JSON does not match expected JSON",
 	)
+}
+
+func TestGetTitle(t *testing.T) {
+	globalConfig := GlobalConfig{
+		OverrideableFields: OverrideableFields{
+			Title: common.Ptr("Title"),
+		},
+	}
+
+	var tests = []struct {
+		description   string
+		serviceConfig ServiceConfig
+		expectedTitle string
+	}{
+
+		{
+			description: "Global title with WMS postfix",
+			serviceConfig: ServiceConfig{
+				Type:    "WMS",
+				Globals: &globalConfig,
+			},
+			expectedTitle: "Title WMS",
+		},
+		{
+			description: "Global title with WFS postfix",
+			serviceConfig: ServiceConfig{
+				Type:    "wFs",
+				Globals: &globalConfig,
+			},
+			expectedTitle: "Title WFS",
+		},
+		{
+			description: "Global title with ATOM postfix",
+			serviceConfig: ServiceConfig{
+				Type:    "Atom",
+				Globals: &globalConfig,
+			},
+			expectedTitle: "Title ATOM",
+		},
+		{
+			description: "Global title with OGC API Features postfix",
+			serviceConfig: ServiceConfig{
+				Type:    "OAF",
+				Globals: &globalConfig,
+			},
+			expectedTitle: "Title OGC API Features",
+		},
+		{
+			description: "Global title with OGC API (Vector) Tiles postfix",
+			serviceConfig: ServiceConfig{
+				Type:    "OAT",
+				Globals: &globalConfig,
+			},
+			expectedTitle: "Title OGC API (Vector) Tiles",
+		},
+		{
+			description: "Specific title on service level without postfix",
+			serviceConfig: ServiceConfig{
+				Type:    "WMS",
+				Globals: &globalConfig,
+				OverrideableFields: OverrideableFields{
+					Title: common.Ptr("A specific title without postfix"),
+				},
+			},
+			expectedTitle: "A specific title without postfix",
+		},
+		{
+			description: "Empty string if no title info is available",
+			serviceConfig: ServiceConfig{
+				Type:    "WMS",
+				Globals: &GlobalConfig{},
+			},
+			expectedTitle: "",
+		},
+	}
+	for _, test := range tests {
+		title := test.serviceConfig.GetTitle()
+		assert.Equal(t, test.expectedTitle, title)
+	}
 }

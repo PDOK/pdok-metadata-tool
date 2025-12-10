@@ -326,7 +326,7 @@ func (sc *ServiceConfig) GetTitle() string {
 	if sc.Globals.Title != nil {
 		postfix := ""
 
-		switch sc.Type {
+		switch strings.ToLower(sc.Type) {
 		case "wms":
 			postfix = " WMS"
 		case "wfs":
