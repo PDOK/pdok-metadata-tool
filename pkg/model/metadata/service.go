@@ -1,7 +1,9 @@
 package metadata
 
 import (
-	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 )
 
 // NLServiceMetadata is used for retrieving the relevant fields from service metadata.
@@ -17,6 +19,9 @@ type NLServiceMetadata struct {
 	OperatesOn       []OperatesOnRef
 	Endpoints        []ServiceEndpoint
 	ThumbnailURL     *string
+	InspireVariant   *inspire.InspireVariant
+	InspireThemes    []string
+	HVDCategories    []hvd.HVDCategory
 }
 
 // OperatesOnRef represents a coupled dataset reference from a service metadata record.
@@ -33,16 +38,19 @@ type ServiceEndpoint struct {
 }
 
 // NewNLServiceMetadataFromMDMetadata creates a new instance based on service metadata from a CSW response.
-func NewNLServiceMetadataFromMDMetadata(m *csw.MDMetadata) *NLServiceMetadata {
+func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetadata {
 	sm := &NLServiceMetadata{
-		MetadataID:   m.UUID,
-		SourceID:     m.UUID,
-		Title:        "",
-		Keywords:     nil,
-		ServiceType:  "",
-		OperatesOn:   nil,
-		Endpoints:    nil,
-		ThumbnailURL: nil,
+		MetadataID:     m.UUID,
+		SourceID:       m.UUID,
+		Title:          "",
+		Keywords:       nil,
+		ServiceType:    "",
+		OperatesOn:     nil,
+		Endpoints:      nil,
+		ThumbnailURL:   nil,
+		InspireVariant: nil,
+		InspireThemes:  nil,
+		HVDCategories:  nil,
 	}
 
 	if m.IdentificationInfo.SVServiceIdentification != nil {
@@ -72,6 +80,12 @@ func NewNLServiceMetadataFromMDMetadata(m *csw.MDMetadata) *NLServiceMetadata {
 
 		// Thumbnail
 		sm.ThumbnailURL = m.GetServiceThumbnailURL()
+
+		// INSPIRE & HVD (service)
+		sm.InspireThemes = m.GetServiceInspireThemes()
+		sm.HVDCategories = m.GetServiceHVDCategories()
+		// Variant is determined from dataQualityInfo (applies to the record overall)
+		sm.InspireVariant = m.GetInspireVariant()
 	}
 
 	// Distribution endpoints

@@ -2,11 +2,14 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"net/url"
+	"time"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
 	"github.com/urfave/cli/v3"
 )
@@ -26,7 +29,7 @@ func init() {
 						Usage: "Endpoint of the CSW service to harvest metadata records from. Default is NGR.",
 					},
 					&cli.StringFlag{
-						Name:  "local-path",
+						Name:  "cache-path",
 						Value: common.MetadataCachePath,
 						Usage: "Local path where the HVD Thesaurus is cached.",
 					},
@@ -46,29 +49,36 @@ func init() {
 					}
 
 					cswClient := client.NewCswClient(ngrEndpoint)
-					//cswClient.SetCache(common.MetadataCachePath, 3600*24*7)
+					cswClient.SetCache(common.MetadataCachePath, 7*24*time.Hour)
 					service := csw.Service
-					dataset := csw.Dataset
 
 					org := "Beheer PDOK"
 
-					constraint := csw.GetRecordsCQLConstraint{
+					servicesByPDOKconstraint := csw.GetRecordsCQLConstraint{
 						OrganisationName: &org,
 						MetadataType:     &service,
 					}
-					_, err = cswClient.HarvestByCQLConstraint(&constraint)
+
+					mds, err := cswClient.HarvestByCQLConstraint(&servicesByPDOKconstraint)
 					if err != nil {
 						return err
 					}
 
-					constraint2 := csw.GetRecordsCQLConstraint{
-						MetadataType: &dataset,
+					for _, md := range mds {
+						m := metadata.NewNLServiceMetadataFromMDMetadata(&md)
+
+						fmt.Printf("%s\t%s\t%s\t%s\n", m.ServiceType, m.Title, m.OrganisationName, m.OperatesOn)
 					}
 
-					_, err = cswClient.HarvestByCQLConstraint(&constraint2)
-					if err != nil {
-						return err
-					}
+					//dataset := csw.Dataset
+					//constraint2 := csw.GetRecordsCQLConstraint{
+					//	MetadataType: &dataset,
+					//}
+					//
+					//_, err = cswClient.HarvestByCQLConstraint(&constraint2)
+					//if err != nil {
+					//	return err
+					//}
 
 					// todo: find out how to discriminate between service metadata and dataset metadata
 

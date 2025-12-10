@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 )
 
 // CswClient is used as a client for doing CSW requests.
@@ -56,7 +57,7 @@ func (c *CswClient) getRecordByIDUrl(uuid string) string {
 }
 
 // GetRecordByID returns a metadata record for a given id.
-func (c *CswClient) GetRecordByID(uuid string) (csw.MDMetadata, error) {
+func (c *CswClient) GetRecordByID(uuid string) (iso1911x.MDMetadata, error) {
 	cswURL := c.getRecordByIDUrl(uuid)
 
 	// todo: use cache trough GetRawRecordByID
@@ -64,7 +65,7 @@ func (c *CswClient) GetRecordByID(uuid string) (csw.MDMetadata, error) {
 
 	err := getUnmarshalledXMLResponse(&cswResponse, cswURL, "GET", nil, *c.client)
 	if err != nil {
-		return csw.MDMetadata{}, err
+		return iso1911x.MDMetadata{}, err
 	}
 
 	cswResponse.MDMetadata.SelfURL = cswURL
@@ -76,6 +77,7 @@ func (c *CswClient) GetRawRecordByID(uuid string) (rawRecord []byte, err error) 
 	// Try cache first when enabled and fresh
 	if c.cacheDir != nil {
 		if cached, ok, cacheErr := c.getCachedRecordIfFresh(uuid); cacheErr == nil && ok {
+			fmt.Println("Using cached record")
 			return cached, nil
 		}
 		// if cacheErr != nil we ignore and proceed to fetch
@@ -83,7 +85,7 @@ func (c *CswClient) GetRawRecordByID(uuid string) (rawRecord []byte, err error) 
 
 	// Fetch from remote
 	cswURL := c.getRecordByIDUrl(uuid)
-	fmt.Println(cswURL)
+	fmt.Println("Using NGR: " + cswURL)
 	rawRecord, err = getResponseBody(cswURL, "GET", nil, *c.client)
 	if err != nil {
 		return nil, err
@@ -210,7 +212,7 @@ func (c *CswClient) GetAllRecords(constraint *csw.GetRecordsCQLConstraint) ([]cs
 	return result, nil
 }
 
-func (c *CswClient) HarvestByCQLConstraint(constraint *csw.GetRecordsCQLConstraint) (result []csw.GetRecordByIDResponse, err error) {
+func (c *CswClient) HarvestByCQLConstraint(constraint *csw.GetRecordsCQLConstraint) (result []iso1911x.MDMetadata, err error) {
 	records, err := c.GetAllRecords(constraint)
 
 	fmt.Printf("Found %d records for pdok services\n", len(records))
@@ -230,7 +232,7 @@ func (c *CswClient) HarvestByCQLConstraint(constraint *csw.GetRecordsCQLConstrai
 		if err != nil {
 			fmt.Printf("error unmarshalling NGR response from record %s: %s", record.Identifier, err)
 		} else {
-			result = append(result, cswResponse)
+			result = append(result, cswResponse.MDMetadata)
 		}
 
 	}
