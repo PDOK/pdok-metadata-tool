@@ -58,7 +58,7 @@ func TestCswClient_GetRecords(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mdRecords, nextRecord, err := cswClient.GetRecords(&tt.args.constraint, tt.args.offset)
+			mdRecords, nextRecord, err := cswClient.GetRecordPage(&tt.args.constraint, tt.args.offset)
 			if !tt.wantErr {
 				require.NoError(t, err)
 			}

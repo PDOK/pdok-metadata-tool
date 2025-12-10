@@ -228,7 +228,7 @@ func (c *CswClient) HarvestByCQLConstraint(constraint *csw.GetRecordsCQLConstrai
 		cswResponse := csw.GetRecordByIDResponse{}
 		err = xml.Unmarshal(raw, &cswResponse)
 		if err != nil {
-			fmt.Printf("error unmarshalling NGR response from record %s: %w", record.Identifier, err)
+			fmt.Printf("error unmarshalling NGR response from record %s: %s", record.Identifier, err)
 		} else {
 			result = append(result, cswResponse)
 		}

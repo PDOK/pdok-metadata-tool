@@ -85,9 +85,9 @@ func buildMockWebserverNgr() *httptest.Server {
 			}
 		case strings.HasPrefix(url, GetRecords):
 			switch path := strings.TrimPrefix(url, GetRecords); path {
-			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results&startPosition=1&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0&constraint=type='dataset'":
+			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results&startPosition=1&maxRecords=50&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0&constraint=type%3D%27dataset%27":
 				writeOkResponse("./testdata/CSW_GetRecordsResponse_Dataset.xml", rw, ContentTypeXML)
-			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results&startPosition=11&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0&constraint=type='service'":
+			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results&startPosition=11&maxRecords=50&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0&constraint=type%3D%27service%27":
 				writeOkResponse("./testdata/CSW_GetRecordsResponse_Service.xml", rw, ContentTypeXML)
 			default:
 				log.Infof("no handler for request %s in test setup", req.URL.String())
