@@ -298,6 +298,23 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 	return
 }
 
+// GetServiceKeywords returns a slice of keywords from service metadata.
+func (m *MDMetadata) GetServiceKeywords() (keywords []string) {
+	if m.IdentificationInfo.SVServiceIdentification == nil {
+		return
+	}
+	for _, descriptiveKeyword := range m.IdentificationInfo.SVServiceIdentification.DescriptiveKeywords {
+		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
+			if keyword.CharacterString != "" {
+				keywords = append(keywords, keyword.CharacterString)
+			} else if keyword.Anchor.Text != "" {
+				keywords = append(keywords, keyword.Anchor.Text)
+			}
+		}
+	}
+	return
+}
+
 // GetLicenseURL returns the license href.
 func (m *MDMetadata) GetLicenseURL() string {
 	for _, val := range m.IdentificationInfo.MDDataIdentification.LicenseURL {
@@ -318,6 +335,18 @@ func (m *MDMetadata) GetThumbnailURL() *string {
 		return &thumbnailURL
 	}
 
+	return nil
+}
+
+// GetServiceThumbnailURL returns the thumbnail URL from a service metadata record.
+func (m *MDMetadata) GetServiceThumbnailURL() *string {
+	if m.IdentificationInfo.SVServiceIdentification != nil &&
+		m.IdentificationInfo.SVServiceIdentification.GraphicOverview != nil {
+		thumbnailURL := m.IdentificationInfo.SVServiceIdentification.GraphicOverview.MDBrowseGraphic.FileName
+		if thumbnailURL != "" {
+			return &thumbnailURL
+		}
+	}
 	return nil
 }
 
