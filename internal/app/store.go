@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
@@ -47,6 +46,7 @@ func init() {
 					}
 
 					cswClient := client.NewCswClient(ngrEndpoint)
+					//cswClient.SetCache(common.MetadataCachePath, 3600*24*7)
 					service := csw.Service
 					dataset := csw.Dataset
 
@@ -56,27 +56,18 @@ func init() {
 						OrganisationName: &org,
 						MetadataType:     &service,
 					}
-					records, err := cswClient.GetAllRecords(&constraint)
+					_, err = cswClient.HarvestByCQLConstraint(&constraint)
 					if err != nil {
 						return err
-					}
-
-					fmt.Printf("Found %d records for pdok services\n", len(records))
-					for _, record := range records {
-						fmt.Printf("%s\t%s\t%s\n", record.Identifier, record.Type, record.Title)
 					}
 
 					constraint2 := csw.GetRecordsCQLConstraint{
 						MetadataType: &dataset,
 					}
-					records2, err := cswClient.GetAllRecords(&constraint2)
+
+					_, err = cswClient.HarvestByCQLConstraint(&constraint2)
 					if err != nil {
 						return err
-					}
-
-					fmt.Printf("Found %d records for pdok services\n", len(records2))
-					for _, record := range records2 {
-						fmt.Printf("%s\t%s\t%s\n", record.Identifier, record.Type, record.Title)
 					}
 
 					// todo: find out how to discriminate between service metadata and dataset metadata
