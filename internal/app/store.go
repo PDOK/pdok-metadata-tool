@@ -65,10 +65,11 @@ func init() {
 						return err
 					}
 
+					// todo: move this to a separate command and put this in repository
 					for _, md := range mds {
 						m := metadata.NewNLServiceMetadataFromMDMetadata(&md)
 
-						fmt.Printf("%s\t%s\t%s\t%s\n", m.ServiceType, m.Title, m.OrganisationName, m.OperatesOn)
+						fmt.Printf("%s\t%s\t%s\t%s\t%s\n", m.ServiceType, m.GetInspireVariant(), m.Title, m.OrganisationName, m.OperatesOn)
 					}
 
 					//dataset := csw.Dataset

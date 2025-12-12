@@ -154,7 +154,7 @@ func (c *CswClient) getCachePath(uuid string) string {
 // todo: when the NumberOfRecordsMatched changed while paging, this could upset the paging. We should check during paging if the number of records has changed. If so we should restart paging from 1.
 func (c *CswClient) GetRecordPage(constraint *csw.GetRecordsCQLConstraint, offset int) ([]csw.SummaryRecord, int, error) {
 	if offset == 0 {
-		offset = 1
+		return nil, -1, fmt.Errorf("offset must be greater than 0")
 	}
 
 	cswURL := c.endpoint.String() +

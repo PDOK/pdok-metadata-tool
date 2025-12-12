@@ -102,3 +102,12 @@ func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetada
 
 	return sm
 }
+
+func (m *NLServiceMetadata) GetInspireVariant() string {
+
+	if m.InspireVariant != nil {
+		return string(*m.InspireVariant)
+	}
+	return ""
+
+}
