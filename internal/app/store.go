@@ -3,13 +3,13 @@ package app
 import (
 	"context"
 	"fmt"
-	"net/url"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
-	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
+	"github.com/pdok/pdok-metadata-tool/pkg/repository"
 	"github.com/urfave/cli/v3"
 )
 
@@ -43,14 +43,17 @@ func init() {
 					// todo: refactor MetadataRepository in kangaroo API to use endpoint ipv host + path
 
 					cswEndpoint := cmd.String("csw-endpoint")
-					ngrEndpoint, err := url.Parse(cswEndpoint)
+
+					repo, err := repository.NewMetadataRepository(cswEndpoint)
 					if err != nil {
 						return err
 					}
-					cswClient := client.NewCswClient(ngrEndpoint)
+
 					cachePath := cmd.String("cache-path")
 					cacheTTL := cmd.Int("cache-ttl")
-					cswClient.SetCache(cachePath, cacheTTL)
+
+					repo.CswClient.SetCache(cachePath, cacheTTL)
+
 					service := csw.Service
 
 					org := "Beheer PDOK"
@@ -60,7 +63,7 @@ func init() {
 						MetadataType:     &service,
 					}
 
-					mds, err := cswClient.HarvestByCQLConstraint(&servicesByPDOKconstraint)
+					mds, err := repo.CswClient.HarvestByCQLConstraint(&servicesByPDOKconstraint)
 					if err != nil {
 						return err
 					}
@@ -69,7 +72,11 @@ func init() {
 					for _, md := range mds {
 						m := metadata.NewNLServiceMetadataFromMDMetadata(&md)
 
-						fmt.Printf("%s\t%s\t%s\t%s\t%s\n", m.ServiceType, m.GetInspireVariant(), m.Title, m.OrganisationName, m.OperatesOn)
+						determineDatasetInspireVariant(repo, m)
+
+						fmt.Printf("%-15s %-15s %-100s %-30s\n",
+							m.ServiceType, m.GetInspireVariant(), m.Title, m.OrganisationName)
+
 					}
 
 					//dataset := csw.Dataset
@@ -92,4 +99,30 @@ func init() {
 		},
 	}
 	PDOKMetadataToolCLI.Commands = append(PDOKMetadataToolCLI.Commands, command)
+}
+
+func determineDatasetInspireVariant(repo *repository.MetadataRepository, m *metadata.NLServiceMetadata) {
+	for _, ref := range m.OperatesOn {
+
+		// TODO This is slow, possibly implement a cache
+		datasetMetadataId := ref.GetID()
+		datasetMetadata, _ := repo.GetDatasetMetadataByID(datasetMetadataId)
+		if datasetMetadata == nil {
+			fmt.Println("No dataset metadata found for " + datasetMetadataId + ", for service record " + m.MetadataID)
+			continue
+		}
+
+		if datasetMetadata.InspireVariant != nil {
+			if len(m.OperatesOn) > 1 {
+				// An INSPIRE service with multiple linked datasets can only be AsIs
+				m.InspireVariant = common.Ptr(inspire.AsIs)
+				return
+			}
+			m.InspireVariant = datasetMetadata.InspireVariant
+			return
+		}
+
+	}
+	m.InspireVariant = nil
+	return
 }

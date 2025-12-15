@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMetadataRepository_GetDatasetMetadataById1(t *testing.T) {
+func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 	mockedNGRServer := preTestSetup()
 
 	mr, _ := NewMetadataRepository("")

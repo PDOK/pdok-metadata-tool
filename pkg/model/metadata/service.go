@@ -1,6 +1,10 @@
 package metadata
 
 import (
+	"html"
+	"net/url"
+	"strings"
+
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
@@ -28,6 +32,28 @@ type NLServiceMetadata struct {
 type OperatesOnRef struct {
 	UUIDRef string
 	Href    string
+}
+
+func (o *OperatesOnRef) GetID() string {
+	// The UUIDRef field has been deprecated, see https://geonovum.github.io/Metadata-ISO19119/#gekoppelde-bron
+	// It can still be present in NGR metadata, but it does not always match the id in the CSW href.
+	// Therefor we first try to parse the id from the CSW href.
+
+	unescapedHref := html.UnescapeString(o.Href)
+
+	hrefUrl, err := url.Parse(unescapedHref)
+	if err == nil {
+		for _, key := range []string{"id", "ID"} {
+			id := hrefUrl.Query().Get(key)
+			if id != "" {
+				// remove whitespace
+				id = strings.ReplaceAll(id, " ", "")
+				return id
+			}
+		}
+	}
+
+	return strings.ReplaceAll(o.UUIDRef, " ", "")
 }
 
 // ServiceEndpoint represents an access endpoint for the service, including protocol information.
@@ -84,8 +110,7 @@ func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetada
 		// INSPIRE & HVD (service)
 		sm.InspireThemes = m.GetServiceInspireThemes()
 		sm.HVDCategories = m.GetServiceHVDCategories()
-		// Variant is determined from dataQualityInfo (applies to the record overall)
-		sm.InspireVariant = m.GetInspireVariant()
+
 	}
 
 	// Distribution endpoints

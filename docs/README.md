@@ -36,7 +36,7 @@ Shows example of <input_file_service_specifics> for users that are not familiar 
 
 Used to retrieve and inspect high value dataset categories from the HVD Thesaurus.
 
-**--local-path**="": Local path where the HVD Thesaurus is cached. (default: /Users/williamloosman/repo/pdok/pdok-metadata-tool/cache/high-value-dataset-category.rdf)
+**--local-path**="": Local path where the HVD Thesaurus is cached. (default: /var/git/pdok-metadata-tool/cache/high-value-dataset-category.rdf)
 
 **--url**="": HVD Thesaurus endpoint which should contain the HVD categories as RDF format. (default: https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Fhigh-value-dataset-category%2F20241002-0%2Frdf%2Fskos_core%2Fhigh-value-dataset-category.rdf&fileName=high-value-dataset-category.rdf)
 
@@ -52,7 +52,7 @@ Displays list of HVD categories.
 
 Exports HVD categories to a CSV file.
 
-**-o**="": Output file path for the CSV file. (default: /Users/williamloosman/repo/pdok/pdok-metadata-tool/cache/high-value-dataset-category.csv)
+**-o**="": Output file path for the CSV file. (default: /var/git/pdok-metadata-tool/cache/high-value-dataset-category.csv)
 
 ## inspire
 
@@ -76,6 +76,8 @@ The store is used to interact with metadata CSW store service.
 
 Harvest original metadata records from CSW source to cache directory.
 
-**--csw-endpoint**="": Endpoint of the CSW service to harvest metadata records from. Default is NGR. (default: https://nationaalgeoregister.nl/geonetwork/srv/dut/csw)
+**--cache-path**="": Local path where CSW metadata records are cached. (default: /var/git/pdok-metadata-tool/cache/records)
 
-**--local-path**="": Local path where the HVD Thesaurus is cached. (default: /Users/williamloosman/repo/pdok/pdok-metadata-tool/cache/records)
+**--cache-ttl**="": Cache TTL in hours for CSW record cache (default: 168 hours = 7 days). (default: 168)
+
+**--csw-endpoint**="": Endpoint of the CSW service to harvest metadata records from. Default is NGR. (default: https://nationaalgeoregister.nl/geonetwork/srv/dut/csw)

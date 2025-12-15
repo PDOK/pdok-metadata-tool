@@ -36,7 +36,9 @@ func (mr *MetadataRepository) GetDatasetMetadataByID(
 		return
 	}
 
-	datasetMetadata = metadata.NewNLDatasetMetadataFromMDMetadata(&mdMetadata)
+	if mdMetadata.IdentificationInfo.MDDataIdentification != nil {
+		datasetMetadata = metadata.NewNLDatasetMetadataFromMDMetadata(&mdMetadata)
+	}
 
 	return
 }
