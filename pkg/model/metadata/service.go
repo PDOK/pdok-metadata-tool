@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 )
 
@@ -23,9 +22,9 @@ type NLServiceMetadata struct {
 	OperatesOn       []OperatesOnRef
 	Endpoints        []ServiceEndpoint
 	ThumbnailURL     *string
-	InspireVariant   *inspire.InspireVariant
-	InspireThemes    []string
-	HVDCategories    []hvd.HVDCategory
+	//	InspireVariant *inspire.InspireVariant // A service does not have an inspire variant. Datasets have. The service can be conform inspire or not. But when a dataset is as-is the service is still 100% conform inspire. Thus, the conformity of a service is separate from the dataset it serves. This is our current interpretation. In the future we might call this field conformInspire. But this only reflects if the service is conform inspire and not if the dataset in the service is conform.
+	InspireThemes []string
+	HVDCategories []hvd.HVDCategory
 }
 
 // OperatesOnRef represents a coupled dataset reference from a service metadata record.
@@ -66,17 +65,17 @@ type ServiceEndpoint struct {
 // NewNLServiceMetadataFromMDMetadata creates a new instance based on service metadata from a CSW response.
 func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetadata {
 	sm := &NLServiceMetadata{
-		MetadataID:     m.UUID,
-		SourceID:       m.UUID,
-		Title:          "",
-		Keywords:       nil,
-		ServiceType:    "",
-		OperatesOn:     nil,
-		Endpoints:      nil,
-		ThumbnailURL:   nil,
-		InspireVariant: nil,
-		InspireThemes:  nil,
-		HVDCategories:  nil,
+		MetadataID:   m.UUID,
+		SourceID:     m.UUID,
+		Title:        "",
+		Keywords:     nil,
+		ServiceType:  "",
+		OperatesOn:   nil,
+		Endpoints:    nil,
+		ThumbnailURL: nil,
+		//InspireVariant: nil,
+		InspireThemes: nil,
+		HVDCategories: nil,
 	}
 
 	if m.IdentificationInfo.SVServiceIdentification != nil {
@@ -128,11 +127,11 @@ func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetada
 	return sm
 }
 
-func (m *NLServiceMetadata) GetInspireVariant() string {
-
-	if m.InspireVariant != nil {
-		return string(*m.InspireVariant)
-	}
-	return ""
-
-}
+//func (m *NLServiceMetadata) GetInspireVariant() string {
+//
+//	if m.InspireVariant != nil {
+//		return string(*m.InspireVariant)
+//	}
+//	return ""
+//
+//}

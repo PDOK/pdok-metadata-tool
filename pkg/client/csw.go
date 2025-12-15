@@ -60,17 +60,16 @@ func (c *CswClient) getRecordByIDUrl(uuid string) string {
 
 // GetRecordByID returns a metadata record for a given id.
 func (c *CswClient) GetRecordByID(uuid string) (iso1911x.MDMetadata, error) {
-	cswURL := c.getRecordByIDUrl(uuid)
 
-	// todo: use cache trough GetRawRecordByID
-	cswResponse := csw.GetRecordByIDResponse{}
-
-	err := getUnmarshalledXMLResponse(&cswResponse, cswURL, "GET", nil, *c.client)
+	raw, err := c.GetRawRecordByID(uuid)
 	if err != nil {
 		return iso1911x.MDMetadata{}, err
 	}
 
-	cswResponse.MDMetadata.SelfURL = cswURL
+	cswResponse := csw.GetRecordByIDResponse{}
+	if err := xml.Unmarshal(raw, &cswResponse); err != nil {
+		return iso1911x.MDMetadata{}, err
+	}
 
 	return cswResponse.MDMetadata, nil
 }
