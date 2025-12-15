@@ -27,7 +27,14 @@ type NLDatasetMetadata struct {
 }
 
 // NewNLDatasetMetadataFromMDMetadata creates a new instance based on dataset metadata from a CSW response.
+// Deprecated: prefer NewNLDatasetMetadataFromMDMetadataWithHVDRepo to enrich HVD categories.
 func NewNLDatasetMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLDatasetMetadata {
+	return NewNLDatasetMetadataFromMDMetadataWithHVDRepo(m, nil)
+}
+
+// NewNLDatasetMetadataFromMDMetadataWithHVDRepo creates a new instance and enriches HVD categories
+// using the provided HVD category provider.
+func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(m *iso1911x.MDMetadata, hvdRepo hvd.CategoryProvider) *NLDatasetMetadata {
 	return &NLDatasetMetadata{
 		MetadataID:     m.UUID,
 		SourceID:       m.UUID,
@@ -36,13 +43,13 @@ func NewNLDatasetMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLDatasetMetada
 		ContactName:    m.IdentificationInfo.MDDataIdentification.ContactName,
 		ContactEmail:   m.IdentificationInfo.MDDataIdentification.ContactEmail,
 		ContactURL:     m.IdentificationInfo.MDDataIdentification.ContactURL,
-		Keywords:       m.GetDatasetKeywords(),
-		LicenceURL:     m.GetDatasetLicenseURL(),
+		Keywords:       m.GetKeywords(),
+		LicenceURL:     m.GetLicenseURL(),
 		UseLimitation:  m.IdentificationInfo.MDDataIdentification.UseLimitation,
-		ThumbnailURL:   m.GetDatasetThumbnailURL(),
+		ThumbnailURL:   m.GetThumbnailURL(),
 		InspireVariant: m.GetInspireVariant(),
-		InspireThemes:  m.GetDatasetInspireThemes(),
-		HVDCategories:  m.GetDatasetHVDCategories(),
+		InspireThemes:  m.GetInspireThemes(),
+		HVDCategories:  m.GetHVDCategories(hvdRepo),
 		BoundingBox: &BoundingBox{
 			WestBoundLongitude: m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude,
 			EastBoundLongitude: m.IdentificationInfo.MDDataIdentification.Extent.EastBoundLongitude,

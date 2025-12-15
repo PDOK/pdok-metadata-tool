@@ -10,18 +10,14 @@ import (
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 )
 
-// MetadataType holds the possible types of metadata.
-type MetadataType string
+// MetadataType is an alias to iso1911x.MetadataType to ensure a single source of truth.
+type MetadataType = iso1911x.MetadataType
 
 // Possible values for MetadataType.
 const (
-	Service MetadataType = "service"
-	Dataset MetadataType = "dataset"
+	Service MetadataType = iso1911x.Service
+	Dataset MetadataType = iso1911x.Dataset
 )
-
-func (m MetadataType) String() string {
-	return string(m)
-}
 
 // GetRecordByIDResponse struct for unmarshalling a CSW GetRecordByID response.
 type GetRecordByIDResponse struct {

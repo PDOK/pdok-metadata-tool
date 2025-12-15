@@ -22,6 +22,7 @@ type NLServiceMetadata struct {
 	OperatesOn       []OperatesOnRef
 	Endpoints        []ServiceEndpoint
 	ThumbnailURL     *string
+	LicenceURL       string
 	//	InspireVariant *inspire.InspireVariant // A service does not have an inspire variant. Datasets have. The service can be conform inspire or not. But when a dataset is as-is the service is still 100% conform inspire. Thus, the conformity of a service is separate from the dataset it serves. This is our current interpretation. In the future we might call this field conformInspire. But this only reflects if the service is conform inspire and not if the dataset in the service is conform.
 	InspireThemes []string
 	HVDCategories []hvd.HVDCategory
@@ -63,7 +64,14 @@ type ServiceEndpoint struct {
 }
 
 // NewNLServiceMetadataFromMDMetadata creates a new instance based on service metadata from a CSW response.
+// Deprecated: prefer NewNLServiceMetadataFromMDMetadataWithHVDRepo to enrich HVD categories.
 func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetadata {
+	return NewNLServiceMetadataFromMDMetadataWithHVDRepo(m, nil)
+}
+
+// NewNLServiceMetadataFromMDMetadataWithHVDRepo creates a new instance and enriches HVD categories
+// using the provided HVD category provider.
+func NewNLServiceMetadataFromMDMetadataWithHVDRepo(m *iso1911x.MDMetadata, hvdRepo hvd.CategoryProvider) *NLServiceMetadata {
 	sm := &NLServiceMetadata{
 		MetadataID:   m.UUID,
 		SourceID:     m.UUID,
@@ -73,6 +81,7 @@ func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetada
 		OperatesOn:   nil,
 		Endpoints:    nil,
 		ThumbnailURL: nil,
+		LicenceURL:   "",
 		//InspireVariant: nil,
 		InspireThemes: nil,
 		HVDCategories: nil,
@@ -92,8 +101,8 @@ func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetada
 			}
 		}
 
-		// Keywords
-		sm.Keywords = m.GetServiceKeywords()
+		// Keywords (generic, excludes INSPIRE and HVD groups)
+		sm.Keywords = m.GetKeywords()
 
 		// Coupled datasets
 		for _, op := range svc.OperatesOn {
@@ -103,12 +112,15 @@ func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetada
 			})
 		}
 
-		// Thumbnail
-		sm.ThumbnailURL = m.GetServiceThumbnailURL()
+		// Thumbnail (generic)
+		sm.ThumbnailURL = m.GetThumbnailURL()
+
+		// License URL (from MD_LegalConstraints)
+		sm.LicenceURL = m.GetLicenseURL()
 
 		// INSPIRE & HVD (service)
-		sm.InspireThemes = m.GetServiceInspireThemes()
-		sm.HVDCategories = m.GetServiceHVDCategories()
+		sm.InspireThemes = m.GetInspireThemes()
+		sm.HVDCategories = m.GetHVDCategories(hvdRepo)
 
 	}
 

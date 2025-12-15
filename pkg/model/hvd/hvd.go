@@ -12,3 +12,9 @@ type HVDCategory struct {
 	LabelDutch   string `json:"labelDutch"`
 	LabelEnglish string `json:"labelEnglish"`
 }
+
+// CategoryProvider abstracts a provider that can resolve a category by its code.
+// Implemented by repository.HVDRepository.
+type CategoryProvider interface {
+	GetHVDCategoryByCode(code string) (*HVDCategory, error)
+}

@@ -6,12 +6,14 @@ import (
 
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
 )
 
 // MetadataRepository is used for looking up metadata using the given CSW endpoint.
 type MetadataRepository struct {
 	CswClient *client.CswClient
+	HVDRepo   hvd.CategoryProvider
 }
 
 // NewMetadataRepository creates a new instance of MetadataRepository.
@@ -38,7 +40,7 @@ func (mr *MetadataRepository) GetDatasetMetadataByID(
 	}
 
 	if mdMetadata.IdentificationInfo.MDDataIdentification != nil {
-		datasetMetadata = metadata.NewNLDatasetMetadataFromMDMetadata(&mdMetadata)
+		datasetMetadata = metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(&mdMetadata, mr.HVDRepo)
 	}
 
 	return
@@ -101,7 +103,7 @@ func HarvestByCQLConstraint[T any](
 		}
 		for i := range mds {
 			if mds[i].IdentificationInfo.SVServiceIdentification != nil {
-				sm := metadata.NewNLServiceMetadataFromMDMetadata(&mds[i])
+				sm := metadata.NewNLServiceMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
 				if sm != nil {
 					result = append(result, any(*sm).(T))
 				}
@@ -118,7 +120,7 @@ func HarvestByCQLConstraint[T any](
 		}
 		for i := range mds {
 			if mds[i].IdentificationInfo.MDDataIdentification.Title != "" {
-				dm := metadata.NewNLDatasetMetadataFromMDMetadata(&mds[i])
+				dm := metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
 				if dm != nil {
 					result = append(result, any(*dm).(T))
 				}
@@ -128,4 +130,9 @@ func HarvestByCQLConstraint[T any](
 	default:
 		return nil, fmt.Errorf("unsupported type parameter T; must be NLServiceMetadata or NLDatasetMetadata")
 	}
+}
+
+// SetHVDRepo sets the HVD category provider used to enrich HVD categories in flat models.
+func (mr *MetadataRepository) SetHVDRepo(repo hvd.CategoryProvider) {
+	mr.HVDRepo = repo
 }

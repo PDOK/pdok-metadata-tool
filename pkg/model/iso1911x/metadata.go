@@ -11,6 +11,18 @@ import (
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 )
 
+// MetadataType holds the possible types of metadata for MD_Metadata records.
+type MetadataType string
+
+// Possible values for MetadataType.
+const (
+	Service MetadataType = "service"
+	Dataset MetadataType = "dataset"
+)
+
+// String returns the string representation of the MetadataType.
+func (m MetadataType) String() string { return string(m) }
+
 // MDMetadata struct for unmarshalling the CSW response (MD_Metadata).
 // Supports both dataset (MD_DataIdentification) and service (SV_ServiceIdentification).
 type MDMetadata struct {
@@ -24,32 +36,29 @@ type MDMetadata struct {
 	ResponsibleParty        *CSWResponsibleParty `xml:"contact>CI_ResponsibleParty>OrganisationName"`
 	IdentificationInfo      struct {
 		SVServiceIdentification *struct {
-			Title               string               `xml:"citation>CI_Citation>title>CharacterString"`
-			ResponsibleParty    *CSWResponsibleParty `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
-			GraphicOverview     *CSWGraphicOverview  `xml:"graphicOverview"`
-			DescriptiveKeywords []struct {
-				MDKeywords CSWMDKeywords `xml:"MD_Keywords"`
-			} `xml:"descriptiveKeywords"`
-			ServiceType string `xml:"serviceType>LocalName"`
-			OperatesOn  []struct {
+			Title               string                  `xml:"citation>CI_Citation>title>CharacterString"`
+			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
+			GraphicOverview     *CSWGraphicOverview     `xml:"graphicOverview"`
+			DescriptiveKeywords []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
+			ServiceType         string                  `xml:"serviceType>LocalName"`
+			LicenseURL          []CSWAnchor             `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
+			OperatesOn          []struct {
 				Uuidref string `xml:"uuidref,attr"`
 				Href    string `xml:"href,attr"`
 			} `xml:"operatesOn"`
 		} `xml:"SV_ServiceIdentification"`
 		MDDataIdentification *struct {
-			Title               string              `xml:"citation>CI_Citation>title>CharacterString"`
-			Abstract            string              `xml:"abstract>CharacterString"`
-			GraphicOverview     *CSWGraphicOverview `xml:"graphicOverview"`
-			DescriptiveKeywords []struct {
-				MDKeywords CSWMDKeywords `xml:"MD_Keywords"`
-			} `xml:"descriptiveKeywords"`
-			ContactName      string               `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
-			ContactEmail     string               `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>address>CI_Address>electronicMailAddress>CharacterString"`
-			ContactURL       string               `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>onlineResource>CI_OnlineResource>linkage>URL"`
-			LicenseURL       []CSWAnchor          `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
-			UseLimitation    string               `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
-			ResponsibleParty *CSWResponsibleParty `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
-			Extent           struct {
+			Title               string                  `xml:"citation>CI_Citation>title>CharacterString"`
+			Abstract            string                  `xml:"abstract>CharacterString"`
+			GraphicOverview     *CSWGraphicOverview     `xml:"graphicOverview"`
+			DescriptiveKeywords []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
+			ContactName         string                  `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
+			ContactEmail        string                  `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>address>CI_Address>electronicMailAddress>CharacterString"`
+			ContactURL          string                  `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>onlineResource>CI_OnlineResource>linkage>URL"`
+			LicenseURL          []CSWAnchor             `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
+			UseLimitation       string                  `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
+			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
+			Extent              struct {
 				WestBoundLongitude string `xml:"westBoundLongitude>Decimal"`
 				EastBoundLongitude string `xml:"eastBoundLongitude>Decimal"`
 				SouthBoundLatitude string `xml:"southBoundLatitude>Decimal"`
@@ -77,7 +86,6 @@ type MDMetadata struct {
 	} `xml:"dataQualityInfo>DQ_DataQuality"`
 }
 
-// ResponsibleParty struct for unmarshalling the CSW response.
 // CSWResponsibleParty represents a text or Anchor value for organisation names in CSW records.
 type CSWResponsibleParty struct {
 	Char   string `xml:"CharacterString"`
@@ -129,68 +137,130 @@ type CSWMDKeywords struct {
 	Thesaurus CSWThesaurus      `xml:"thesaurusName>CI_Citation>title"`
 }
 
-// GetDatasetKeywords returns a slice of keywords (datasets).
-func (m *MDMetadata) GetDatasetKeywords() (keywords []string) {
-	if m.IdentificationInfo.MDDataIdentification == nil {
-		return
+// CSWDescriptiveKeyword wraps MD_Keywords blocks for reuse across dataset and service structures.
+type CSWDescriptiveKeyword struct {
+	MDKeywords CSWMDKeywords `xml:"MD_Keywords"`
+}
+
+// GetMetaDataType returns whether this MDMetadata represents a dataset or a service.
+// It uses the hierarchyLevel>MD_ScopeCode value (codeListValue or text) when present.
+// Defaults to Dataset when unknown.
+func (m *MDMetadata) GetMetaDataType() MetadataType {
+	if m.MdType != nil {
+		// Prefer CodeListValue (element content), fallback to attribute if needed
+		val := m.MdType.CodeListValue
+		if val == "" {
+			val = m.MdType.TextValue
+		}
+		switch strings.ToLower(strings.TrimSpace(val)) {
+		case string(Service):
+			return Service
+		case string(Dataset):
+			return Dataset
+		}
 	}
-	for _, descriptiveKeyword := range m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords {
-		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
-			if keyword.CharacterString != "" {
-				keywords = append(keywords, keyword.CharacterString)
-			} else if keyword.Anchor.Text != "" {
-				keywords = append(keywords, keyword.Anchor.Text)
+	// Default to dataset when unknown
+	return Dataset
+}
+
+// GetKeywords returns non-INSPIRE, non-HVD keywords for both dataset and service metadata.
+func (m *MDMetadata) GetKeywords() (keywords []string) {
+	var dks []CSWDescriptiveKeyword
+	switch m.GetMetaDataType() {
+	case Service:
+		if m.IdentificationInfo.SVServiceIdentification != nil {
+			dks = m.IdentificationInfo.SVServiceIdentification.DescriptiveKeywords
+		}
+	case Dataset:
+		if m.IdentificationInfo.MDDataIdentification != nil {
+			dks = m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords
+		}
+	}
+
+	const (
+		inspireThesaurusName    = "GEMET - INSPIRE themes, version 1.0"
+		inspireDutchVocabulary  = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+		hvdConceptVocabulary    = "http://data.europa.eu/bna/"
+		hvdThesaurusTitleAnchor = "http://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	)
+
+	for _, dk := range dks {
+		th := dk.MDKeywords.Thesaurus
+		// Skip INSPIRE keywords groups
+		if th.CharacterString == inspireThesaurusName || th.Anchor.Text == inspireThesaurusName ||
+			(th.Anchor.Href != "" && strings.Contains(th.Anchor.Href, inspireDutchVocabulary)) {
+			continue
+		}
+		// Skip HVD keywords groups
+		isHVDGroup := false
+		if th.Anchor.Href != "" && strings.Contains(th.Anchor.Href, hvdThesaurusTitleAnchor) {
+			isHVDGroup = true
+		} else {
+			for _, kw := range dk.MDKeywords.Keyword {
+				if kw.Anchor.Href != "" && strings.Contains(kw.Anchor.Href, hvdConceptVocabulary) {
+					isHVDGroup = true
+					break
+				}
+			}
+		}
+		if isHVDGroup {
+			continue
+		}
+		// Collect generic keywords
+		for _, kw := range dk.MDKeywords.Keyword {
+			if kw.CharacterString != "" {
+				keywords = append(keywords, kw.CharacterString)
+			} else if kw.Anchor.Text != "" {
+				keywords = append(keywords, kw.Anchor.Text)
 			}
 		}
 	}
 	return
 }
 
-// GetServiceKeywords returns a slice of keywords from service metadata.
-func (m *MDMetadata) GetServiceKeywords() (keywords []string) {
-	if m.IdentificationInfo.SVServiceIdentification == nil {
-		return
-	}
-	for _, descriptiveKeyword := range m.IdentificationInfo.SVServiceIdentification.DescriptiveKeywords {
-		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
-			if keyword.CharacterString != "" {
-				keywords = append(keywords, keyword.CharacterString)
-			} else if keyword.Anchor.Text != "" {
-				keywords = append(keywords, keyword.Anchor.Text)
+// GetLicenseURL returns a license URL for either dataset or service (if present).
+func (m *MDMetadata) GetLicenseURL() string {
+	switch m.GetMetaDataType() {
+	case Dataset:
+		if m.IdentificationInfo.MDDataIdentification == nil {
+			return ""
+		}
+		for _, val := range m.IdentificationInfo.MDDataIdentification.LicenseURL {
+			if strings.Contains(val.Href, "creativecommons.org") {
+				return val.Href
 			}
 		}
-	}
-	return
-}
-
-// GetDatasetLicenseURL returns the license href (dataset).
-func (m *MDMetadata) GetDatasetLicenseURL() string {
-	if m.IdentificationInfo.MDDataIdentification == nil {
-		return ""
-	}
-	for _, val := range m.IdentificationInfo.MDDataIdentification.LicenseURL {
-		if strings.Contains(val.Href, "creativecommons.org") {
-			return val.Href
+	case Service:
+		if m.IdentificationInfo.SVServiceIdentification == nil {
+			return ""
+		}
+		for _, val := range m.IdentificationInfo.SVServiceIdentification.LicenseURL {
+			if strings.Contains(val.Href, "creativecommons.org") {
+				return val.Href
+			}
 		}
 	}
 	return ""
 }
 
-// GetDatasetThumbnailURL returns the thumbnail URL (dataset).
-func (m *MDMetadata) GetDatasetThumbnailURL() *string {
-	if m.IdentificationInfo.MDDataIdentification != nil &&
-		m.IdentificationInfo.MDDataIdentification.GraphicOverview != nil {
-		thumbnailURL := m.IdentificationInfo.MDDataIdentification.GraphicOverview.MDBrowseGraphic.FileName
-		return &thumbnailURL
-	}
-	return nil
-}
-
-// GetServiceThumbnailURL returns the thumbnail URL from a service metadata record.
-func (m *MDMetadata) GetServiceThumbnailURL() *string {
-	if m.IdentificationInfo.SVServiceIdentification != nil &&
-		m.IdentificationInfo.SVServiceIdentification.GraphicOverview != nil {
+// GetThumbnailURL returns the thumbnail URL from either dataset or service metadata.
+func (m *MDMetadata) GetThumbnailURL() *string {
+	switch m.GetMetaDataType() {
+	case Service:
+		if m.IdentificationInfo.SVServiceIdentification == nil ||
+			m.IdentificationInfo.SVServiceIdentification.GraphicOverview == nil {
+			return nil
+		}
 		thumbnailURL := m.IdentificationInfo.SVServiceIdentification.GraphicOverview.MDBrowseGraphic.FileName
+		if thumbnailURL != "" {
+			return &thumbnailURL
+		}
+	case Dataset:
+		if m.IdentificationInfo.MDDataIdentification == nil ||
+			m.IdentificationInfo.MDDataIdentification.GraphicOverview == nil {
+			return nil
+		}
+		thumbnailURL := m.IdentificationInfo.MDDataIdentification.GraphicOverview.MDBrowseGraphic.FileName
 		if thumbnailURL != "" {
 			return &thumbnailURL
 		}
@@ -239,18 +309,26 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 	}
 }
 
-// GetDatasetInspireThemes retrieves the INSPIRE themes from dataset metadata.
-func (m *MDMetadata) GetDatasetInspireThemes() (themes []string) {
+// GetInspireThemes is a generic version that returns INSPIRE themes for dataset or service.
+func (m *MDMetadata) GetInspireThemes() (themes []string) {
 	const (
 		thesaurusName            = "GEMET - INSPIRE themes, version 1.0"
 		thesaurusVocabularyDutch = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
 	)
 
-	if m.IdentificationInfo.MDDataIdentification == nil {
-		return
+	var dks []CSWDescriptiveKeyword
+	switch m.GetMetaDataType() {
+	case Service:
+		if m.IdentificationInfo.SVServiceIdentification != nil {
+			dks = m.IdentificationInfo.SVServiceIdentification.DescriptiveKeywords
+		}
+	case Dataset:
+		if m.IdentificationInfo.MDDataIdentification != nil {
+			dks = m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords
+		}
 	}
 
-	for _, descriptiveKeyword := range m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords {
+	for _, descriptiveKeyword := range dks {
 		thesaurus := descriptiveKeyword.MDKeywords.Thesaurus
 
 		if thesaurus.CharacterString != thesaurusName && thesaurus.Anchor.Text != thesaurusName {
@@ -260,79 +338,13 @@ func (m *MDMetadata) GetDatasetInspireThemes() (themes []string) {
 
 		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
 			if keyword.Anchor.Href != "" {
-				// Try to get the INSPIRE theme from the anchor
-				// according to TG Recommendation 1.5: metadata/2.0/rec/datasets-and-series/use-anchors-for-gemet
-				if strings.Contains(keyword.Anchor.Href, thesaurusVocabularyDutch) {
-					theme := strings.ReplaceAll(
-						keyword.Anchor.Href,
-						thesaurusVocabularyDutch,
-						"",
-					)
-					themes = append(themes, theme)
-				}
-			} else if keyword.CharacterString != "" {
-				// Otherwise match the keyword with values of the GEMET vocabulary
-				// according to TG Requirement 1.4: metadata/2.0/req/datasets-and-series/inspire-theme-keyword
-				theme := inspire.GetInspireThemeIDForDutchLabel(keyword.CharacterString)
-				if theme != "" {
-					themes = append(themes, theme)
-				}
-			}
-		}
-	}
-
-	return themes
-}
-
-// GetDatasetHVDCategories retrieves the HVD categories from dataset metadata.
-func (m *MDMetadata) GetDatasetHVDCategories() (categories []hvd.HVDCategory) {
-	const thesaurusVocabulary = "http://data.europa.eu/bna/"
-
-	if m.IdentificationInfo.MDDataIdentification == nil {
-		return
-	}
-
-	for _, descriptiveKeyword := range m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords {
-		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
-			if keyword.Anchor.Href != "" {
-				if strings.Contains(keyword.Anchor.Href, thesaurusVocabulary) {
-					parts := strings.Split(keyword.Anchor.Href, "/")
-					category := parts[len(parts)-1]
-					categories = append(categories, hvd.HVDCategory{ID: category})
-				}
-			}
-		}
-	}
-
-	return
-}
-
-// GetServiceInspireThemes retrieves the INSPIRE themes from service metadata.
-func (m *MDMetadata) GetServiceInspireThemes() (themes []string) {
-	const (
-		thesaurusName            = "GEMET - INSPIRE themes, version 1.0"
-		thesaurusVocabularyDutch = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
-	)
-
-	if m.IdentificationInfo.SVServiceIdentification == nil {
-		return
-	}
-
-	for _, descriptiveKeyword := range m.IdentificationInfo.SVServiceIdentification.DescriptiveKeywords {
-		thesaurus := descriptiveKeyword.MDKeywords.Thesaurus
-
-		if thesaurus.CharacterString != thesaurusName && thesaurus.Anchor.Text != thesaurusName {
-			// Skip, this is not the right thesaurus
-			continue
-		}
-
-		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
-			if keyword.Anchor.Href != "" {
+				// Try to get the INSPIRE theme from the anchor according to TG Recommendation 1.5
 				if strings.Contains(keyword.Anchor.Href, thesaurusVocabularyDutch) {
 					theme := strings.ReplaceAll(keyword.Anchor.Href, thesaurusVocabularyDutch, "")
 					themes = append(themes, theme)
 				}
 			} else if keyword.CharacterString != "" {
+				// Otherwise match the keyword with values of the GEMET vocabulary (TG Requirement 1.4)
 				theme := inspire.GetInspireThemeIDForDutchLabel(keyword.CharacterString)
 				if theme != "" {
 					themes = append(themes, theme)
@@ -344,23 +356,50 @@ func (m *MDMetadata) GetServiceInspireThemes() (themes []string) {
 	return themes
 }
 
-// GetServiceHVDCategories retrieves the HVD categories from service metadata.
-func (m *MDMetadata) GetServiceHVDCategories() (categories []hvd.HVDCategory) {
+// GetHVDCategories is the generic method to retrieve HVD categories from metadata.
+// It detects whether the MDMetadata is a dataset or service, extracts HVD category codes
+// from the appropriate descriptive keywords, and (optionally) enriches them via the
+// provided HVDRepository to include full details.
+func (m *MDMetadata) GetHVDCategories(hvdRepo hvd.CategoryProvider) (categories []hvd.HVDCategory) { //nolint:lll
 	const thesaurusVocabulary = "http://data.europa.eu/bna/"
 
-	if m.IdentificationInfo.SVServiceIdentification == nil {
-		return
+	// Use a map to avoid duplicates while preserving order via slice append checks
+	seen := map[string]bool{}
+
+	var dks []CSWDescriptiveKeyword
+	switch m.GetMetaDataType() {
+	case Service:
+		if m.IdentificationInfo.SVServiceIdentification != nil {
+			dks = m.IdentificationInfo.SVServiceIdentification.DescriptiveKeywords
+		}
+	case Dataset:
+		if m.IdentificationInfo.MDDataIdentification != nil {
+			dks = m.IdentificationInfo.MDDataIdentification.DescriptiveKeywords
+		}
 	}
 
-	for _, descriptiveKeyword := range m.IdentificationInfo.SVServiceIdentification.DescriptiveKeywords {
+	for _, descriptiveKeyword := range dks {
 		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
-			if keyword.Anchor.Href != "" {
-				if strings.Contains(keyword.Anchor.Href, thesaurusVocabulary) {
-					parts := strings.Split(keyword.Anchor.Href, "/")
-					category := parts[len(parts)-1]
-					categories = append(categories, hvd.HVDCategory{ID: category})
+			if keyword.Anchor.Href == "" {
+				continue
+			}
+			if !strings.Contains(keyword.Anchor.Href, thesaurusVocabulary) {
+				continue
+			}
+			parts := strings.Split(keyword.Anchor.Href, "/")
+			code := parts[len(parts)-1]
+			label := keyword.Anchor.Text
+			if seen[code] {
+				continue
+			}
+			seen[code] = true
+			if hvdRepo != nil {
+				if cat, err := hvdRepo.GetHVDCategoryByCode(code); err == nil && cat != nil {
+					categories = append(categories, *cat)
+					continue
 				}
 			}
+			categories = append(categories, hvd.HVDCategory{ID: code, LabelDutch: label})
 		}
 	}
 

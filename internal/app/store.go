@@ -11,6 +11,7 @@ import (
 	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
 	"github.com/pdok/pdok-metadata-tool/pkg/repository"
@@ -41,6 +42,18 @@ var (
 	flagFilterType = &cli.StringFlag{
 		Name:  "filter-type",
 		Usage: "Optional filter by metadata type: 'service' or 'dataset'. If omitted, all types are harvested.",
+	}
+	// HVD repository flags used to enrich HVD categories in flat outputs
+	flagHvdURL = &cli.StringFlag{
+		Name:        "hvd-url",
+		DefaultText: "eu-thesaurus-url",
+		Value:       hvd.HvdEndpoint,
+		Usage:       "HVD Thesaurus endpoint (RDF). Used to enrich HVD categories.",
+	}
+	flagHvdLocalPath = &cli.StringFlag{
+		Name:  "hvd-local-path",
+		Value: common.HvdLocalRDFPath,
+		Usage: "Local cache path for the HVD Thesaurus RDF.",
 	}
 )
 
@@ -108,6 +121,8 @@ func init() {
 					flagCachePath,
 					flagCacheTTL,
 					flagFilterOrg,
+					flagHvdURL,
+					flagHvdLocalPath,
 				},
 				Action: func(_ context.Context, cmd *cli.Command) error {
 					return harvestFlatToFile[metadata.NLServiceMetadata](cmd, csw.Service, "service-metadata", "service metadata items")
@@ -121,6 +136,8 @@ func init() {
 					flagCachePath,
 					flagCacheTTL,
 					flagFilterOrg,
+					flagHvdURL,
+					flagHvdLocalPath,
 				},
 				Action: func(_ context.Context, cmd *cli.Command) error {
 					return harvestFlatToFile[metadata.NLDatasetMetadata](cmd, csw.Dataset, "dataset-metadata", "dataset metadata items")
@@ -144,6 +161,10 @@ func harvestFlatToFile[T any](cmd *cli.Command, mt csw.MetadataType, outBase str
 	cachePath := cmd.String("cache-path")
 	cacheTTL := cmd.Int("cache-ttl")
 	repo.SetCache(cachePath, cacheTTL)
+
+	// Configure HVD Repository for enrichment
+	hvdRepo := repository.NewHVDRepository(cmd.String("hvd-url"), cmd.String("hvd-local-path"))
+	repo.SetHVDRepo(hvdRepo)
 
 	// Build constraint with static MetadataType and optional org filter
 	var constraint csw.GetRecordsCQLConstraint
