@@ -37,7 +37,7 @@ func NewNLDatasetMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLDatasetMetada
 func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(m *iso1911x.MDMetadata, hvdRepo hvd.CategoryProvider) *NLDatasetMetadata {
 	return &NLDatasetMetadata{
 		MetadataID:     m.UUID,
-		SourceID:       m.UUID,
+		SourceID:       m.IdentificationInfo.MDDataIdentification.SourceId,
 		Title:          m.IdentificationInfo.MDDataIdentification.Title,
 		Abstract:       m.IdentificationInfo.MDDataIdentification.Abstract,
 		ContactName:    m.IdentificationInfo.MDDataIdentification.ContactName,
