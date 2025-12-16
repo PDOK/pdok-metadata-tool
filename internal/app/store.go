@@ -73,12 +73,13 @@ func init() {
 					flagFilterOrg,
 				},
 				Action: func(_ context.Context, cmd *cli.Command) error {
-
 					cswEndpoint := cmd.String("csw-endpoint")
+
 					u, err := url.Parse(cswEndpoint)
 					if err != nil {
 						return err
 					}
+
 					cswClient := client.NewCswClient(u)
 
 					cachePath := cmd.String("cache-path")
@@ -87,6 +88,7 @@ func init() {
 
 					// Build CQL constraint from flags
 					var constraint csw.GetRecordsCQLConstraint
+
 					if t := cmd.String("filter-type"); t != "" {
 						switch t {
 						case csw.Service.String():
@@ -96,9 +98,13 @@ func init() {
 							mt := csw.Dataset
 							constraint.MetadataType = &mt
 						default:
-							return fmt.Errorf("invalid --filter-type: %s (allowed: service, dataset)", t)
+							return fmt.Errorf(
+								"invalid --filter-type: %s (allowed: service, dataset)",
+								t,
+							)
 						}
 					}
+
 					if org := cmd.String("filter-org"); org != "" {
 						constraint.OrganisationName = &org
 					}
@@ -108,7 +114,12 @@ func init() {
 						return err
 					}
 
-					fmt.Printf("Harvested %d records. Cached XML in %s (TTL %d hours).\n", len(mds), cachePath, cacheTTL)
+					fmt.Printf(
+						"Harvested %d records. Cached XML in %s (TTL %d hours).\n",
+						len(mds),
+						cachePath,
+						cacheTTL,
+					)
 
 					return nil
 				},
@@ -125,7 +136,12 @@ func init() {
 					flagHvdLocalPath,
 				},
 				Action: func(_ context.Context, cmd *cli.Command) error {
-					return harvestFlatToFile[metadata.NLServiceMetadata](cmd, csw.Service, "service-metadata", "service metadata items")
+					return harvestFlatToFile[metadata.NLServiceMetadata](
+						cmd,
+						csw.Service,
+						"service-metadata",
+						"service metadata items",
+					)
 				},
 			},
 			{
@@ -140,7 +156,12 @@ func init() {
 					flagHvdLocalPath,
 				},
 				Action: func(_ context.Context, cmd *cli.Command) error {
-					return harvestFlatToFile[metadata.NLDatasetMetadata](cmd, csw.Dataset, "dataset-metadata", "dataset metadata items")
+					return harvestFlatToFile[metadata.NLDatasetMetadata](
+						cmd,
+						csw.Dataset,
+						"dataset-metadata",
+						"dataset metadata items",
+					)
 				},
 			},
 		},
@@ -150,9 +171,15 @@ func init() {
 
 // harvestFlatToFile centralizes the shared logic for harvesting flat models (service/dataset),
 // marshalling them to JSON, and writing the output to a file under the parent of cache-path.
-func harvestFlatToFile[T any](cmd *cli.Command, mt csw.MetadataType, outBase string, summaryLabel string) error {
+func harvestFlatToFile[T any](
+	cmd *cli.Command,
+	mt csw.MetadataType,
+	outBase string,
+	summaryLabel string,
+) error {
 	// Init repository and propagate cache
 	cswEndpoint := cmd.String("csw-endpoint")
+
 	repo, err := repository.NewMetadataRepository(cswEndpoint)
 	if err != nil {
 		return err
@@ -168,6 +195,7 @@ func harvestFlatToFile[T any](cmd *cli.Command, mt csw.MetadataType, outBase str
 
 	// Build constraint with static MetadataType and optional org filter
 	var constraint csw.GetRecordsCQLConstraint
+
 	constraint.MetadataType = &mt
 	if org := cmd.String("filter-org"); org != "" {
 		constraint.OrganisationName = &org
@@ -189,14 +217,17 @@ func harvestFlatToFile[T any](cmd *cli.Command, mt csw.MetadataType, outBase str
 	parentDir := filepath.Dir(cachePath)
 	org := cmd.String("filter-org")
 	norm := common.NormalizeForFilename(org)
+
 	outPath := filepath.Join(parentDir, fmt.Sprintf("%s-%s.json", outBase, norm))
 	if err := os.MkdirAll(parentDir, 0o755); err != nil {
 		return err
 	}
+
 	if err := os.WriteFile(outPath, b, 0o644); err != nil {
 		return err
 	}
 
 	fmt.Printf("Wrote %d %s to %s\n", len(res), summaryLabel, outPath)
+
 	return nil
 }

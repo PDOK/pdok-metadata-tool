@@ -34,7 +34,10 @@ func NewNLDatasetMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLDatasetMetada
 
 // NewNLDatasetMetadataFromMDMetadataWithHVDRepo creates a new instance and enriches HVD categories
 // using the provided HVD category provider.
-func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(m *iso1911x.MDMetadata, hvdRepo hvd.CategoryProvider) *NLDatasetMetadata {
+func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
+	m *iso1911x.MDMetadata,
+	hvdRepo hvd.CategoryProvider,
+) *NLDatasetMetadata {
 	return &NLDatasetMetadata{
 		MetadataID:     m.UUID,
 		SourceID:       m.UUID,

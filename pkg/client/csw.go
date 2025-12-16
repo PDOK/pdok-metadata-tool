@@ -3,7 +3,7 @@ package client
 
 import (
 	"encoding/xml"
-	"fmt"
+	"errors"
 	"net/http"
 	"net/url"
 	"os"
@@ -62,7 +62,6 @@ func (c *CswClient) getRecordByIDUrl(uuid string) string {
 
 // GetRecordByID returns a metadata record for a given id.
 func (c *CswClient) GetRecordByID(uuid string) (iso1911x.MDMetadata, error) {
-
 	raw, err := c.GetRawRecordByID(uuid)
 	if err != nil {
 		return iso1911x.MDMetadata{}, err
@@ -81,6 +80,7 @@ func (c *CswClient) GetRawRecordByID(uuid string) (rawRecord []byte, err error) 
 	if c.cacheDir != nil {
 		if cached, ok, cacheErr := c.getCachedRecordIfFresh(uuid); cacheErr == nil && ok {
 			slog.Debug("Harvesting record from cache", "uuid", uuid)
+
 			return cached, nil
 		}
 		// if cacheErr != nil we ignore and proceed to fetch
@@ -89,6 +89,7 @@ func (c *CswClient) GetRawRecordByID(uuid string) (rawRecord []byte, err error) 
 	// Fetch from remote
 	cswURL := c.getRecordByIDUrl(uuid)
 	slog.Debug("Harvesting record from", "url", cswURL)
+
 	rawRecord, err = getResponseBody(cswURL, "GET", nil, *c.client)
 	if err != nil {
 		return nil, err
@@ -106,11 +107,13 @@ func (c *CswClient) GetRawRecordByID(uuid string) (rawRecord []byte, err error) 
 // When cache does not exist or is stale, returns (nil, false, nil).
 func (c *CswClient) getCachedRecordIfFresh(uuid string) ([]byte, bool, error) {
 	path := c.getCachePath(uuid)
+
 	fi, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, false, nil
 		}
+
 		return nil, false, err
 	}
 
@@ -123,6 +126,7 @@ func (c *CswClient) getCachedRecordIfFresh(uuid string) ([]byte, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
+
 	return data, true, nil
 }
 
@@ -131,10 +135,13 @@ func (c *CswClient) storeRecordInCache(uuid string, data []byte) error {
 	if c.cacheDir == nil {
 		return nil
 	}
+
 	if err := c.ensureCacheDir(); err != nil {
 		return err
 	}
+
 	path := c.getCachePath(uuid)
+
 	return os.WriteFile(path, data, 0o644)
 }
 
@@ -142,6 +149,7 @@ func (c *CswClient) ensureCacheDir() error {
 	if c.cacheDir == nil {
 		return nil
 	}
+
 	return os.MkdirAll(*c.cacheDir, 0o755)
 }
 
@@ -153,9 +161,12 @@ func (c *CswClient) getCachePath(uuid string) string {
 // GetRecordPage returns the full CSW GetRecords response for a page, possibly using a constraint.
 // TODO Use this for harvesting service metadata in ETF-validator-go.
 // Note: Interface changed to return the entire GetRecordsResponse (not only records and next offset).
-func (c *CswClient) GetRecordPage(constraint *csw.GetRecordsCQLConstraint, offset int) (csw.GetRecordsResponse, error) {
+func (c *CswClient) GetRecordPage(
+	constraint *csw.GetRecordsCQLConstraint,
+	offset int,
+) (csw.GetRecordsResponse, error) {
 	if offset == 0 {
-		return csw.GetRecordsResponse{}, fmt.Errorf("offset must be greater than 0")
+		return csw.GetRecordsResponse{}, errors.New("offset must be greater than 0")
 	}
 
 	cswURL := c.endpoint.String() +
@@ -183,12 +194,22 @@ func (c *CswClient) GetRecordPage(constraint *csw.GetRecordsCQLConstraint, offse
 
 // getRecordsRecursive recursively pages through all records.
 // It guards against changes in NumberOfRecordsMatched by restarting from offset 1 if detected.
-func (c *CswClient) getRecordsRecursive(constraint *csw.GetRecordsCQLConstraint, offset int, result *[]csw.SummaryRecord) (err error) {
+func (c *CswClient) getRecordsRecursive(
+	constraint *csw.GetRecordsCQLConstraint,
+	offset int,
+	result *[]csw.SummaryRecord,
+) (err error) {
 	return c.getRecordsRecursiveWithState(constraint, offset, result, -1, 0)
 }
 
 // getRecordsRecursiveWithState is the internal implementation tracking baseline matched and restart attempts.
-func (c *CswClient) getRecordsRecursiveWithState(constraint *csw.GetRecordsCQLConstraint, offset int, result *[]csw.SummaryRecord, baselineMatched int, restarts int) (err error) {
+func (c *CswClient) getRecordsRecursiveWithState(
+	constraint *csw.GetRecordsCQLConstraint,
+	offset int,
+	result *[]csw.SummaryRecord,
+	baselineMatched int,
+	restarts int,
+) (err error) {
 	const maxRestarts = 3
 
 	resp, err := c.GetRecordPage(constraint, offset)
@@ -212,8 +233,8 @@ func (c *CswClient) getRecordsRecursiveWithState(constraint *csw.GetRecordsCQLCo
 		slog.Info("Found records; paging recursively until end", "total", matched)
 	} else {
 		// Detect changes in total matches and restart if necessary
-
 		slog.Debug("Paging recursively until end", "total", matched, "baseline", baselineMatched, "offset", offset)
+
 		if baselineMatched >= 0 && matched != baselineMatched {
 			if restarts >= maxRestarts {
 				slog.Warn("NumberOfRecordsMatched keeps changing; giving up restarts", "baseline", baselineMatched, "current", matched, "restarts", restarts)
@@ -221,6 +242,7 @@ func (c *CswClient) getRecordsRecursiveWithState(constraint *csw.GetRecordsCQLCo
 				slog.Warn("NumberOfRecordsMatched changed during paging; restarting from offset 1", "baseline", baselineMatched, "current", matched, "restarts", restarts+1)
 				// Reset results and restart from beginning with new baseline
 				*result = (*result)[:0]
+
 				return c.getRecordsRecursiveWithState(constraint, 1, result, matched, restarts+1)
 			}
 		}
@@ -236,9 +258,11 @@ func (c *CswClient) getRecordsRecursiveWithState(constraint *csw.GetRecordsCQLCo
 }
 
 // GetAllRecords returns all metadata records based on recursive paging, possibly using a constraint.
-func (c *CswClient) GetAllRecords(constraint *csw.GetRecordsCQLConstraint) ([]csw.SummaryRecord, error) {
-
+func (c *CswClient) GetAllRecords(
+	constraint *csw.GetRecordsCQLConstraint,
+) ([]csw.SummaryRecord, error) {
 	var result []csw.SummaryRecord
+
 	err := c.getRecordsRecursive(constraint, 1, &result)
 	if err != nil {
 		return nil, err
@@ -247,9 +271,10 @@ func (c *CswClient) GetAllRecords(constraint *csw.GetRecordsCQLConstraint) ([]cs
 	return result, nil
 }
 
-func (c *CswClient) HarvestByCQLConstraint(constraint *csw.GetRecordsCQLConstraint) (result []iso1911x.MDMetadata, err error) {
+func (c *CswClient) HarvestByCQLConstraint(
+	constraint *csw.GetRecordsCQLConstraint,
+) (result []iso1911x.MDMetadata, err error) {
 	records, err := c.GetAllRecords(constraint)
-
 	if err != nil {
 		return
 	}
@@ -257,17 +282,33 @@ func (c *CswClient) HarvestByCQLConstraint(constraint *csw.GetRecordsCQLConstrai
 	for _, record := range records {
 		raw, err := c.GetRawRecordByID(record.Identifier)
 		if err != nil {
-			slog.Debug("Error retrieving record", "identifier", record.Identifier, "type", record.Type, "title", record.Title, "err", err)
+			slog.Debug(
+				"Error retrieving record",
+				"identifier",
+				record.Identifier,
+				"type",
+				record.Type,
+				"title",
+				record.Title,
+				"err",
+				err,
+			)
 		}
 
 		cswResponse := csw.GetRecordByIDResponse{}
+
 		err = xml.Unmarshal(raw, &cswResponse)
 		if err != nil {
-			slog.Debug("Error unmarshalling NGR response", "identifier", record.Identifier, "err", err)
+			slog.Debug(
+				"Error unmarshalling NGR response",
+				"identifier",
+				record.Identifier,
+				"err",
+				err,
+			)
 		} else {
 			result = append(result, cswResponse.MDMetadata)
 		}
-
 	}
 
 	return
@@ -284,7 +325,13 @@ func (c *CswClient) GetRecordsWithOGCFilter(
 
 	var cswResponse = csw.GetRecordsResponse{}
 
-	err = getUnmarshalledXMLResponse(&cswResponse, c.endpoint.String(), "POST", &requestBody, *c.client)
+	err = getUnmarshalledXMLResponse(
+		&cswResponse,
+		c.endpoint.String(),
+		"POST",
+		&requestBody,
+		*c.client,
+	)
 	if err != nil {
 		return nil, err
 	}

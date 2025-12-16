@@ -152,6 +152,7 @@ func (m *MDMetadata) GetMetaDataType() MetadataType {
 		if val == "" {
 			val = m.MdType.TextValue
 		}
+
 		switch strings.ToLower(strings.TrimSpace(val)) {
 		case string(Service):
 			return Service
@@ -166,6 +167,7 @@ func (m *MDMetadata) GetMetaDataType() MetadataType {
 // GetKeywords returns non-INSPIRE, non-HVD keywords for both dataset and service metadata.
 func (m *MDMetadata) GetKeywords() (keywords []string) {
 	var dks []CSWDescriptiveKeyword
+
 	switch m.GetMetaDataType() {
 	case Service:
 		if m.IdentificationInfo.SVServiceIdentification != nil {
@@ -199,10 +201,12 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 			for _, kw := range dk.MDKeywords.Keyword {
 				if kw.Anchor.Href != "" && strings.Contains(kw.Anchor.Href, hvdConceptVocabulary) {
 					isHVDGroup = true
+
 					break
 				}
 			}
 		}
+
 		if isHVDGroup {
 			continue
 		}
@@ -215,7 +219,8 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 			}
 		}
 	}
-	return
+
+	return keywords
 }
 
 // GetLicenseURL returns a license URL for either dataset or service (if present).
@@ -225,6 +230,7 @@ func (m *MDMetadata) GetLicenseURL() string {
 		if m.IdentificationInfo.MDDataIdentification == nil {
 			return ""
 		}
+
 		for _, val := range m.IdentificationInfo.MDDataIdentification.LicenseURL {
 			if strings.Contains(val.Href, "creativecommons.org") {
 				return val.Href
@@ -234,12 +240,14 @@ func (m *MDMetadata) GetLicenseURL() string {
 		if m.IdentificationInfo.SVServiceIdentification == nil {
 			return ""
 		}
+
 		for _, val := range m.IdentificationInfo.SVServiceIdentification.LicenseURL {
 			if strings.Contains(val.Href, "creativecommons.org") {
 				return val.Href
 			}
 		}
 	}
+
 	return ""
 }
 
@@ -251,6 +259,7 @@ func (m *MDMetadata) GetThumbnailURL() *string {
 			m.IdentificationInfo.SVServiceIdentification.GraphicOverview == nil {
 			return nil
 		}
+
 		thumbnailURL := m.IdentificationInfo.SVServiceIdentification.GraphicOverview.MDBrowseGraphic.FileName
 		if thumbnailURL != "" {
 			return &thumbnailURL
@@ -260,11 +269,13 @@ func (m *MDMetadata) GetThumbnailURL() *string {
 			m.IdentificationInfo.MDDataIdentification.GraphicOverview == nil {
 			return nil
 		}
+
 		thumbnailURL := m.IdentificationInfo.MDDataIdentification.GraphicOverview.MDBrowseGraphic.FileName
 		if thumbnailURL != "" {
 			return &thumbnailURL
 		}
 	}
+
 	return nil
 }
 
@@ -317,6 +328,7 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 	)
 
 	var dks []CSWDescriptiveKeyword
+
 	switch m.GetMetaDataType() {
 	case Service:
 		if m.IdentificationInfo.SVServiceIdentification != nil {
@@ -364,13 +376,16 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 // It detects whether the MDMetadata is a dataset or service, extracts HVD category codes
 // from the appropriate descriptive keywords, and (optionally) enriches them via the
 // provided HVDRepository to include full details.
-func (m *MDMetadata) GetHVDCategories(hvdRepo hvd.CategoryProvider) (categories []hvd.HVDCategory) { //nolint:lll
+func (m *MDMetadata) GetHVDCategories(
+	hvdRepo hvd.CategoryProvider,
+) (categories []hvd.HVDCategory) { //nolint:lll
 	const thesaurusVocabulary = "http://data.europa.eu/bna/"
 
 	// Use a map to avoid duplicates while preserving order via slice append checks
 	seen := map[string]bool{}
 
 	var dks []CSWDescriptiveKeyword
+
 	switch m.GetMetaDataType() {
 	case Service:
 		if m.IdentificationInfo.SVServiceIdentification != nil {
@@ -387,25 +402,31 @@ func (m *MDMetadata) GetHVDCategories(hvdRepo hvd.CategoryProvider) (categories 
 			if keyword.Anchor.Href == "" {
 				continue
 			}
+
 			if !strings.Contains(keyword.Anchor.Href, thesaurusVocabulary) {
 				continue
 			}
+
 			parts := strings.Split(keyword.Anchor.Href, "/")
 			code := parts[len(parts)-1]
 			label := keyword.Anchor.Text
+
 			if seen[code] {
 				continue
 			}
+
 			seen[code] = true
 			if hvdRepo != nil {
 				if cat, err := hvdRepo.GetHVDCategoryByCode(code); err == nil && cat != nil {
 					categories = append(categories, *cat)
+
 					continue
 				}
 			}
+
 			categories = append(categories, hvd.HVDCategory{ID: code, LabelDutch: label})
 		}
 	}
 
-	return
+	return categories
 }

@@ -9,6 +9,7 @@ func TestOperatesOnRef_GetID1(t *testing.T) {
 		UUIDRef string
 		Href    string
 	}
+
 	tests := []struct {
 		name   string
 		fields fields

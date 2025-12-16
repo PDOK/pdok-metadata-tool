@@ -71,7 +71,6 @@ func getResponseBody(
 	defer common.SafeClose(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
-
 		bodyBytes, _ := io.ReadAll(resp.Body)
 		bodyStr := string(bodyBytes)
 

@@ -78,8 +78,10 @@ func TestCswClient_GetRecords(t *testing.T) {
 
 func atoi(t *testing.T, s string) int {
 	t.Helper()
+
 	i, err := strconv.Atoi(s)
 	require.NoError(t, err)
+
 	return i
 }
 

@@ -64,12 +64,14 @@ func (c *GetRecordsCQLConstraint) ToQueryParameter() (constraint string) {
 
 	// Build the raw CQL expression and URL-encode it as a single query parameter value
 	var expr string
+	var exprSb67 strings.Builder
 	for i, c := range constraints {
-		expr += c
+		exprSb67.WriteString(c)
 		if i < len(constraints)-1 {
-			expr += " AND "
+			exprSb67.WriteString(" AND ")
 		}
 	}
+	expr += exprSb67.String()
 
 	constraint += "&constraint=" + url.QueryEscape(expr)
 

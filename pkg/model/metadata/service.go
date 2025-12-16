@@ -38,7 +38,6 @@ func (o *OperatesOnRef) GetID() string {
 	// The UUIDRef field has been deprecated, see https://geonovum.github.io/Metadata-ISO19119/#gekoppelde-bron
 	// It can still be present in NGR metadata, but it does not always match the id in the CSW href.
 	// Therefor we first try to parse the id from the CSW href.
-
 	unescapedHref := html.UnescapeString(o.Href)
 
 	hrefUrl, err := url.Parse(unescapedHref)
@@ -48,6 +47,7 @@ func (o *OperatesOnRef) GetID() string {
 			if id != "" {
 				// remove whitespace
 				id = strings.ReplaceAll(id, " ", "")
+
 				return id
 			}
 		}
@@ -71,7 +71,10 @@ func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetada
 
 // NewNLServiceMetadataFromMDMetadataWithHVDRepo creates a new instance and enriches HVD categories
 // using the provided HVD category provider.
-func NewNLServiceMetadataFromMDMetadataWithHVDRepo(m *iso1911x.MDMetadata, hvdRepo hvd.CategoryProvider) *NLServiceMetadata {
+func NewNLServiceMetadataFromMDMetadataWithHVDRepo(
+	m *iso1911x.MDMetadata,
+	hvdRepo hvd.CategoryProvider,
+) *NLServiceMetadata {
 	sm := &NLServiceMetadata{
 		MetadataID:   m.UUID,
 		SourceID:     m.UUID,
@@ -121,7 +124,6 @@ func NewNLServiceMetadataFromMDMetadataWithHVDRepo(m *iso1911x.MDMetadata, hvdRe
 		// INSPIRE & HVD (service)
 		sm.InspireThemes = m.GetInspireThemes()
 		sm.HVDCategories = m.GetHVDCategories(hvdRepo)
-
 	}
 
 	// Distribution endpoints
@@ -130,16 +132,18 @@ func NewNLServiceMetadataFromMDMetadataWithHVDRepo(m *iso1911x.MDMetadata, hvdRe
 		if ol.Protocol.Anchor.Text != "" {
 			ep.Protocol = ol.Protocol.Anchor.Text
 		}
+
 		if ol.Protocol.Anchor.Href != "" {
 			ep.ProtocolHref = ol.Protocol.Anchor.Href
 		}
+
 		sm.Endpoints = append(sm.Endpoints, ep)
 	}
 
 	return sm
 }
 
-//func (m *NLServiceMetadata) GetInspireVariant() string {
+// func (m *NLServiceMetadata) GetInspireVariant() string {
 //
 //	if m.InspireVariant != nil {
 //		return string(*m.InspireVariant)

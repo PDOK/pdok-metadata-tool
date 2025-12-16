@@ -30,6 +30,7 @@ var PDOKMetadataToolCLI = &cli.Command{
 		lvl := parseLogLevel(val)
 		handler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: lvl})
 		slog.SetDefault(slog.New(handler))
+
 		return ctx, nil
 	},
 }

@@ -46,30 +46,40 @@ func NormalizeForFilename(s string) string {
 	if s == "" {
 		return "all"
 	}
+
 	s = strings.ToLower(s)
 	s = strings.ReplaceAll(s, " ", "-")
 
 	// replace any non allowed char with '-'
 	var b strings.Builder
+
 	prevDash := false
+
 	for _, r := range s {
 		allowed := (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' || r == '_'
 		if !allowed {
 			// write dash (will be collapsed)
 			if !prevDash {
 				b.WriteByte('-')
+
 				prevDash = true
 			}
+
 			continue
 		}
+
 		if r == '-' {
 			if !prevDash {
 				b.WriteRune(r)
+
 				prevDash = true
 			}
+
 			continue
 		}
+
 		b.WriteRune(r)
+
 		prevDash = false
 	}
 
@@ -77,5 +87,6 @@ func NormalizeForFilename(s string) string {
 	if res == "" {
 		return "all"
 	}
+
 	return res
 }

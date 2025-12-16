@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 
@@ -40,7 +41,10 @@ func (mr *MetadataRepository) GetDatasetMetadataByID(
 	}
 
 	if mdMetadata.IdentificationInfo.MDDataIdentification != nil {
-		datasetMetadata = metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(&mdMetadata, mr.HVDRepo)
+		datasetMetadata = metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
+			&mdMetadata,
+			mr.HVDRepo,
+		)
 	}
 
 	return
@@ -84,10 +88,11 @@ func HarvestByCQLConstraint[T any](
 	constraint *csw.GetRecordsCQLConstraint,
 ) (result []T, err error) {
 	if constraint == nil {
-		return nil, fmt.Errorf("constraint must not be nil")
+		return nil, errors.New("constraint must not be nil")
 	}
+
 	if constraint.MetadataType == nil {
-		return nil, fmt.Errorf("constraint.MetadataType must be set to 'service' or 'dataset'")
+		return nil, errors.New("constraint.MetadataType must be set to 'service' or 'dataset'")
 	}
 
 	// Determine expected T vs MetadataType
@@ -97,10 +102,12 @@ func HarvestByCQLConstraint[T any](
 		if *constraint.MetadataType != csw.Service {
 			return nil, fmt.Errorf("type parameter mismatch: T=NLServiceMetadata but MetadataType=%s", constraint.MetadataType.String())
 		}
+
 		mds, err := mr.CswClient.HarvestByCQLConstraint(constraint)
 		if err != nil {
 			return nil, err
 		}
+
 		for i := range mds {
 			if mds[i].IdentificationInfo.SVServiceIdentification != nil {
 				sm := metadata.NewNLServiceMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
@@ -109,15 +116,18 @@ func HarvestByCQLConstraint[T any](
 				}
 			}
 		}
+
 		return result, nil
 	case metadata.NLDatasetMetadata:
 		if *constraint.MetadataType != csw.Dataset {
 			return nil, fmt.Errorf("type parameter mismatch: T=NLDatasetMetadata but MetadataType=%s", constraint.MetadataType.String())
 		}
+
 		mds, err := mr.CswClient.HarvestByCQLConstraint(constraint)
 		if err != nil {
 			return nil, err
 		}
+
 		for i := range mds {
 			if mds[i].IdentificationInfo.MDDataIdentification.Title != "" {
 				dm := metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
@@ -126,9 +136,10 @@ func HarvestByCQLConstraint[T any](
 				}
 			}
 		}
+
 		return result, nil
 	default:
-		return nil, fmt.Errorf("unsupported type parameter T; must be NLServiceMetadata or NLDatasetMetadata")
+		return nil, errors.New("unsupported type parameter T; must be NLServiceMetadata or NLDatasetMetadata")
 	}
 }
 

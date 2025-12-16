@@ -8,5 +8,6 @@ func MarshalJSON(v any) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(b), nil
 }
