@@ -25,6 +25,11 @@ type CswClient struct {
 	cacheTTL time.Duration
 }
 
+const (
+	permDir0750  = 0o750
+	permFile0600 = 0o600
+)
+
 // NewCswClient creates a new instance of NgrClient.
 func NewCswClient(endpoint *url.URL) CswClient {
 	const defaultTimeoutSeconds = 20
@@ -147,7 +152,7 @@ func (c *CswClient) HarvestByCQLConstraint(
 ) (result []iso1911x.MDMetadata, err error) {
 	records, err := c.GetAllRecords(constraint)
 	if err != nil {
-		return
+		return result, err
 	}
 
 	for _, record := range records {
@@ -182,7 +187,7 @@ func (c *CswClient) HarvestByCQLConstraint(
 		}
 	}
 
-	return
+	return result, err
 }
 
 // GetRecordsWithOGCFilter returns summary metadata records, using an OGC filter.
@@ -214,7 +219,9 @@ func (c *CswClient) GetRecordsWithOGCFilter(
 
 // --- Helper and unexported methods must be placed after exported methods (funcorder) ---
 
-func (c *CswClient) getRecordByIDUrl(uuid string) string { //nolint:stylecheck // matches existing naming convention
+func (c *CswClient) getRecordByIDUrl(
+	uuid string,
+) string { //nolint:stylecheck // matches existing naming convention
 	return c.endpoint.String() +
 		"?service=CSW" +
 		"&request=GetRecordById" +
@@ -260,7 +267,7 @@ func (c *CswClient) storeRecordInCache(uuid string, data []byte) error {
 
 	path := c.getCachePath(uuid)
 
-	return os.WriteFile(path, data, 0o600)
+	return os.WriteFile(path, data, permFile0600)
 }
 
 func (c *CswClient) ensureCacheDir() error {
@@ -268,7 +275,7 @@ func (c *CswClient) ensureCacheDir() error {
 		return nil
 	}
 
-	return os.MkdirAll(*c.cacheDir, 0o750)
+	return os.MkdirAll(*c.cacheDir, permDir0750)
 }
 
 func (c *CswClient) getCachePath(uuid string) string {

@@ -12,6 +12,7 @@ import (
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
 	"github.com/pdok/pdok-metadata-tool/pkg/repository"
@@ -57,7 +58,11 @@ var (
 	}
 )
 
-const DefaultCacheTTLHrs = 168
+const (
+	DefaultCacheTTLHrs = 168
+	permDir0750        = 0o750
+	permFile0600       = 0o600
+)
 
 func init() {
 	command := &cli.Command{
@@ -93,11 +98,11 @@ func init() {
 
 					if t := cmd.String("filter-type"); t != "" {
 						switch t {
-						case csw.Service.String():
-							mt := csw.Service
+						case iso1911x.Service.String():
+							mt := iso1911x.Service
 							constraint.MetadataType = &mt
-						case csw.Dataset.String():
-							mt := csw.Dataset
+						case iso1911x.Dataset.String():
+							mt := iso1911x.Dataset
 							constraint.MetadataType = &mt
 						default:
 							return fmt.Errorf(
@@ -140,7 +145,7 @@ func init() {
 				Action: func(_ context.Context, cmd *cli.Command) error {
 					return harvestFlatToFile[metadata.NLServiceMetadata](
 						cmd,
-						csw.Service,
+						iso1911x.Service,
 						"service-metadata",
 						"service metadata items",
 					)
@@ -160,7 +165,7 @@ func init() {
 				Action: func(_ context.Context, cmd *cli.Command) error {
 					return harvestFlatToFile[metadata.NLDatasetMetadata](
 						cmd,
-						csw.Dataset,
+						iso1911x.Dataset,
 						"dataset-metadata",
 						"dataset metadata items",
 					)
@@ -175,7 +180,7 @@ func init() {
 // marshalling them to JSON, and writing the output to a file under the parent of cache-path.
 func harvestFlatToFile[T any](
 	cmd *cli.Command,
-	mt csw.MetadataType,
+	mt iso1911x.MetadataType,
 	outBase string,
 	summaryLabel string,
 ) error {
@@ -221,11 +226,11 @@ func harvestFlatToFile[T any](
 	norm := common.NormalizeForFilename(org)
 
 	outPath := filepath.Join(parentDir, fmt.Sprintf("%s-%s.json", outBase, norm))
-	if err := os.MkdirAll(parentDir, 0o750); err != nil {
+	if err := os.MkdirAll(parentDir, permDir0750); err != nil {
 		return err
 	}
 
-	if err := os.WriteFile(outPath, b, 0o600); err != nil {
+	if err := os.WriteFile(outPath, b, permFile0600); err != nil {
 		return err
 	}
 

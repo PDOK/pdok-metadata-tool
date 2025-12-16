@@ -2,12 +2,12 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"net/url"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
 )
 
@@ -56,7 +56,7 @@ func (mr *MetadataRepository) SearchDatasetMetadata(
 	id *string,
 ) (records []csw.SummaryRecord, err error) {
 	filter := csw.GetRecordsOgcFilter{
-		MetadataType: csw.Dataset,
+		MetadataType: iso1911x.Dataset,
 		Title:        title,
 		Identifier:   id,
 	}
@@ -95,60 +95,50 @@ func HarvestByCQLConstraint[T any](
 		return nil, errors.New("constraint.MetadataType must be set to 'service' or 'dataset'")
 	}
 
-	// Determine expected T vs MetadataType
-	var zero T
+	var (
+		metadataType iso1911x.MetadataType
+		zero         T
+	)
+
 	switch any(zero).(type) {
 	case metadata.NLServiceMetadata:
-		if *constraint.MetadataType != csw.Service {
-			return nil, fmt.Errorf("type parameter mismatch: T=NLServiceMetadata but MetadataType=%s", constraint.MetadataType.String())
-		}
-
-		mds, err := mr.CswClient.HarvestByCQLConstraint(constraint)
-		if err != nil {
-			return nil, err
-		}
-
-		for i := range mds {
-			if mds[i].IdentificationInfo.SVServiceIdentification != nil {
-				sm := metadata.NewNLServiceMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
-				if sm != nil {
-					// separate type assertion to satisfy forcetypeassert linter
-					v, ok := any(*sm).(T)
-					if ok {
-						result = append(result, v)
-					}
-				}
-			}
-		}
-
-		return result, nil
+		metadataType = iso1911x.Service
 	case metadata.NLDatasetMetadata:
-		if *constraint.MetadataType != csw.Dataset {
-			return nil, fmt.Errorf("type parameter mismatch: T=NLDatasetMetadata but MetadataType=%s", constraint.MetadataType.String())
-		}
-
-		mds, err := mr.CswClient.HarvestByCQLConstraint(constraint)
-		if err != nil {
-			return nil, err
-		}
-
-		for i := range mds {
-			if mds[i].IdentificationInfo.MDDataIdentification.Title != "" {
-				dm := metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
-				if dm != nil {
-					// separate type assertion to satisfy forcetypeassert linter
-					v, ok := any(*dm).(T)
-					if ok {
-						result = append(result, v)
-					}
-				}
-			}
-		}
-
-		return result, nil
+		metadataType = iso1911x.Dataset
 	default:
 		return nil, errors.New("unsupported type parameter T; must be NLServiceMetadata or NLDatasetMetadata")
 	}
+
+	constraint.MetadataType = &metadataType
+
+	mds, err := mr.CswClient.HarvestByCQLConstraint(constraint)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range mds {
+		if metadataType == iso1911x.Service {
+			sm := metadata.NewNLServiceMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
+			if sm != nil {
+				v, ok := any(*sm).(T)
+				if ok {
+					result = append(result, v)
+				}
+			}
+		}
+
+		if metadataType == iso1911x.Dataset {
+			dm := metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
+			if dm != nil {
+				v, ok := any(*dm).(T)
+				if ok {
+					result = append(result, v)
+				}
+			}
+		}
+	}
+
+	return result, nil
 }
 
 // SetHVDRepo sets the HVD category provider used to enrich HVD categories in flat models.

@@ -10,14 +10,7 @@ import (
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 )
 
-// MetadataType is an alias to iso1911x.MetadataType to ensure a single source of truth.
-type MetadataType = iso1911x.MetadataType
-
-// Possible values for MetadataType.
-const (
-	Service MetadataType = iso1911x.Service
-	Dataset MetadataType = iso1911x.Dataset
-)
+// Note: Use iso1911x.MetadataType directly for type and constants (Service/Dataset).
 
 // GetRecordByIDResponse struct for unmarshalling a CSW GetRecordByID response.
 type GetRecordByIDResponse struct {
@@ -39,7 +32,7 @@ type GetRecordsResponse struct {
 
 // GetRecordsCQLConstraint struct for creating a CQL constraint.
 type GetRecordsCQLConstraint struct {
-	MetadataType     *MetadataType
+	MetadataType     *iso1911x.MetadataType
 	OrganisationName *string
 }
 
@@ -56,31 +49,36 @@ func (c *GetRecordsCQLConstraint) ToQueryParameter() (constraint string) {
 	}
 
 	if len(constraints) == 0 {
-		return
+		return constraint
 	}
 
 	constraint += "&constraintLanguage=CQL_TEXT"
 	constraint += "&constraint_language_version=1.1.0"
 
 	// Build the raw CQL expression and URL-encode it as a single query parameter value
-	var expr string
-	var exprSb67 strings.Builder
+	var (
+		expr     string
+		exprSb67 strings.Builder
+	)
+
 	for i, c := range constraints {
 		exprSb67.WriteString(c)
+
 		if i < len(constraints)-1 {
 			exprSb67.WriteString(" AND ")
 		}
 	}
+
 	expr += exprSb67.String()
 
 	constraint += "&constraint=" + url.QueryEscape(expr)
 
-	return
+	return constraint
 }
 
 // GetRecordsOgcFilter struct for creating an OgcFilter for a CSW GetRecords request.
 type GetRecordsOgcFilter struct {
-	MetadataType MetadataType
+	MetadataType iso1911x.MetadataType
 	Title        *string
 	Identifier   *string
 }

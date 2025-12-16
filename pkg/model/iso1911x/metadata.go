@@ -352,12 +352,17 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
 			if keyword.Anchor.Href != "" {
 				// Try to get the INSPIRE theme from the anchor according to TG Recommendation 1.5
-				expectedPrefixes := []string{thesaurusVocabularyDutch, thesaurusVocabularyEnglish, inspireThemeRegistry}
+				expectedPrefixes := []string{
+					thesaurusVocabularyDutch,
+					thesaurusVocabularyEnglish,
+					inspireThemeRegistry,
+				}
 
 				for _, prefix := range expectedPrefixes {
 					if strings.Contains(keyword.Anchor.Href, prefix) {
 						theme := strings.ReplaceAll(keyword.Anchor.Href, prefix, "")
 						themes = append(themes, theme)
+
 						break
 					}
 				}
