@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"time"
 
+	"log/slog"
+
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 )
@@ -78,7 +80,7 @@ func (c *CswClient) GetRawRecordByID(uuid string) (rawRecord []byte, err error) 
 	// Try cache first when enabled and fresh
 	if c.cacheDir != nil {
 		if cached, ok, cacheErr := c.getCachedRecordIfFresh(uuid); cacheErr == nil && ok {
-			fmt.Println("Using cached record")
+			slog.Debug("Harvesting record from cache", "uuid", uuid)
 			return cached, nil
 		}
 		// if cacheErr != nil we ignore and proceed to fetch
@@ -86,7 +88,7 @@ func (c *CswClient) GetRawRecordByID(uuid string) (rawRecord []byte, err error) 
 
 	// Fetch from remote
 	cswURL := c.getRecordByIDUrl(uuid)
-	fmt.Println("Using NGR: " + cswURL)
+	slog.Debug("Harvesting record from", "url", cswURL)
 	rawRecord, err = getResponseBody(cswURL, "GET", nil, *c.client)
 	if err != nil {
 		return nil, err
@@ -148,12 +150,12 @@ func (c *CswClient) getCachePath(uuid string) string {
 	return filepath.Join(*c.cacheDir, uuid+".xml")
 }
 
-// GetRecordPage returns one page of summary metadata, possibly using a constraint.
+// GetRecordPage returns the full CSW GetRecords response for a page, possibly using a constraint.
 // TODO Use this for harvesting service metadata in ETF-validator-go.
-// todo: when the NumberOfRecordsMatched changed while paging, this could upset the paging. We should check during paging if the number of records has changed. If so we should restart paging from 1.
-func (c *CswClient) GetRecordPage(constraint *csw.GetRecordsCQLConstraint, offset int) ([]csw.SummaryRecord, int, error) {
+// Note: Interface changed to return the entire GetRecordsResponse (not only records and next offset).
+func (c *CswClient) GetRecordPage(constraint *csw.GetRecordsCQLConstraint, offset int) (csw.GetRecordsResponse, error) {
 	if offset == 0 {
-		return nil, -1, fmt.Errorf("offset must be greater than 0")
+		return csw.GetRecordsResponse{}, fmt.Errorf("offset must be greater than 0")
 	}
 
 	cswURL := c.endpoint.String() +
@@ -173,32 +175,64 @@ func (c *CswClient) GetRecordPage(constraint *csw.GetRecordsCQLConstraint, offse
 
 	err := getUnmarshalledXMLResponse(&cswResponse, cswURL, "GET", nil, *c.client)
 	if err != nil {
-		return nil, -1, err
+		return csw.GetRecordsResponse{}, err
 	}
 
-	nextRecord, err := strconv.Atoi(cswResponse.SearchResults.NextRecord)
-	if err != nil {
-		return nil, -1, err
-	}
-
-	return cswResponse.SearchResults.SummaryRecords, nextRecord, nil
+	return cswResponse, nil
 }
 
+// getRecordsRecursive recursively pages through all records.
+// It guards against changes in NumberOfRecordsMatched by restarting from offset 1 if detected.
 func (c *CswClient) getRecordsRecursive(constraint *csw.GetRecordsCQLConstraint, offset int, result *[]csw.SummaryRecord) (err error) {
+	return c.getRecordsRecursiveWithState(constraint, offset, result, -1, 0)
+}
 
-	fmt.Printf("recursing with offset %d\n", offset)
-	records, nextOffset, err := c.GetRecordPage(constraint, offset)
+// getRecordsRecursiveWithState is the internal implementation tracking baseline matched and restart attempts.
+func (c *CswClient) getRecordsRecursiveWithState(constraint *csw.GetRecordsCQLConstraint, offset int, result *[]csw.SummaryRecord, baselineMatched int, restarts int) (err error) {
+	const maxRestarts = 3
+
+	resp, err := c.GetRecordPage(constraint, offset)
 	if err != nil {
 		return err
 	}
 
-	*result = append(*result, records...)
-
-	if nextOffset == 0 {
-		return
+	nextOffset, err := strconv.Atoi(resp.SearchResults.NextRecord)
+	if err != nil {
+		return err
 	}
 
-	return c.getRecordsRecursive(constraint, nextOffset, result)
+	matched, err := strconv.Atoi(resp.SearchResults.NumberOfRecordsMatched)
+	if err != nil {
+		return err
+	}
+
+	if offset == 1 {
+		// First page logging and establish baseline
+		baselineMatched = matched
+		slog.Info("Found records; paging recursively until end", "total", matched)
+	} else {
+		// Detect changes in total matches and restart if necessary
+
+		slog.Debug("Paging recursively until end", "total", matched, "baseline", baselineMatched, "offset", offset)
+		if baselineMatched >= 0 && matched != baselineMatched {
+			if restarts >= maxRestarts {
+				slog.Warn("NumberOfRecordsMatched keeps changing; giving up restarts", "baseline", baselineMatched, "current", matched, "restarts", restarts)
+			} else {
+				slog.Warn("NumberOfRecordsMatched changed during paging; restarting from offset 1", "baseline", baselineMatched, "current", matched, "restarts", restarts+1)
+				// Reset results and restart from beginning with new baseline
+				*result = (*result)[:0]
+				return c.getRecordsRecursiveWithState(constraint, 1, result, matched, restarts+1)
+			}
+		}
+	}
+
+	*result = append(*result, resp.SearchResults.SummaryRecords...)
+
+	if nextOffset == 0 {
+		return nil
+	}
+
+	return c.getRecordsRecursiveWithState(constraint, nextOffset, result, baselineMatched, restarts)
 }
 
 // GetAllRecords returns all metadata records based on recursive paging, possibly using a constraint.
@@ -216,22 +250,20 @@ func (c *CswClient) GetAllRecords(constraint *csw.GetRecordsCQLConstraint) ([]cs
 func (c *CswClient) HarvestByCQLConstraint(constraint *csw.GetRecordsCQLConstraint) (result []iso1911x.MDMetadata, err error) {
 	records, err := c.GetAllRecords(constraint)
 
-	fmt.Printf("Found %d records for pdok services\n", len(records))
 	if err != nil {
 		return
 	}
 
 	for _, record := range records {
-		fmt.Printf("Harvesting record: %s\n", record.Identifier)
 		raw, err := c.GetRawRecordByID(record.Identifier)
 		if err != nil {
-			fmt.Printf("Error retrieving %s\t%s\t%s\n", record.Identifier, record.Type, record.Title)
+			slog.Debug("Error retrieving record", "identifier", record.Identifier, "type", record.Type, "title", record.Title, "err", err)
 		}
 
 		cswResponse := csw.GetRecordByIDResponse{}
 		err = xml.Unmarshal(raw, &cswResponse)
 		if err != nil {
-			fmt.Printf("error unmarshalling NGR response from record %s: %s", record.Identifier, err)
+			slog.Debug("Error unmarshalling NGR response", "identifier", record.Identifier, "err", err)
 		} else {
 			result = append(result, cswResponse.MDMetadata)
 		}

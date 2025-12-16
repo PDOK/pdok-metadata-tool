@@ -3,6 +3,7 @@ package client
 import (
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
@@ -58,19 +59,28 @@ func TestCswClient_GetRecords(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mdRecords, nextRecord, err := cswClient.GetRecordPage(&tt.args.constraint, tt.args.offset)
+			resp, err := cswClient.GetRecordPage(&tt.args.constraint, tt.args.offset)
 			if !tt.wantErr {
 				require.NoError(t, err)
 			}
 
-			assert.Len(t, mdRecords, tt.wantNrOfRecords)
-			assert.Equal(t, tt.wantNextRecord, nextRecord)
+			assert.Len(t, resp.SearchResults.SummaryRecords, tt.wantNrOfRecords)
 
-			for _, record := range mdRecords {
+			// NextRecord is a string in the model; compare as string
+			assert.Equal(t, tt.wantNextRecord, atoi(t, resp.SearchResults.NextRecord))
+
+			for _, record := range resp.SearchResults.SummaryRecords {
 				assert.Equal(t, string(*tt.args.constraint.MetadataType), record.Type)
 			}
 		})
 	}
+}
+
+func atoi(t *testing.T, s string) int {
+	t.Helper()
+	i, err := strconv.Atoi(s)
+	require.NoError(t, err)
+	return i
 }
 
 func TestCswClient_GetRecordsWithOGCFilter(t *testing.T) {

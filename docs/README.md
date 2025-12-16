@@ -6,11 +6,20 @@ pmt - PDOK Metadata Tool - This tool is set up to handle various metadata relate
 
 pmt
 
+```
+[--log-level]=[value]
+```
+
 **Usage**:
 
 ```
 pmt [GLOBAL OPTIONS] [command [COMMAND OPTIONS]] [ARGUMENTS...]
 ```
+
+# GLOBAL OPTIONS
+
+**--log-level**="": Set log level: debug, info, warn, error (env: PMT_LOG_LEVEL) (default: info)
+
 
 # COMMANDS
 
@@ -98,6 +107,10 @@ Harvest service metadata (flat model) as JSON. Supports optional organisation fi
 
 **--filter-org**="": Optional filter by organisation name (CQL field 'OrganisationName'). Matches exact value.
 
+**--hvd-local-path**="": Local cache path for the HVD Thesaurus RDF. (default: /Users/williamloosman/repo/pdok/pdok-metadata-tool/cache/high-value-dataset-category.rdf)
+
+**--hvd-url**="": HVD Thesaurus endpoint (RDF). Used to enrich HVD categories. (default: https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Fhigh-value-dataset-category%2F20241002-0%2Frdf%2Fskos_core%2Fhigh-value-dataset-category.rdf&fileName=high-value-dataset-category.rdf)
+
 ### harvest-dataset
 
 Harvest dataset metadata (flat model) as JSON. Supports optional organisation filter and caching options.
@@ -109,3 +122,7 @@ Harvest dataset metadata (flat model) as JSON. Supports optional organisation fi
 **--csw-endpoint**="": Endpoint of the CSW service to harvest metadata records from. Default is NGR. (default: https://nationaalgeoregister.nl/geonetwork/srv/dut/csw)
 
 **--filter-org**="": Optional filter by organisation name (CQL field 'OrganisationName'). Matches exact value.
+
+**--hvd-local-path**="": Local cache path for the HVD Thesaurus RDF. (default: /Users/williamloosman/repo/pdok/pdok-metadata-tool/cache/high-value-dataset-category.rdf)
+
+**--hvd-url**="": HVD Thesaurus endpoint (RDF). Used to enrich HVD categories. (default: https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Fhigh-value-dataset-category%2F20241002-0%2Frdf%2Fskos_core%2Fhigh-value-dataset-category.rdf&fileName=high-value-dataset-category.rdf)
