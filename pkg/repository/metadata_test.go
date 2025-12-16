@@ -54,15 +54,13 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 				id: "C2DFBDBC-5092-11E0-BA8E-B62DE0D72085",
 			},
 			wantMetadataID:   "C2DFBDBC-5092-11E0-BA8E-B62DE0D72085",
-			wantSourceID:     "C2DFBDBC-5092-11E0-BA8E-B62DE0D72085",
+			wantSourceID:     "1234",
 			wantTitle:        "Naam van de dataset (*)",
 			wantAbstract:     ptr("Samenvatting (*)"),
 			wantContactName:  ptr("persoon verantwoordelijk voor de dataset"),
 			wantContactEmail: ptr("Email@organisatie.nl"),
 			wantContactURL:   ptr("https://www.geonovum.nl/"),
 			wantKeywords: []string{
-				"Beschermde gebieden",
-				"Habitats en biotopen",
 				"Nationaal", //nolint:misspell
 				"Verspreidingsgebied van habitattypen (Habitatrichtlijn)",
 				"Trefwoorden uit een andere thesaurus",
@@ -74,7 +72,7 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 				"Gebruiksbeperkingen (*), Toepassingen waarvoor de data niet geschikt is.",
 			),
 			wantThumbnailURL:   ptr("URL naar voorbeeldweergave van de dataset"),
-			wantInspireVariant: ptr(inspire.Harmonised),
+			wantInspireVariant: ptr(inspire.AsIs),
 			wantInspireThemes:  []string{"ps", "hb"},
 			wantHVDCategories:  nil,
 			wantBoundingBox: ptr(metadata.BoundingBox{
@@ -94,7 +92,7 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 			wantTitle:          "Invasieve Exoten (INSPIRE Geharmoniseerd)",
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"sd"},
-			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021"}},
+			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021", LabelDutch: "Aardobservatie en milieu"}},
 			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "-3.5879",
 				EastBoundLongitude: "13.5757",
@@ -115,7 +113,7 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 			),
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"hy"},
-			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021"}},
+			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021", LabelDutch: "Aardobservatie en milieu"}},
 			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "2.65899516",
 				EastBoundLongitude: "7.83057492",
@@ -129,7 +127,7 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 				id: "19165027-a13a-4c19-9013-ec1fd191019d",
 			},
 			wantMetadataID:    "19165027-a13a-4c19-9013-ec1fd191019d",
-			wantSourceID:      "19165027-a13a-4c19-9013-ec1fd191019d",
+			wantSourceID:      "84487381-957b-4bd6-a9c9-47c6b6037223",
 			wantTitle:         "Wetlands (INSPIRE Geharmoniseerd)",
 			wantUseLimitation: ptr("Geen gebruiksbeperkingen"),
 			wantThumbnailURL: ptr(
@@ -137,7 +135,7 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 			),
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"ps"},
-			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021"}},
+			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021", LabelDutch: "Aardobservatie en milieu"}},
 			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "2.1339",
 				EastBoundLongitude: "8.16",

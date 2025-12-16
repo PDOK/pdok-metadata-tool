@@ -49,6 +49,7 @@ type MDMetadata struct {
 		} `xml:"SV_ServiceIdentification"`
 		MDDataIdentification *struct {
 			Title               string                  `xml:"citation>CI_Citation>title>CharacterString"`
+			SourceId            string                  `xml:"citation>CI_Citation>identifier>MD_Identifier>code>Anchor"`
 			Abstract            string                  `xml:"abstract>CharacterString"`
 			GraphicOverview     *CSWGraphicOverview     `xml:"graphicOverview"`
 			DescriptiveKeywords []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
@@ -288,6 +289,7 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 	harmonised := inspire.Harmonised
 	asIs := inspire.AsIs
 
+	foundInspireRegulation := false
 	for _, report := range m.DQDataQuality.Report {
 		for _, result := range report.ConsistencyResult {
 			specificationTitle := ""
@@ -297,15 +299,22 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 				specificationTitle = result.Specification.Anchor.Text
 			}
 
-			hasInspireRegulation := strings.Contains(specificationTitle, inspireRegulation)
+			foundInspireRegulation = strings.Contains(specificationTitle, inspireRegulation)
 
-			if hasInspireRegulation {
+			if foundInspireRegulation {
 				isInspire = true
 			}
 
 			if result.Pass != "true" {
 				isConformant = false
 			}
+
+			if foundInspireRegulation {
+				break
+			}
+		}
+		if foundInspireRegulation {
+			break
 		}
 	}
 

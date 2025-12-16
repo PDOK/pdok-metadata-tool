@@ -14,7 +14,6 @@ import (
 // similar in spirit to NLDatasetMetadata for datasets.
 type NLServiceMetadata struct {
 	MetadataID       string
-	SourceID         string
 	Title            string
 	OrganisationName string
 	Keywords         []string
@@ -76,7 +75,6 @@ func NewNLServiceMetadataFromMDMetadataWithHVDRepo(
 ) *NLServiceMetadata {
 	sm := &NLServiceMetadata{
 		MetadataID:   m.UUID,
-		SourceID:     m.UUID,
 		Title:        "",
 		Keywords:     nil,
 		ServiceType:  "",

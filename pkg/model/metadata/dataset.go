@@ -39,7 +39,7 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 ) *NLDatasetMetadata {
 	return &NLDatasetMetadata{
 		MetadataID:     m.UUID,
-		SourceID:       m.UUID,
+		SourceID:       m.IdentificationInfo.MDDataIdentification.SourceId,
 		Title:          m.IdentificationInfo.MDDataIdentification.Title,
 		Abstract:       m.IdentificationInfo.MDDataIdentification.Abstract,
 		ContactName:    m.IdentificationInfo.MDDataIdentification.ContactName,
