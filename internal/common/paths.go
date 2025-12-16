@@ -9,7 +9,7 @@ import (
 
 var (
 	// CachePath is a local path for the cache.
-	CachePath = filepath.Join(GetProjectRoot(), "cache")
+	CachePath = "cache"
 	// HvdLocalRDFPath is a local path for the HVD RDF file.
 	HvdLocalRDFPath = filepath.Join(CachePath, "high-value-dataset-category.rdf")
 	// HvdLocalCSVPath is a local path for the HVD CSV file.
