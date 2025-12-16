@@ -287,13 +287,12 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 			}
 
 			hasInspireRegulation := strings.Contains(specificationTitle, inspireRegulation)
-			hasInspireSpecTitle := strings.HasPrefix(specificationTitle, "INSPIRE")
 
 			if hasInspireRegulation {
 				isInspire = true
 			}
 
-			if hasInspireSpecTitle && result.Pass != "true" {
+			if result.Pass != "true" {
 				isConformant = false
 			}
 		}
@@ -314,6 +313,7 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 	const (
 		thesaurusName            = "GEMET - INSPIRE themes, version 1.0"
 		thesaurusVocabularyDutch = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+		inspireThemeRegistry     = "http://inspire.ec.europa.eu/theme/"
 	)
 
 	var dks []CSWDescriptiveKeyword
@@ -341,6 +341,10 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 				// Try to get the INSPIRE theme from the anchor according to TG Recommendation 1.5
 				if strings.Contains(keyword.Anchor.Href, thesaurusVocabularyDutch) {
 					theme := strings.ReplaceAll(keyword.Anchor.Href, thesaurusVocabularyDutch, "")
+					themes = append(themes, theme)
+				} else if strings.Contains(keyword.Anchor.Href, inspireThemeRegistry) {
+					// Workaround for INSPIRE keywords using 'xlink:href="http://inspire.ec.europa.eu/theme/..'
+					theme := strings.ReplaceAll(keyword.Anchor.Href, inspireThemeRegistry, "")
 					themes = append(themes, theme)
 				}
 			} else if keyword.CharacterString != "" {
