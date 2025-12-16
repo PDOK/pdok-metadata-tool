@@ -33,11 +33,11 @@ type MDMetadata struct {
 	} `xml:"hierarchyLevel>MD_ScopeCode"`
 	MetadataStandardVersion string               `xml:"metadataStandardVersion>CharacterString"`
 	UUID                    string               `xml:"fileIdentifier>CharacterString"`
-	ResponsibleParty        *CSWResponsibleParty `xml:"contact>CI_ResponsibleParty>OrganisationName"`
+	ResponsibleParty        *CSWResponsibleParty `xml:"contact>CI_ResponsibleParty>organisationName"`
 	IdentificationInfo      struct {
 		SVServiceIdentification *struct {
 			Title               string                  `xml:"citation>CI_Citation>title>CharacterString"`
-			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
+			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>organisationName"`
 			GraphicOverview     *CSWGraphicOverview     `xml:"graphicOverview"`
 			DescriptiveKeywords []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
 			ServiceType         string                  `xml:"serviceType>LocalName"`
