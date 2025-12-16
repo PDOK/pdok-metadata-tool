@@ -290,6 +290,7 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 	asIs := inspire.AsIs
 
 	foundInspireRegulation := false
+
 	for _, report := range m.DQDataQuality.Report {
 		for _, result := range report.ConsistencyResult {
 			specificationTitle := ""
@@ -313,6 +314,7 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 				break
 			}
 		}
+
 		if foundInspireRegulation {
 			break
 		}

@@ -92,7 +92,9 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 			wantTitle:          "Invasieve Exoten (INSPIRE Geharmoniseerd)",
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"sd"},
-			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021", LabelDutch: "Aardobservatie en milieu"}},
+			wantHVDCategories: []hvd.HVDCategory{
+				{ID: "c_dd313021", LabelDutch: "Aardobservatie en milieu"},
+			},
 			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "-3.5879",
 				EastBoundLongitude: "13.5757",
@@ -113,7 +115,9 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 			),
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"hy"},
-			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021", LabelDutch: "Aardobservatie en milieu"}},
+			wantHVDCategories: []hvd.HVDCategory{
+				{ID: "c_dd313021", LabelDutch: "Aardobservatie en milieu"},
+			},
 			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "2.65899516",
 				EastBoundLongitude: "7.83057492",
@@ -135,7 +139,9 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 			),
 			wantInspireVariant: ptr(inspire.Harmonised),
 			wantInspireThemes:  []string{"ps"},
-			wantHVDCategories:  []hvd.HVDCategory{{ID: "c_dd313021", LabelDutch: "Aardobservatie en milieu"}},
+			wantHVDCategories: []hvd.HVDCategory{
+				{ID: "c_dd313021", LabelDutch: "Aardobservatie en milieu"},
+			},
 			wantBoundingBox: ptr(metadata.BoundingBox{
 				WestBoundLongitude: "2.1339",
 				EastBoundLongitude: "8.16",

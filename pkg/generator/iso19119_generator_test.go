@@ -3,10 +3,12 @@ package generator
 import (
 	"encoding/xml"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/pdok/pdok-metadata-tool/internal/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/ucarion/c14n"
@@ -80,6 +82,8 @@ func TestGenerateMetadata(t *testing.T) {
 		},
 	}
 
+	hvdCachePath := path.Join(common.GetProjectRoot(), common.HvdLocalRDFPath)
+
 	for _, test := range tests {
 		var serviceSpecifics ServiceSpecifics
 
@@ -89,7 +93,7 @@ func TestGenerateMetadata(t *testing.T) {
 		err = serviceSpecifics.Validate()
 		require.NoError(t, err)
 
-		generator, err := NewISO19119Generator(serviceSpecifics, outputFolder, nil, nil)
+		generator, err := NewISO19119Generator(serviceSpecifics, outputFolder, nil, &hvdCachePath)
 		require.NoError(t, err)
 
 		err = generator.Generate()
