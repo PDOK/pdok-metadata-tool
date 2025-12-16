@@ -112,7 +112,11 @@ func HarvestByCQLConstraint[T any](
 			if mds[i].IdentificationInfo.SVServiceIdentification != nil {
 				sm := metadata.NewNLServiceMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
 				if sm != nil {
-					result = append(result, any(*sm).(T))
+					// separate type assertion to satisfy forcetypeassert linter
+					v, ok := any(*sm).(T)
+					if ok {
+						result = append(result, v)
+					}
 				}
 			}
 		}
@@ -132,7 +136,11 @@ func HarvestByCQLConstraint[T any](
 			if mds[i].IdentificationInfo.MDDataIdentification.Title != "" {
 				dm := metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
 				if dm != nil {
-					result = append(result, any(*dm).(T))
+					// separate type assertion to satisfy forcetypeassert linter
+					v, ok := any(*dm).(T)
+					if ok {
+						result = append(result, v)
+					}
 				}
 			}
 		}

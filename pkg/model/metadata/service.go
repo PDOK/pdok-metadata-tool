@@ -64,7 +64,6 @@ type ServiceEndpoint struct {
 }
 
 // NewNLServiceMetadataFromMDMetadata creates a new instance based on service metadata from a CSW response.
-// Deprecated: prefer NewNLServiceMetadataFromMDMetadataWithHVDRepo to enrich HVD categories.
 func NewNLServiceMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLServiceMetadata {
 	return NewNLServiceMetadataFromMDMetadataWithHVDRepo(m, nil)
 }

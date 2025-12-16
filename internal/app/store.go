@@ -32,7 +32,7 @@ var (
 	}
 	flagCacheTTL = &cli.IntFlag{
 		Name:  "cache-ttl",
-		Value: 168, // hours (7 days)
+		Value: DefaultCacheTTLHrs, // hours (7 days)
 		Usage: "Cache TTL in hours for CSW record cache (default: 168 hours = 7 days).",
 	}
 	flagFilterOrg = &cli.StringFlag{
@@ -56,6 +56,8 @@ var (
 		Usage: "Local cache path for the HVD Thesaurus RDF.",
 	}
 )
+
+const DefaultCacheTTLHrs = 168
 
 func init() {
 	command := &cli.Command{
@@ -219,11 +221,11 @@ func harvestFlatToFile[T any](
 	norm := common.NormalizeForFilename(org)
 
 	outPath := filepath.Join(parentDir, fmt.Sprintf("%s-%s.json", outBase, norm))
-	if err := os.MkdirAll(parentDir, 0o755); err != nil {
+	if err := os.MkdirAll(parentDir, 0o750); err != nil {
 		return err
 	}
 
-	if err := os.WriteFile(outPath, b, 0o644); err != nil {
+	if err := os.WriteFile(outPath, b, 0o600); err != nil {
 		return err
 	}
 

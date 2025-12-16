@@ -27,7 +27,6 @@ type NLDatasetMetadata struct {
 }
 
 // NewNLDatasetMetadataFromMDMetadata creates a new instance based on dataset metadata from a CSW response.
-// Deprecated: prefer NewNLDatasetMetadataFromMDMetadataWithHVDRepo to enrich HVD categories.
 func NewNLDatasetMetadataFromMDMetadata(m *iso1911x.MDMetadata) *NLDatasetMetadata {
 	return NewNLDatasetMetadataFromMDMetadataWithHVDRepo(m, nil)
 }

@@ -51,15 +51,6 @@ func (c *CswClient) UnsetCache() {
 	c.cacheDir = nil
 }
 
-func (c *CswClient) getRecordByIDUrl(uuid string) string {
-	return c.endpoint.String() +
-		"?service=CSW" +
-		"&request=GetRecordById" +
-		"&version=2.0.2" +
-		"&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full" +
-		"&id=" + uuid + "#MD_DataIdentification"
-}
-
 // GetRecordByID returns a metadata record for a given id.
 func (c *CswClient) GetRecordByID(uuid string) (iso1911x.MDMetadata, error) {
 	raw, err := c.GetRawRecordByID(uuid)
@@ -68,7 +59,7 @@ func (c *CswClient) GetRecordByID(uuid string) (iso1911x.MDMetadata, error) {
 	}
 
 	cswResponse := csw.GetRecordByIDResponse{}
-	if err := xml.Unmarshal(raw, &cswResponse); err != nil {
+	if err := xml.Unmarshal(raw, &cswResponse); err != nil { //nolint:musttag // model types contain tags
 		return iso1911x.MDMetadata{}, err
 	}
 
@@ -103,61 +94,6 @@ func (c *CswClient) GetRawRecordByID(uuid string) (rawRecord []byte, err error) 
 	return rawRecord, nil
 }
 
-// getCachedRecordIfFresh returns cached bytes and true when cache exists and is within TTL.
-// When cache does not exist or is stale, returns (nil, false, nil).
-func (c *CswClient) getCachedRecordIfFresh(uuid string) ([]byte, bool, error) {
-	path := c.getCachePath(uuid)
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, false, nil
-		}
-
-		return nil, false, err
-	}
-
-	// Check freshness
-	if time.Since(fi.ModTime()) > c.cacheTTL {
-		return nil, false, nil
-	}
-
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, false, err
-	}
-
-	return data, true, nil
-}
-
-// storeRecordInCache ensures dir exists and writes bytes to cache file.
-func (c *CswClient) storeRecordInCache(uuid string, data []byte) error {
-	if c.cacheDir == nil {
-		return nil
-	}
-
-	if err := c.ensureCacheDir(); err != nil {
-		return err
-	}
-
-	path := c.getCachePath(uuid)
-
-	return os.WriteFile(path, data, 0o644)
-}
-
-func (c *CswClient) ensureCacheDir() error {
-	if c.cacheDir == nil {
-		return nil
-	}
-
-	return os.MkdirAll(*c.cacheDir, 0o755)
-}
-
-func (c *CswClient) getCachePath(uuid string) string {
-	// simple filename: <uuid>.xml inside cacheDir
-	return filepath.Join(*c.cacheDir, uuid+".xml")
-}
-
 // GetRecordPage returns the full CSW GetRecords response for a page, possibly using a constraint.
 // TODO Use this for harvesting service metadata in ETF-validator-go.
 // Note: Interface changed to return the entire GetRecordsResponse (not only records and next offset).
@@ -190,6 +126,154 @@ func (c *CswClient) GetRecordPage(
 	}
 
 	return cswResponse, nil
+}
+
+// GetAllRecords returns all metadata records based on recursive paging, possibly using a constraint.
+func (c *CswClient) GetAllRecords(
+	constraint *csw.GetRecordsCQLConstraint,
+) ([]csw.SummaryRecord, error) {
+	var result []csw.SummaryRecord
+
+	err := c.getRecordsRecursive(constraint, 1, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (c *CswClient) HarvestByCQLConstraint(
+	constraint *csw.GetRecordsCQLConstraint,
+) (result []iso1911x.MDMetadata, err error) {
+	records, err := c.GetAllRecords(constraint)
+	if err != nil {
+		return
+	}
+
+	for _, record := range records {
+		raw, err := c.GetRawRecordByID(record.Identifier)
+		if err != nil {
+			slog.Debug(
+				"Error retrieving record",
+				"identifier",
+				record.Identifier,
+				"type",
+				record.Type,
+				"title",
+				record.Title,
+				"err",
+				err,
+			)
+		}
+
+		cswResponse := csw.GetRecordByIDResponse{}
+
+		err = xml.Unmarshal(raw, &cswResponse) //nolint:musttag // model types contain tags
+		if err != nil {
+			slog.Debug(
+				"Error unmarshalling NGR response",
+				"identifier",
+				record.Identifier,
+				"err",
+				err,
+			)
+		} else {
+			result = append(result, cswResponse.MDMetadata)
+		}
+	}
+
+	return
+}
+
+// GetRecordsWithOGCFilter returns summary metadata records, using an OGC filter.
+func (c *CswClient) GetRecordsWithOGCFilter(
+	filter *csw.GetRecordsOgcFilter,
+) ([]csw.SummaryRecord, error) {
+	requestBody, err := filter.ToRequestBody()
+	if err != nil {
+		return nil, err
+	}
+
+	var cswResponse = csw.GetRecordsResponse{}
+
+	err = getUnmarshalledXMLResponse(
+		&cswResponse,
+		c.endpoint.String(),
+		"POST",
+		&requestBody,
+		*c.client,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return cswResponse.SearchResults.SummaryRecords, nil
+}
+
+// --- Helper and unexported methods must be placed after exported methods (funcorder) ---
+
+// --- Helper and unexported methods must be placed after exported methods (funcorder) ---
+
+func (c *CswClient) getRecordByIDUrl(uuid string) string { //nolint:stylecheck // matches existing naming convention
+	return c.endpoint.String() +
+		"?service=CSW" +
+		"&request=GetRecordById" +
+		"&version=2.0.2" +
+		"&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full" +
+		"&id=" + uuid + "#MD_DataIdentification"
+}
+
+func (c *CswClient) getCachedRecordIfFresh(uuid string) ([]byte, bool, error) {
+	path := c.getCachePath(uuid)
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, false, nil
+		}
+
+		return nil, false, err
+	}
+
+	// Check freshness
+	if time.Since(fi.ModTime()) > c.cacheTTL {
+		return nil, false, nil
+	}
+
+	// #nosec G304 -- reading from a constructed path under controlled cache directory
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, false, err
+	}
+
+	return data, true, nil
+}
+
+func (c *CswClient) storeRecordInCache(uuid string, data []byte) error {
+	if c.cacheDir == nil {
+		return nil
+	}
+
+	if err := c.ensureCacheDir(); err != nil {
+		return err
+	}
+
+	path := c.getCachePath(uuid)
+
+	return os.WriteFile(path, data, 0o600)
+}
+
+func (c *CswClient) ensureCacheDir() error {
+	if c.cacheDir == nil {
+		return nil
+	}
+
+	return os.MkdirAll(*c.cacheDir, 0o750)
+}
+
+func (c *CswClient) getCachePath(uuid string) string {
+	// simple filename: <uuid>.xml inside cacheDir
+	return filepath.Join(*c.cacheDir, uuid+".xml")
 }
 
 // getRecordsRecursive recursively pages through all records.
@@ -255,86 +339,4 @@ func (c *CswClient) getRecordsRecursiveWithState(
 	}
 
 	return c.getRecordsRecursiveWithState(constraint, nextOffset, result, baselineMatched, restarts)
-}
-
-// GetAllRecords returns all metadata records based on recursive paging, possibly using a constraint.
-func (c *CswClient) GetAllRecords(
-	constraint *csw.GetRecordsCQLConstraint,
-) ([]csw.SummaryRecord, error) {
-	var result []csw.SummaryRecord
-
-	err := c.getRecordsRecursive(constraint, 1, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
-}
-
-func (c *CswClient) HarvestByCQLConstraint(
-	constraint *csw.GetRecordsCQLConstraint,
-) (result []iso1911x.MDMetadata, err error) {
-	records, err := c.GetAllRecords(constraint)
-	if err != nil {
-		return
-	}
-
-	for _, record := range records {
-		raw, err := c.GetRawRecordByID(record.Identifier)
-		if err != nil {
-			slog.Debug(
-				"Error retrieving record",
-				"identifier",
-				record.Identifier,
-				"type",
-				record.Type,
-				"title",
-				record.Title,
-				"err",
-				err,
-			)
-		}
-
-		cswResponse := csw.GetRecordByIDResponse{}
-
-		err = xml.Unmarshal(raw, &cswResponse)
-		if err != nil {
-			slog.Debug(
-				"Error unmarshalling NGR response",
-				"identifier",
-				record.Identifier,
-				"err",
-				err,
-			)
-		} else {
-			result = append(result, cswResponse.MDMetadata)
-		}
-	}
-
-	return
-}
-
-// GetRecordsWithOGCFilter returns summary metadata records, using an OGC filter.
-func (c *CswClient) GetRecordsWithOGCFilter(
-	filter *csw.GetRecordsOgcFilter,
-) ([]csw.SummaryRecord, error) {
-	requestBody, err := filter.ToRequestBody()
-	if err != nil {
-		return nil, err
-	}
-
-	var cswResponse = csw.GetRecordsResponse{}
-
-	err = getUnmarshalledXMLResponse(
-		&cswResponse,
-		c.endpoint.String(),
-		"POST",
-		&requestBody,
-		*c.client,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return cswResponse.SearchResults.SummaryRecords, nil
 }
