@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 	"github.com/stretchr/testify/assert"
@@ -205,6 +206,11 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 		t.Run(filepath.Base(tc.File), func(t *testing.T) {
 			b, err := os.ReadFile(tc.File)
 			require.NoError(t, err)
+
+			b2, err := os.ReadFile("/Users/williamloosman/repo/pdok/pdok-metadata-tool/cache/records/500d396f-5ec6-4e4b-a151-5fb3cddd8082.xml")
+			require.NoError(t, err)
+			var test csw.GetRecordByIDResponse
+			require.NoError(t, xml.Unmarshal(b2, &test)) //nolint
 
 			var md iso1911x.MDMetadata
 			require.NoError(t, xml.Unmarshal(b, &md)) //nolint

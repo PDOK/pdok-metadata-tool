@@ -153,6 +153,11 @@ type ServiceEndpoint struct {
 	Protocol string
 }
 
+// NormalizeXMLText removes leading and trailing whitespace from XML text nodes.
+func NormalizeXMLText(s string) string {
+	return strings.Join(strings.Fields(s), " ")
+}
+
 // GetMetaDataType returns whether this MDMetadata represents a dataset or a service.
 // It uses the hierarchyLevel>MD_ScopeCode value (codeListValue or text) when present.
 // Defaults to Dataset when unknown.
@@ -200,7 +205,7 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 	for _, dk := range dks {
 		th := dk.MDKeywords.Thesaurus
 		// Skip INSPIRE keywords groups
-		if th.CharacterString == inspireThesaurusName || th.Anchor.Text == inspireThesaurusName ||
+		if NormalizeXMLText(th.CharacterString) == inspireThesaurusName || NormalizeXMLText(th.Anchor.Text) == inspireThesaurusName ||
 			(th.Anchor.Href != "" && strings.Contains(th.Anchor.Href, inspireDutchVocabulary)) {
 			continue
 		}
