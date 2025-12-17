@@ -229,9 +229,9 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 		// Collect generic keywords
 		for _, kw := range dk.MDKeywords.Keyword {
 			if kw.CharacterString != "" {
-				keywords = append(keywords, strings.TrimSpace(kw.CharacterString))
+				keywords = append(keywords, NormalizeXMLText(kw.CharacterString))
 			} else if kw.Anchor.Text != "" {
-				keywords = append(keywords, strings.TrimSpace(kw.Anchor.Text))
+				keywords = append(keywords, NormalizeXMLText(kw.Anchor.Text))
 			}
 		}
 	}
@@ -249,7 +249,7 @@ func (m *MDMetadata) GetLicenseURL() string {
 
 		for _, val := range m.IdentificationInfo.MDDataIdentification.LicenseURL {
 			if strings.Contains(val.Href, "creativecommons.org") {
-				return val.Href
+				return NormalizeXMLText(val.Href)
 			}
 		}
 	case Service:
@@ -259,7 +259,7 @@ func (m *MDMetadata) GetLicenseURL() string {
 
 		for _, val := range m.IdentificationInfo.SVServiceIdentification.LicenseURL {
 			if strings.Contains(val.Href, "creativecommons.org") {
-				return val.Href
+				return NormalizeXMLText(val.Href)
 			}
 		}
 	}
@@ -278,7 +278,7 @@ func (m *MDMetadata) GetThumbnailURL() string {
 
 		thumbnailURL := m.IdentificationInfo.SVServiceIdentification.GraphicOverview.MDBrowseGraphic.FileName
 		if thumbnailURL != "" {
-			return thumbnailURL
+			return NormalizeXMLText(thumbnailURL)
 		}
 	case Dataset:
 		if m.IdentificationInfo.MDDataIdentification == nil ||
@@ -288,7 +288,7 @@ func (m *MDMetadata) GetThumbnailURL() string {
 
 		thumbnailURL := m.IdentificationInfo.MDDataIdentification.GraphicOverview.MDBrowseGraphic.FileName
 		if thumbnailURL != "" {
-			return thumbnailURL
+			return NormalizeXMLText(thumbnailURL)
 		}
 	}
 
@@ -315,7 +315,7 @@ func (m *MDMetadata) GetInspireVariantForDataset() inspire.InspireVariant {
 				specificationTitle = result.Specification.Anchor.Text
 			}
 
-			foundInspireRegulation = strings.Contains(specificationTitle, inspireRegulation)
+			foundInspireRegulation = strings.Contains(NormalizeXMLText(specificationTitle), inspireRegulation)
 
 			if foundInspireRegulation {
 				isInspire = true
@@ -370,7 +370,7 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 	for _, descriptiveKeyword := range dks {
 		thesaurus := descriptiveKeyword.MDKeywords.Thesaurus
 
-		if thesaurus.CharacterString != thesaurusName && thesaurus.Anchor.Text != thesaurusName {
+		if NormalizeXMLText(thesaurus.CharacterString) != thesaurusName && NormalizeXMLText(thesaurus.Anchor.Text) != thesaurusName {
 			// Skip, this is not the right thesaurus
 			continue
 		}

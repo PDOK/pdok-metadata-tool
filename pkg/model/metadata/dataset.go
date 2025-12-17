@@ -2,8 +2,6 @@
 package metadata
 
 import (
-	"strings"
-
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
@@ -40,25 +38,25 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 	hvdRepo hvd.CategoryProvider,
 ) *NLDatasetMetadata {
 	return &NLDatasetMetadata{
-		MetadataID:     strings.TrimSpace(m.UUID),
-		SourceID:       strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.SourceId),
-		Title:          strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Title),
-		Abstract:       strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Abstract),
-		ContactName:    strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.ContactName),
-		ContactEmail:   strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.ContactEmail),
-		ContactURL:     strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.ContactURL),
+		MetadataID:     iso1911x.NormalizeXMLText(m.UUID),
+		SourceID:       iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.SourceId),
+		Title:          iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Title),
+		Abstract:       iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Abstract),
+		ContactName:    iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.ContactName),
+		ContactEmail:   iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.ContactEmail),
+		ContactURL:     iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.ContactURL),
 		Keywords:       m.GetKeywords(),
 		LicenceURL:     m.GetLicenseURL(),
-		UseLimitation:  strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.UseLimitation),
+		UseLimitation:  iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.UseLimitation),
 		ThumbnailURL:   m.GetThumbnailURL(),
 		InspireVariant: m.GetInspireVariantForDataset(),
 		InspireThemes:  m.GetInspireThemes(),
 		HVDCategories:  m.GetHVDCategories(hvdRepo),
 		BoundingBox: &BoundingBox{
-			WestBoundLongitude: strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude),
-			EastBoundLongitude: strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Extent.EastBoundLongitude),
-			SouthBoundLatitude: strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Extent.SouthBoundLatitude),
-			NorthBoundLatitude: strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Extent.NorthBoundLatitude),
+			WestBoundLongitude: iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude),
+			EastBoundLongitude: iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Extent.EastBoundLongitude),
+			SouthBoundLatitude: iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Extent.SouthBoundLatitude),
+			NorthBoundLatitude: iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Extent.NorthBoundLatitude),
 		},
 	}
 }
