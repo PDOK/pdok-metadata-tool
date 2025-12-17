@@ -503,9 +503,9 @@ func (m *MDMetadata) GetOperatesOnForService() (result []string) {
 
 func (m *MDMetadata) GetServiceEndpointsForService() (result []ServiceEndpoint) {
 	for _, ol := range m.OnLine {
-		ep := ServiceEndpoint{URL: ol.URL}
+		ep := ServiceEndpoint{URL: NormalizeXMLText(ol.URL)}
 		if ol.Protocol.Anchor.Text != "" {
-			ep.Protocol = ol.Protocol.Anchor.Text
+			ep.Protocol = NormalizeXMLText(ol.Protocol.Anchor.Text)
 		}
 
 		result = append(result, ep)

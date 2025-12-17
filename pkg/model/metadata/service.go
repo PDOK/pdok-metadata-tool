@@ -1,8 +1,6 @@
 package metadata
 
 import (
-	"strings"
-
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 )
@@ -38,12 +36,12 @@ func NewNLServiceMetadataFromMDMetadataWithHVDRepo(
 	hvdRepo hvd.CategoryProvider,
 ) *NLServiceMetadata {
 	sm := &NLServiceMetadata{
-		MetadataID:       strings.TrimSpace(m.UUID),
-		Title:            strings.TrimSpace(m.IdentificationInfo.SVServiceIdentification.Title),
-		Abstract:         strings.TrimSpace(m.IdentificationInfo.SVServiceIdentification.Abstract),
+		MetadataID:       iso1911x.NormalizeXMLText(m.UUID),
+		Title:            iso1911x.NormalizeXMLText(m.IdentificationInfo.SVServiceIdentification.Title),
+		Abstract:         iso1911x.NormalizeXMLText(m.IdentificationInfo.SVServiceIdentification.Abstract),
 		OrganisationName: m.GetServiceContactForService(),
 		Keywords:         m.GetKeywords(),
-		ServiceType:      strings.TrimSpace(m.IdentificationInfo.SVServiceIdentification.ServiceType),
+		ServiceType:      iso1911x.NormalizeXMLText(m.IdentificationInfo.SVServiceIdentification.ServiceType),
 		OperatesOn:       m.GetOperatesOnForService(),
 		Endpoints:        m.GetServiceEndpointsForService(),
 		ThumbnailURL:     m.GetThumbnailURL(),
