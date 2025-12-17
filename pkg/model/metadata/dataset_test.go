@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +28,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 			File: filepath.Join(examples, "500d396f-5ec6-4e4b-a151-5fb3cddd8082.xml"),
 			Metadata: NLDatasetMetadata{
 				MetadataID:   "500d396f-5ec6-4e4b-a151-5fb3cddd8082",
-				SourceID:     "", // todo: known issue -> should be 440c4a06-6924-4f9c-a9e2-6f61340f711b
+				SourceID:     "440c4a06-6924-4f9c-a9e2-6f61340f711b",
 				Title:        "Gemeten Zwaveldioxide concentraties in buitenlucht.",
 				Abstract:     "Ruwe ongevalideerde uurwaarden zwaveldioxide (SO2) op grondniveau in de buitenlucht gemeten in het Landelijk Meetnet Luchtkwaliteit (LML). Zwaveldioxide is een kleurloos gas. Het wordt voornamelijk gevormd het gebruik van zwavelhoudende brandstoffen. Belangrijke bronnen zijn kolengestookte energiecentrales, raffinaderijen en het verkeer (de laatste jaren is voornamelijk de internationale scheepvaart van belang). De concentraties zwaveldioxide zijn in Nederland sterk gedaald door maatregelen op de belangrijkste bronnen. Sinds de jaren 90 van de vorige eeuw zijn er geen normoverschrijdingen meer geweest. Bij hoge concentraties heeft zwaveldioxide negatieve effecten op de menselijke gezondheid en draagt het bij aan de verzuring van ecosystemen. Zwaveldioxide wordt in de lucht gedeeltelijk omgezet in sulfaatdeeltjes en heeft zo een bijdrage aan fijn stof.",
 				ContactName:  "",
@@ -109,7 +108,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 			File: filepath.Join(examples, "a90027f8-7323-45d6-86a7-9374d0de05bf.xml"),
 			Metadata: NLDatasetMetadata{
 				MetadataID:   "a90027f8-7323-45d6-86a7-9374d0de05bf",
-				SourceID:     "", // todo: known issue -> should be 948874aa-c599-4c0f-b0c2-e6b357e73566
+				SourceID:     "948874aa-c599-4c0f-b0c2-e6b357e73566",
 				Title:        "Emissies naar het riool vanuit de industrie (2019 - heden) (INSPIRE)",
 				Abstract:     "Emissies naar het riool vanuit de industrie worden via het e-MJV (elektronisch Milieujaarverslag) gerapporteerd wanneer bedrijven bepaalde drempelwaarden overschrijden, zoals vastgelegd in het EPRTR-protocol (European Pollutant Release and Transfer Register). Bij lozingen op het riool gaat het om stoffen die via industriële processen in het bedrijfsafvalwater terechtkomen en via het gemeentelijk riool naar een rioolwaterzuiveringsinstallatie (RWZI) worden afgevoerd. Bedrijven moeten deze emissies rapporteren als ze onder de reikwijdte van de E-PRTR-verordening vallen én als de emissies van bepaalde stoffen boven de rapportagedrempels uitkomen.",
 				ContactName:  "",
@@ -206,11 +205,6 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 		t.Run(filepath.Base(tc.File), func(t *testing.T) {
 			b, err := os.ReadFile(tc.File)
 			require.NoError(t, err)
-
-			b2, err := os.ReadFile("/Users/williamloosman/repo/pdok/pdok-metadata-tool/cache/records/500d396f-5ec6-4e4b-a151-5fb3cddd8082.xml")
-			require.NoError(t, err)
-			var test csw.GetRecordByIDResponse
-			require.NoError(t, xml.Unmarshal(b2, &test)) //nolint
 
 			var md iso1911x.MDMetadata
 			require.NoError(t, xml.Unmarshal(b, &md)) //nolint

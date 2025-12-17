@@ -52,7 +52,7 @@ type MDMetadata struct {
 		} `xml:"SV_ServiceIdentification"`
 		MDDataIdentification *struct {
 			Title               string                  `xml:"citation>CI_Citation>title>CharacterString"`
-			SourceId            string                  `xml:"citation>CI_Citation>identifier>MD_Identifier>code>Anchor"`
+			Source              Source                  `xml:"citation>CI_Citation>identifier>MD_Identifier>code"`
 			Abstract            string                  `xml:"abstract>CharacterString"`
 			GraphicOverview     *CSWGraphicOverview     `xml:"graphicOverview"`
 			DescriptiveKeywords []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
@@ -145,6 +145,19 @@ type CSWMDKeywords struct {
 // CSWDescriptiveKeyword wraps MD_Keywords blocks for reuse across dataset and service structures.
 type CSWDescriptiveKeyword struct {
 	MDKeywords CSWMDKeywords `xml:"MD_Keywords"`
+}
+
+// Source models the source identification, which can be stored in an anchor or character string
+type Source struct {
+	CharacterString string    `xml:"CharacterString"`
+	Anchor          CSWAnchor `xml:"Anchor"`
+}
+
+func (s *Source) GetID() string {
+	if s.Anchor.Text != "" {
+		return s.Anchor.Text
+	}
+	return s.CharacterString
 }
 
 // ServiceEndpoint represents an access endpoint for the service, including protocol information.

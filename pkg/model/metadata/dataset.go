@@ -39,7 +39,7 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 ) *NLDatasetMetadata {
 	return &NLDatasetMetadata{
 		MetadataID:     iso1911x.NormalizeXMLText(m.UUID),
-		SourceID:       iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.SourceId),
+		SourceID:       iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Source.GetID()),
 		Title:          iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Title),
 		Abstract:       iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Abstract),
 		ContactName:    iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.ContactName),
