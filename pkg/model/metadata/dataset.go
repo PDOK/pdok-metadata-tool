@@ -2,6 +2,8 @@
 package metadata
 
 import (
+	"strings"
+
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
@@ -19,8 +21,8 @@ type NLDatasetMetadata struct {
 	Keywords       []string
 	LicenceURL     string
 	UseLimitation  string
-	ThumbnailURL   *string
-	InspireVariant *inspire.InspireVariant
+	ThumbnailURL   string
+	InspireVariant inspire.InspireVariant
 	InspireThemes  []string
 	HVDCategories  []hvd.HVDCategory
 	BoundingBox    *BoundingBox
@@ -38,25 +40,25 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 	hvdRepo hvd.CategoryProvider,
 ) *NLDatasetMetadata {
 	return &NLDatasetMetadata{
-		MetadataID:     m.UUID,
-		SourceID:       m.IdentificationInfo.MDDataIdentification.SourceId,
-		Title:          m.IdentificationInfo.MDDataIdentification.Title,
-		Abstract:       m.IdentificationInfo.MDDataIdentification.Abstract,
-		ContactName:    m.IdentificationInfo.MDDataIdentification.ContactName,
-		ContactEmail:   m.IdentificationInfo.MDDataIdentification.ContactEmail,
-		ContactURL:     m.IdentificationInfo.MDDataIdentification.ContactURL,
+		MetadataID:     strings.TrimSpace(m.UUID),
+		SourceID:       strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.SourceId),
+		Title:          strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Title),
+		Abstract:       strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Abstract),
+		ContactName:    strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.ContactName),
+		ContactEmail:   strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.ContactEmail),
+		ContactURL:     strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.ContactURL),
 		Keywords:       m.GetKeywords(),
 		LicenceURL:     m.GetLicenseURL(),
-		UseLimitation:  m.IdentificationInfo.MDDataIdentification.UseLimitation,
+		UseLimitation:  strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.UseLimitation),
 		ThumbnailURL:   m.GetThumbnailURL(),
-		InspireVariant: m.GetInspireVariant(),
+		InspireVariant: m.GetInspireVariantForDataset(),
 		InspireThemes:  m.GetInspireThemes(),
 		HVDCategories:  m.GetHVDCategories(hvdRepo),
 		BoundingBox: &BoundingBox{
-			WestBoundLongitude: m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude,
-			EastBoundLongitude: m.IdentificationInfo.MDDataIdentification.Extent.EastBoundLongitude,
-			SouthBoundLatitude: m.IdentificationInfo.MDDataIdentification.Extent.SouthBoundLatitude,
-			NorthBoundLatitude: m.IdentificationInfo.MDDataIdentification.Extent.NorthBoundLatitude,
+			WestBoundLongitude: strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude),
+			EastBoundLongitude: strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Extent.EastBoundLongitude),
+			SouthBoundLatitude: strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Extent.SouthBoundLatitude),
+			NorthBoundLatitude: strings.TrimSpace(m.IdentificationInfo.MDDataIdentification.Extent.NorthBoundLatitude),
 		},
 	}
 }

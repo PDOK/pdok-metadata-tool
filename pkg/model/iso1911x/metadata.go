@@ -5,6 +5,8 @@
 package iso1911x
 
 import (
+	"html"
+	"net/url"
 	"strings"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
@@ -37,6 +39,7 @@ type MDMetadata struct {
 	IdentificationInfo      struct {
 		SVServiceIdentification *struct {
 			Title               string                  `xml:"citation>CI_Citation>title>CharacterString"`
+			Abstract            string                  `xml:"abstract>CharacterString"`
 			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>organisationName"`
 			GraphicOverview     *CSWGraphicOverview     `xml:"graphicOverview"`
 			DescriptiveKeywords []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
@@ -67,6 +70,7 @@ type MDMetadata struct {
 			} `xml:"extent>EX_Extent>geographicElement>EX_GeographicBoundingBox"`
 		} `xml:"MD_DataIdentification"`
 	} `xml:"identificationInfo"`
+	// todo: also implement transferOptions>MD_DigitalTransferOptions>onLine for datasets
 	OnLine []struct {
 		URL      string `xml:"CI_OnlineResource>linkage>URL"`
 		Protocol struct {
@@ -143,6 +147,12 @@ type CSWDescriptiveKeyword struct {
 	MDKeywords CSWMDKeywords `xml:"MD_Keywords"`
 }
 
+// ServiceEndpoint represents an access endpoint for the service, including protocol information.
+type ServiceEndpoint struct {
+	URL      string
+	Protocol string
+}
+
 // GetMetaDataType returns whether this MDMetadata represents a dataset or a service.
 // It uses the hierarchyLevel>MD_ScopeCode value (codeListValue or text) when present.
 // Defaults to Dataset when unknown.
@@ -214,9 +224,9 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 		// Collect generic keywords
 		for _, kw := range dk.MDKeywords.Keyword {
 			if kw.CharacterString != "" {
-				keywords = append(keywords, kw.CharacterString)
+				keywords = append(keywords, strings.TrimSpace(kw.CharacterString))
 			} else if kw.Anchor.Text != "" {
-				keywords = append(keywords, kw.Anchor.Text)
+				keywords = append(keywords, strings.TrimSpace(kw.Anchor.Text))
 			}
 		}
 	}
@@ -253,35 +263,35 @@ func (m *MDMetadata) GetLicenseURL() string {
 }
 
 // GetThumbnailURL returns the thumbnail URL from either dataset or service metadata.
-func (m *MDMetadata) GetThumbnailURL() *string {
+func (m *MDMetadata) GetThumbnailURL() string {
 	switch m.GetMetaDataType() {
 	case Service:
 		if m.IdentificationInfo.SVServiceIdentification == nil ||
 			m.IdentificationInfo.SVServiceIdentification.GraphicOverview == nil {
-			return nil
+			return ""
 		}
 
 		thumbnailURL := m.IdentificationInfo.SVServiceIdentification.GraphicOverview.MDBrowseGraphic.FileName
 		if thumbnailURL != "" {
-			return &thumbnailURL
+			return thumbnailURL
 		}
 	case Dataset:
 		if m.IdentificationInfo.MDDataIdentification == nil ||
 			m.IdentificationInfo.MDDataIdentification.GraphicOverview == nil {
-			return nil
+			return ""
 		}
 
 		thumbnailURL := m.IdentificationInfo.MDDataIdentification.GraphicOverview.MDBrowseGraphic.FileName
 		if thumbnailURL != "" {
-			return &thumbnailURL
+			return thumbnailURL
 		}
 	}
 
-	return nil
+	return ""
 }
 
-// GetInspireVariant retrieves the INSPIRE variant from dataset metadata.
-func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
+// GetInspireVariantForDataset retrieves the INSPIRE variant from dataset metadata.
+func (m *MDMetadata) GetInspireVariantForDataset() inspire.InspireVariant {
 	isInspire := false
 	isConformant := true
 	inspireRegulation := "VERORDENING (EU) Nr. 1089/2010"
@@ -322,11 +332,11 @@ func (m *MDMetadata) GetInspireVariant() *inspire.InspireVariant {
 
 	switch {
 	case isInspire && isConformant:
-		return &harmonised
+		return harmonised
 	case isInspire:
-		return &asIs
+		return asIs
 	default:
-		return nil
+		return ""
 	}
 }
 
@@ -426,8 +436,8 @@ func (m *MDMetadata) GetHVDCategories(
 			}
 
 			parts := strings.Split(keyword.Anchor.Href, "/")
-			code := parts[len(parts)-1]
-			label := keyword.Anchor.Text
+			code := strings.TrimSpace(parts[len(parts)-1])
+			label := strings.TrimSpace(keyword.Anchor.Text)
 
 			if seen[code] {
 				continue
@@ -447,4 +457,51 @@ func (m *MDMetadata) GetHVDCategories(
 	}
 
 	return categories
+}
+
+func (m *MDMetadata) GetOperatesOnForService() (result []string) {
+
+	for _, val := range m.IdentificationInfo.SVServiceIdentification.OperatesOn {
+		unescapedHref := html.UnescapeString(val.Href)
+
+		hrefUrl, err := url.Parse(unescapedHref)
+		if err == nil {
+			for _, key := range []string{"id", "ID"} {
+				id := hrefUrl.Query().Get(key)
+				if id != "" {
+					// remove whitespace
+					id = strings.ReplaceAll(id, " ", "")
+
+					result = append(result, id)
+				}
+			}
+		} else {
+			result = append(result, strings.ReplaceAll(val.Uuidref, " ", ""))
+		}
+	}
+
+	return
+}
+
+func (m *MDMetadata) GetServiceEndpointsForService() (result []ServiceEndpoint) {
+	for _, ol := range m.OnLine {
+		ep := ServiceEndpoint{URL: ol.URL}
+		if ol.Protocol.Anchor.Text != "" {
+			ep.Protocol = ol.Protocol.Anchor.Text
+		}
+
+		result = append(result, ep)
+	}
+	return
+}
+
+func (m *MDMetadata) GetServiceContactForService() string {
+	if m.IdentificationInfo.SVServiceIdentification.ResponsibleParty != nil {
+		if m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Char != "" {
+			return strings.TrimSpace(m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Char)
+		} else if m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Anchor != "" {
+			return strings.TrimSpace(m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Anchor)
+		}
+	}
+	return ""
 }
