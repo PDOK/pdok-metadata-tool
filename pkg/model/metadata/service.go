@@ -36,18 +36,24 @@ func NewNLServiceMetadataFromMDMetadataWithHVDRepo(
 	hvdRepo hvd.CategoryProvider,
 ) *NLServiceMetadata {
 	sm := &NLServiceMetadata{
-		MetadataID:       iso1911x.NormalizeXMLText(m.UUID),
-		Title:            iso1911x.NormalizeXMLText(m.IdentificationInfo.SVServiceIdentification.Title),
-		Abstract:         iso1911x.NormalizeXMLText(m.IdentificationInfo.SVServiceIdentification.Abstract),
+		MetadataID: iso1911x.NormalizeXMLText(m.UUID),
+		Title: iso1911x.NormalizeXMLText(
+			m.IdentificationInfo.SVServiceIdentification.Title,
+		),
+		Abstract: iso1911x.NormalizeXMLText(
+			m.IdentificationInfo.SVServiceIdentification.Abstract,
+		),
 		OrganisationName: m.GetServiceContactForService(),
 		Keywords:         m.GetKeywords(),
-		ServiceType:      iso1911x.NormalizeXMLText(m.IdentificationInfo.SVServiceIdentification.ServiceType),
-		OperatesOn:       m.GetOperatesOnForService(),
-		Endpoints:        m.GetServiceEndpointsForService(),
-		ThumbnailURL:     m.GetThumbnailURL(),
-		LicenceURL:       m.GetLicenseURL(),
-		InspireThemes:    m.GetInspireThemes(),
-		HVDCategories:    m.GetHVDCategories(hvdRepo),
+		ServiceType: iso1911x.NormalizeXMLText(
+			m.IdentificationInfo.SVServiceIdentification.ServiceType,
+		),
+		OperatesOn:    m.GetOperatesOnForService(),
+		Endpoints:     m.GetServiceEndpointsForService(),
+		ThumbnailURL:  m.GetThumbnailURL(),
+		LicenceURL:    m.GetLicenseURL(),
+		InspireThemes: m.GetInspireThemes(),
+		HVDCategories: m.GetHVDCategories(hvdRepo),
 	}
 
 	// Organisation (point of contact organisation name)

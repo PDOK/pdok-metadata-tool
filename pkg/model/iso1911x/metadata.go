@@ -157,6 +157,7 @@ func (s *Source) GetID() string {
 	if s.Anchor.Text != "" {
 		return s.Anchor.Text
 	}
+
 	return s.CharacterString
 }
 
@@ -218,7 +219,8 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 	for _, dk := range dks {
 		th := dk.MDKeywords.Thesaurus
 		// Skip INSPIRE keywords groups
-		if NormalizeXMLText(th.CharacterString) == inspireThesaurusName || NormalizeXMLText(th.Anchor.Text) == inspireThesaurusName ||
+		if NormalizeXMLText(th.CharacterString) == inspireThesaurusName ||
+			NormalizeXMLText(th.Anchor.Text) == inspireThesaurusName ||
 			(th.Anchor.Href != "" && strings.Contains(th.Anchor.Href, inspireDutchVocabulary)) {
 			continue
 		}
@@ -328,7 +330,10 @@ func (m *MDMetadata) GetInspireVariantForDataset() inspire.InspireVariant {
 				specificationTitle = result.Specification.Anchor.Text
 			}
 
-			foundInspireRegulation = strings.Contains(NormalizeXMLText(specificationTitle), inspireRegulation)
+			foundInspireRegulation = strings.Contains(
+				NormalizeXMLText(specificationTitle),
+				inspireRegulation,
+			)
 
 			if foundInspireRegulation {
 				isInspire = true
@@ -383,7 +388,8 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 	for _, descriptiveKeyword := range dks {
 		thesaurus := descriptiveKeyword.MDKeywords.Thesaurus
 
-		if NormalizeXMLText(thesaurus.CharacterString) != thesaurusName && NormalizeXMLText(thesaurus.Anchor.Text) != thesaurusName {
+		if NormalizeXMLText(thesaurus.CharacterString) != thesaurusName &&
+			NormalizeXMLText(thesaurus.Anchor.Text) != thesaurusName {
 			// Skip, this is not the right thesaurus
 			continue
 		}
@@ -478,7 +484,6 @@ func (m *MDMetadata) GetHVDCategories(
 }
 
 func (m *MDMetadata) GetOperatesOnForService() (result []string) {
-
 	for _, val := range m.IdentificationInfo.SVServiceIdentification.OperatesOn {
 		unescapedHref := html.UnescapeString(val.Href)
 
@@ -510,16 +515,20 @@ func (m *MDMetadata) GetServiceEndpointsForService() (result []ServiceEndpoint) 
 
 		result = append(result, ep)
 	}
+
 	return
 }
 
 func (m *MDMetadata) GetServiceContactForService() string {
 	if m.IdentificationInfo.SVServiceIdentification.ResponsibleParty != nil {
 		if m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Char != "" {
-			return strings.TrimSpace(m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Char)
+			return strings.TrimSpace(
+				m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Char,
+			)
 		} else if m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Anchor != "" {
 			return strings.TrimSpace(m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Anchor)
 		}
 	}
+
 	return ""
 }

@@ -38,25 +38,45 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 	hvdRepo hvd.CategoryProvider,
 ) *NLDatasetMetadata {
 	return &NLDatasetMetadata{
-		MetadataID:     iso1911x.NormalizeXMLText(m.UUID),
-		SourceID:       iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Source.GetID()),
-		Title:          iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Title),
-		Abstract:       iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Abstract),
-		ContactName:    iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.ContactName),
-		ContactEmail:   iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.ContactEmail),
-		ContactURL:     iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.ContactURL),
-		Keywords:       m.GetKeywords(),
-		LicenceURL:     m.GetLicenseURL(),
-		UseLimitation:  iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.UseLimitation),
+		MetadataID: iso1911x.NormalizeXMLText(m.UUID),
+		SourceID: iso1911x.NormalizeXMLText(
+			m.IdentificationInfo.MDDataIdentification.Source.GetID(),
+		),
+		Title: iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Title),
+		Abstract: iso1911x.NormalizeXMLText(
+			m.IdentificationInfo.MDDataIdentification.Abstract,
+		),
+		ContactName: iso1911x.NormalizeXMLText(
+			m.IdentificationInfo.MDDataIdentification.ContactName,
+		),
+		ContactEmail: iso1911x.NormalizeXMLText(
+			m.IdentificationInfo.MDDataIdentification.ContactEmail,
+		),
+		ContactURL: iso1911x.NormalizeXMLText(
+			m.IdentificationInfo.MDDataIdentification.ContactURL,
+		),
+		Keywords:   m.GetKeywords(),
+		LicenceURL: m.GetLicenseURL(),
+		UseLimitation: iso1911x.NormalizeXMLText(
+			m.IdentificationInfo.MDDataIdentification.UseLimitation,
+		),
 		ThumbnailURL:   m.GetThumbnailURL(),
 		InspireVariant: m.GetInspireVariantForDataset(),
 		InspireThemes:  m.GetInspireThemes(),
 		HVDCategories:  m.GetHVDCategories(hvdRepo),
 		BoundingBox: &BoundingBox{
-			WestBoundLongitude: iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude),
-			EastBoundLongitude: iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Extent.EastBoundLongitude),
-			SouthBoundLatitude: iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Extent.SouthBoundLatitude),
-			NorthBoundLatitude: iso1911x.NormalizeXMLText(m.IdentificationInfo.MDDataIdentification.Extent.NorthBoundLatitude),
+			WestBoundLongitude: iso1911x.NormalizeXMLText(
+				m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude,
+			),
+			EastBoundLongitude: iso1911x.NormalizeXMLText(
+				m.IdentificationInfo.MDDataIdentification.Extent.EastBoundLongitude,
+			),
+			SouthBoundLatitude: iso1911x.NormalizeXMLText(
+				m.IdentificationInfo.MDDataIdentification.Extent.SouthBoundLatitude,
+			),
+			NorthBoundLatitude: iso1911x.NormalizeXMLText(
+				m.IdentificationInfo.MDDataIdentification.Extent.NorthBoundLatitude,
+			),
 		},
 	}
 }
