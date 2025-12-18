@@ -3,12 +3,11 @@ package client
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
-
-	log "github.com/sirupsen/logrus" //nolint:depguard
 )
 
 const GetRecordByID = "/?service=CSW&request=GetRecordById"
@@ -63,7 +62,7 @@ func buildMockWebserverNgr() *httptest.Server {
 			case "&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=C2DFBDBC-5092-11E0-BA8E-B62DE0D72086":
 				responsePath = "../../examples/ISO19119/Voorbeeld_Metadata_Services_2019_max.xml"
 			default:
-				log.Infof("no handler for request %s in test setup", req.URL.String())
+				slog.Info("no handler for request in test setup", "url", req.URL.String())
 				rw.WriteHeader(http.StatusNotFound)
 
 				return
@@ -71,7 +70,7 @@ func buildMockWebserverNgr() *httptest.Server {
 
 			metadataResponse, err := readFileToString(responsePath)
 			if err != nil {
-				log.Errorf("%v", err)
+				slog.Error("error reading file", "err", err)
 			}
 
 			rw.Header().Set("Content-Type", "application/xml")
@@ -79,18 +78,15 @@ func buildMockWebserverNgr() *httptest.Server {
 
 			getRecordByIDResponse := wrapAsGetRecordByIDResponse(metadataResponse)
 
-			_, err = fmt.Fprint(rw, getRecordByIDResponse)
-			if err != nil {
-				log.Errorf("%v", err)
-			}
+			_, _ = fmt.Fprint(rw, getRecordByIDResponse)
 		case strings.HasPrefix(url, GetRecords):
 			switch path := strings.TrimPrefix(url, GetRecords); path {
-			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results&startPosition=1&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0&constraint=type='dataset'":
+			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results&startPosition=1&maxRecords=50&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0&constraint=type%3D%27dataset%27":
 				writeOkResponse("./testdata/CSW_GetRecordsResponse_Dataset.xml", rw, ContentTypeXML)
-			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results&startPosition=11&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0&constraint=type='service'":
+			case "&version=2.0.2&typeNames=gmd:MD_Metadata&resultType=results&startPosition=11&maxRecords=50&constraintLanguage=CQL_TEXT&constraint_language_version=1.1.0&constraint=type%3D%27service%27":
 				writeOkResponse("./testdata/CSW_GetRecordsResponse_Service.xml", rw, ContentTypeXML)
 			default:
-				log.Infof("no handler for request %s in test setup", req.URL.String())
+				slog.Info("no handler for request in test setup", "url", req.URL.String())
 				rw.WriteHeader(http.StatusNotFound)
 
 				return
@@ -125,11 +121,11 @@ func buildMockWebserverNgr() *httptest.Server {
 			}
 
 			if !bodyMatched {
-				log.Infof("no handler for request %s in test setup", req.URL.String())
+				slog.Info("no handler for request in test setup", "url", req.URL.String())
 				rw.WriteHeader(http.StatusNotFound)
 			}
 		default:
-			log.Infof("no handler for request %s in test setup", req.URL.String())
+			slog.Info("no handler for request in test setup", "url", req.URL.String())
 			rw.WriteHeader(http.StatusNotFound)
 
 			return
@@ -155,7 +151,7 @@ func wrapAsGetRecordByIDResponse(metadata string) string {
 func writeOkResponse(responsePath string, rw http.ResponseWriter, contentType string) {
 	response, err := readFileToString(responsePath)
 	if err != nil {
-		log.Errorf("%v", err)
+		slog.Error("error reading file", "err", err)
 	}
 
 	rw.Header().Set("Content-Type", contentType)

@@ -3,9 +3,11 @@ package client
 import (
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -19,8 +21,8 @@ func TestCswClient_GetRecords(t *testing.T) {
 		offset     int
 	}
 
-	dataset := csw.Dataset
-	service := csw.Service
+	dataset := iso1911x.Dataset
+	service := iso1911x.Service
 
 	tests := []struct {
 		name            string
@@ -58,19 +60,30 @@ func TestCswClient_GetRecords(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mdRecords, nextRecord, err := cswClient.GetRecords(&tt.args.constraint, tt.args.offset)
+			resp, err := cswClient.GetRecordPage(&tt.args.constraint, tt.args.offset)
 			if !tt.wantErr {
 				require.NoError(t, err)
 			}
 
-			assert.Len(t, mdRecords, tt.wantNrOfRecords)
-			assert.Equal(t, tt.wantNextRecord, nextRecord)
+			assert.Len(t, resp.SearchResults.SummaryRecords, tt.wantNrOfRecords)
 
-			for _, record := range mdRecords {
+			// NextRecord is a string in the model; compare as string
+			assert.Equal(t, tt.wantNextRecord, atoi(t, resp.SearchResults.NextRecord))
+
+			for _, record := range resp.SearchResults.SummaryRecords {
 				assert.Equal(t, string(*tt.args.constraint.MetadataType), record.Type)
 			}
 		})
 	}
+}
+
+func atoi(t *testing.T, s string) int {
+	t.Helper()
+
+	i, err := strconv.Atoi(s)
+	require.NoError(t, err)
+
+	return i
 }
 
 func TestCswClient_GetRecordsWithOGCFilter(t *testing.T) {
@@ -91,7 +104,7 @@ func TestCswClient_GetRecordsWithOGCFilter(t *testing.T) {
 			name: "GetRecordsWithOGCFilter for Datasets",
 			args: args{
 				filter: csw.GetRecordsOgcFilter{
-					MetadataType: csw.Dataset,
+					MetadataType: iso1911x.Dataset,
 					Title:        nil,
 					Identifier:   nil,
 				},
@@ -103,7 +116,7 @@ func TestCswClient_GetRecordsWithOGCFilter(t *testing.T) {
 			name: "GetRecordsWithOGCFilter for Services",
 			args: args{
 				filter: csw.GetRecordsOgcFilter{
-					MetadataType: csw.Service,
+					MetadataType: iso1911x.Service,
 					Title:        nil,
 					Identifier:   nil,
 				},
@@ -140,7 +153,7 @@ func TestCswClient_GetRecordById(t *testing.T) {
 		name             string
 		args             args
 		wantErr          bool
-		wantMetadataType csw.MetadataType
+		wantMetadataType iso1911x.MetadataType
 	}{
 		{
 			name: "GetRecordByID for Dataset",
@@ -148,7 +161,7 @@ func TestCswClient_GetRecordById(t *testing.T) {
 				id: "C2DFBDBC-5092-11E0-BA8E-B62DE0D72085",
 			},
 			wantErr:          false,
-			wantMetadataType: csw.Dataset,
+			wantMetadataType: iso1911x.Dataset,
 		},
 		{
 			name: "GetRecordByID for Service",
@@ -156,7 +169,7 @@ func TestCswClient_GetRecordById(t *testing.T) {
 				id: "C2DFBDBC-5092-11E0-BA8E-B62DE0D72086",
 			},
 			wantErr:          false,
-			wantMetadataType: csw.Service,
+			wantMetadataType: iso1911x.Service,
 		},
 	}
 	for _, tt := range tests {
@@ -168,12 +181,12 @@ func TestCswClient_GetRecordById(t *testing.T) {
 
 			assert.Equal(t, MDMetadata.UUID, tt.args.id)
 
-			if tt.wantMetadataType == csw.Dataset {
+			if tt.wantMetadataType == iso1911x.Dataset {
 				assert.NotNil(t, MDMetadata.IdentificationInfo.MDDataIdentification)
 				assert.NotEmpty(t, MDMetadata.IdentificationInfo.MDDataIdentification.Title)
 			}
 
-			if tt.wantMetadataType == csw.Service {
+			if tt.wantMetadataType == iso1911x.Service {
 				assert.NotNil(t, MDMetadata.IdentificationInfo.SVServiceIdentification)
 				assert.NotEmpty(t, MDMetadata.IdentificationInfo.SVServiceIdentification.Title)
 			}

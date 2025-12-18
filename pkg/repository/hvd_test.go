@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"path"
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
@@ -55,5 +56,7 @@ func TestHvdRepository_GetFilteredHvdCategories(t *testing.T) {
 }
 
 func getNewHVDRepository() *HVDRepository {
-	return NewHVDRepository(hvd.HvdEndpoint, common.HvdLocalRDFPath)
+	hvdCachePath := path.Join(common.GetProjectRoot(), common.HvdLocalRDFPath)
+
+	return NewHVDRepository(hvd.HvdEndpoint, hvdCachePath)
 }

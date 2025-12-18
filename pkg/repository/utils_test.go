@@ -3,12 +3,11 @@ package repository
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
-
-	log "github.com/sirupsen/logrus" //nolint:depguard
 )
 
 const GetRecordByID = "/?service=CSW&request=GetRecordById"
@@ -35,13 +34,13 @@ func buildMockWebserverNgr() *httptest.Server {
 			case "&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=19165027-a13a-4c19-9013-ec1fd191019d":
 				responsePath = "../../examples/ISO19115/Wetlands_INSPIRE_geharmoniseerd.xml"
 			default:
-				log.Infof("no handler for request %s in test setup", req.URL.String())
+				slog.Info("no handler for request in test setup", "url", req.URL.String())
 				rw.WriteHeader(http.StatusNotFound)
 			}
 
 			metadataResponse, err := readFileToString(responsePath)
 			if err != nil {
-				log.Errorf("%v", err)
+				slog.Error("error reading file", "err", err)
 			}
 
 			rw.Header().Set("Content-Type", "application/xml")
@@ -49,10 +48,7 @@ func buildMockWebserverNgr() *httptest.Server {
 
 			getRecordByIDResponse := wrapAsGetRecordByIDResponse(metadataResponse)
 
-			_, err = fmt.Fprint(rw, getRecordByIDResponse)
-			if err != nil {
-				log.Errorf("%v", err)
-			}
+			_, _ = fmt.Fprint(rw, getRecordByIDResponse)
 		case url == "/":
 			bodyBytes, err := io.ReadAll(req.Body)
 			if err != nil {
@@ -71,19 +67,16 @@ func buildMockWebserverNgr() *httptest.Server {
 
 				metadataResponse, err := readFileToString(responsePath)
 				if err != nil {
-					log.Errorf("%v", err)
+					slog.Error("error reading file", "err", err)
 				}
 
 				rw.Header().Set("Content-Type", "application/xml")
 				rw.WriteHeader(http.StatusOK)
 
-				_, err = fmt.Fprint(rw, metadataResponse)
-				if err != nil {
-					log.Errorf("%v", err)
-				}
+				_, _ = fmt.Fprint(rw, metadataResponse)
 			}
 		default:
-			log.Infof("no handler for request %s in test setup", req.URL.String())
+			slog.Info("no handler for request in test setup", "url", req.URL.String())
 			rw.WriteHeader(http.StatusNotFound)
 		}
 	}))

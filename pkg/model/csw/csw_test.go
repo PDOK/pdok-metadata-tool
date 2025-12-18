@@ -3,6 +3,7 @@ package csw
 import (
 	"testing"
 
+	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -37,7 +38,7 @@ func TestGetRecordsOgcFilter_ToRequestBody(t *testing.T) {
 	title := "title"
 	identifier := "C2DFBDBC-5092-11E0-BA8E-B62DE0D72086"
 	filter := GetRecordsOgcFilter{
-		MetadataType: Service,
+		MetadataType: iso1911x.Service,
 		Title:        &title,
 		Identifier:   &identifier,
 	}

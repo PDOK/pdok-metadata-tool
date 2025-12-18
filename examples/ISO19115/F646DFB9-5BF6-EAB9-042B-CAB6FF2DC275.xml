@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmx="http://www.isotc211.org/2005/gmx"
+                 xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20060504/gmd/gmd.xsd http://www.isotc211.org/2005/gmx http://schemas.opengis.net/iso/19139/20060504/gmx/gmx.xsd">
+    <gmd:fileIdentifier>
+        <gco:CharacterString>F646DFB9-5BF6-EAB9-042B-CAB6FF2DC275</gco:CharacterString>
+    </gmd:fileIdentifier>
+    <gmd:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="dut">Nederlands; Vlaams
+        </gmd:LanguageCode>
+    </gmd:language>
+    <gmd:characterSet>
+        <gmd:MD_CharacterSetCode
+                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode"
+                codeListValue="utf8">utf8
+        </gmd:MD_CharacterSetCode>
+    </gmd:characterSet>
+    <gmd:hierarchyLevel>
+        <gmd:MD_ScopeCode
+                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_ScopeCode"
+                codeListValue="dataset">dataset
+        </gmd:MD_ScopeCode>
+    </gmd:hierarchyLevel>
+    <gmd:contact>
+        <gmd:CI_ResponsibleParty>
+            <gmd:organisationName>
+                <gco:CharacterString>TNO Geologische Dienst Nederland</gco:CharacterString>
+            </gmd:organisationName>
+            <gmd:positionName>
+                <gco:CharacterString>Beheerder metadata</gco:CharacterString>
+            </gmd:positionName>
+            <gmd:contactInfo>
+                <gmd:CI_Contact>
+                    <gmd:address>
+                        <gmd:CI_Address>
+                            <gmd:electronicMailAddress>
+                                <gco:CharacterString>support@broservicedesk.nl</gco:CharacterString>
+                            </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                    </gmd:address>
+                    <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>https://www.basisregistratieondergrond.nl</gmd:URL>
+                            </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onlineResource>
+                </gmd:CI_Contact>
+            </gmd:contactInfo>
+            <gmd:role>
+                <gmd:CI_RoleCode
+                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_RoleCode"
+                        codeListValue="pointOfContact">contactpunt
+                </gmd:CI_RoleCode>
+            </gmd:role>
+        </gmd:CI_ResponsibleParty>
+    </gmd:contact>
+    <gmd:dateStamp>
+        <gco:Date>2025-02-04</gco:Date>
+    </gmd:dateStamp>
+    <gmd:metadataStandardName>
+        <gco:CharacterString>ISO 19115</gco:CharacterString>
+    </gmd:metadataStandardName>
+    <gmd:metadataStandardVersion>
+        <gco:CharacterString>Nederlands metadata profiel op ISO 19115 voor geografie 2.1.0</gco:CharacterString>
+    </gmd:metadataStandardVersion>
+    <gmd:referenceSystemInfo>
+        <gmd:MD_ReferenceSystem>
+            <gmd:referenceSystemIdentifier>
+                <gmd:RS_Identifier>
+                    <gmd:code>
+                        <gmx:Anchor xlink:href="http://www.opengis.net/def/crs/EPSG/0/28992">Stelsel van de
+                            Rijksdriehoeksmeting (Amersfoort / RD New)
+                        </gmx:Anchor>
+                    </gmd:code>
+                </gmd:RS_Identifier>
+            </gmd:referenceSystemIdentifier>
+        </gmd:MD_ReferenceSystem>
+    </gmd:referenceSystemInfo>
+    <gmd:referenceSystemInfo>
+        <gmd:MD_ReferenceSystem>
+            <gmd:referenceSystemIdentifier>
+                <gmd:RS_Identifier>
+                    <gmd:code>
+                        <gmx:Anchor xlink:href="http://www.opengis.net/def/crs/EPSG/0/5709">Hoogte boven Normaal
+                            Amsterdams Peil (NAP)
+                        </gmx:Anchor>
+                    </gmd:code>
+                </gmd:RS_Identifier>
+            </gmd:referenceSystemIdentifier>
+        </gmd:MD_ReferenceSystem>
+    </gmd:referenceSystemInfo>
+    <gmd:identificationInfo>
+        <gmd:MD_DataIdentification>
+            <gmd:citation>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                        <gco:CharacterString>BRO - Digitaal Geologisch Model (DGM) as-is</gco:CharacterString>
+                    </gmd:title>
+                    <gmd:date>
+                        <gmd:CI_Date>
+                            <gmd:date>
+                                <gco:Date>2009-10-21</gco:Date>
+                            </gmd:date>
+                            <gmd:dateType>
+                                <gmd:CI_DateTypeCode
+                                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
+                                        codeListValue="publication">publicatie
+                                </gmd:CI_DateTypeCode>
+                            </gmd:dateType>
+                        </gmd:CI_Date>
+                    </gmd:date>
+                    <gmd:edition>
+                        <gco:CharacterString>versie 1.3</gco:CharacterString>
+                    </gmd:edition>
+                    <gmd:identifier>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gmx:Anchor
+                                        xlink:href="http://nationaalgeoregister.nl/geonetwork/srv/dut/csw?Service=CSW&amp;Version=2.0.2&amp;Request=GetRecordById&amp;elementSetName=full&amp;OutputSchema=http://www.isotc211.org/2005/gmd&amp;ID=F646DFB9-5BF6-EAB9-042B-CAB6FF2DC275">
+                                    23c5bc1b-212b-49b5-8375-846ccabd544d
+                                </gmx:Anchor>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:identifier>
+                </gmd:CI_Citation>
+            </gmd:citation>
+            <gmd:abstract>
+                <gco:CharacterString>Het Digitaal Geologisch Model (DGM) is een driedimensionaal lagenmodel van de
+                    Nederlandse ondergrond tot een diepte van ongeveer 500 m onder NAP, met lokaal uitschieters tot 1200
+                    m. De ondergrondlagen in dit deel van de ondergrond bestaan hoofdzakelijk uit onverharde sedimenten,
+                    waarin de grondsoorten klei, zand, grind en veen voorkomen. De lagen worden op basis van verschillen
+                    in lithologie en andere eigenschappen ingedeeld in lithostratigrafische eenheden. DGM is een model
+                    van de opbouw en de samenhang (geometrie) van deze lithostratigrafische eenheden. De hoogteligging
+                    van de onder- en bovenkant en de dikte van de eenheden worden vastgelegd in gridbestanden (rasters)
+                    met een celgrootte van 100 bij 100 m. Behalve de laaginformatie bevat DGM ook de geïnterpreteerde
+                    boorbeschrijvingen die bij het maken van het model gebruikt zijn.
+                    Het modelgebied van DGM bestaat uit het vasteland van Nederland. De ondergrond van het Nederlandse
+                    deel van het Continentaal Plat is niet in DGM opgenomen. DGM is een regionaal model. Het is niet
+                    geschikt voor gebruik op lokale schaal; voor het maken van een lokaal ondergrondmodel zullen altijd
+                    aanvullende gegevens nodig zijn.
+                    Voor verdere informatie wordt verwezen naar de website van de BRO:
+                    https://basisregistratieondergrond.nl/
+                </gco:CharacterString>
+            </gmd:abstract>
+            <gmd:purpose>
+                <gco:CharacterString>Voor gebruik in geologische en geohydrologische modellen</gco:CharacterString>
+            </gmd:purpose>
+            <gmd:status>
+                <gmd:MD_ProgressCode
+                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_ProgressCode"
+                        codeListValue="completed">compleet
+                </gmd:MD_ProgressCode>
+            </gmd:status>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:organisationName>
+                        <gco:CharacterString>TNO Geologische Dienst Nederland</gco:CharacterString>
+                    </gmd:organisationName>
+                    <gmd:positionName>
+                        <gco:CharacterString>Projectleider Ondiepe kartering</gco:CharacterString>
+                    </gmd:positionName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress>
+                                        <gco:CharacterString>support@broservicedesk.nl</gco:CharacterString>
+                                    </gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                            <gmd:onlineResource>
+                                <gmd:CI_OnlineResource>
+                                    <gmd:linkage>
+                                        <gmd:URL>https://www.basisregistratieondergrond.nl</gmd:URL>
+                                    </gmd:linkage>
+                                </gmd:CI_OnlineResource>
+                            </gmd:onlineResource>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode
+                                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_RoleCode"
+                                codeListValue="pointOfContact">contactpunt
+                        </gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:resourceMaintenance>
+                <gmd:MD_MaintenanceInformation>
+                    <gmd:maintenanceAndUpdateFrequency>
+                        <gmd:MD_MaintenanceFrequencyCode
+                                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode"
+                                codeListValue="annually">jaarlijks
+                        </gmd:MD_MaintenanceFrequencyCode>
+                    </gmd:maintenanceAndUpdateFrequency>
+                </gmd:MD_MaintenanceInformation>
+            </gmd:resourceMaintenance>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>Digitaal Geologisch Model</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gco:CharacterString>DGM</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gco:CharacterString>infoFeatureAccessService</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gco:CharacterString>humanGeographicViewer</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gco:CharacterString>Boringen</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gco:CharacterString>Formatie</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gco:CharacterString>Nederland</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gco:CharacterString>Bodem</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gco:CharacterString>basisset NOVEX</gco:CharacterString>
+                    </gmd:keyword>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/en/inspire-theme/ge">Geologie
+                        </gmx:Anchor>
+                    </gmd:keyword>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/inspire_themes">GEMET -
+                                    INSPIRE themes, version 1.0
+                                </gmx:Anchor>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2008-06-01</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode
+                                                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
+                                                codeListValue="publication">publicatie
+                                        </gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/SpatialScope/national">
+                            Nationaal
+                        </gmx:Anchor>
+                    </gmd:keyword>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/SpatialScope">
+                                    Ruimtelijke dekking
+                                </gmx:Anchor>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2019-05-22</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode
+                                                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
+                                                codeListValue="publication">publicatie
+                                        </gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://data.europa.eu/eli/reg_impl/2023/138/oj">HVD</gmx:Anchor>
+                    </gmd:keyword>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://data.europa.eu/bna/c_dd313021">Aardobservatie en milieu
+                        </gmx:Anchor>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://data.europa.eu/bna/c_e3f55603">Geologie</gmx:Anchor>
+                    </gmd:keyword>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gmx:Anchor
+                                        xlink:href="http://publications.europa.eu/resource/dataset/high-value-dataset-category">
+                                    High-value dataset categories
+                                </gmx:Anchor>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2023-09-27</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode
+                                                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
+                                                codeListValue="publication">publicatie
+                                        </gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:resourceConstraints>
+                <gmd:MD_Constraints>
+                    <gmd:useLimitation>
+                        <gco:CharacterString>Geen gebruiksbeperkingen</gco:CharacterString>
+                    </gmd:useLimitation>
+                </gmd:MD_Constraints>
+            </gmd:resourceConstraints>
+            <gmd:resourceConstraints>
+                <gmd:MD_LegalConstraints>
+                    <gmd:accessConstraints>
+                        <gmd:MD_RestrictionCode
+                                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode"
+                                codeListValue="otherRestrictions">anders
+                        </gmd:MD_RestrictionCode>
+                    </gmd:accessConstraints>
+                    <gmd:otherConstraints>
+                        <gmx:Anchor xlink:href="http://creativecommons.org/publicdomain/zero/1.0/deed.nl">Geen
+                            beperkingen
+                        </gmx:Anchor>
+                    </gmd:otherConstraints>
+                    <gmd:otherConstraints>
+                        <gmx:Anchor
+                                xlink:href="http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply">
+                            Er zijn geen condities voor toegang en gebruik
+                        </gmx:Anchor>
+                    </gmd:otherConstraints>
+                </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+            <gmd:resourceConstraints>
+                <gmd:MD_LegalConstraints>
+                    <gmd:accessConstraints>
+                        <gmd:MD_RestrictionCode
+                                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode"
+                                codeListValue="otherRestrictions">anders
+                        </gmd:MD_RestrictionCode>
+                    </gmd:accessConstraints>
+                    <gmd:otherConstraints>
+                        <gmx:Anchor
+                                xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">
+                            Geen beperkingen voor publieke toegang
+                        </gmx:Anchor>
+                    </gmd:otherConstraints>
+                </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+            <gmd:resourceConstraints>
+                <gmd:MD_SecurityConstraints>
+                    <gmd:classification>
+                        <gmd:MD_ClassificationCode
+                                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_ClassificationCode"
+                                codeListValue="unclassified">vrij toegankelijk
+                        </gmd:MD_ClassificationCode>
+                    </gmd:classification>
+                </gmd:MD_SecurityConstraints>
+            </gmd:resourceConstraints>
+            <gmd:spatialRepresentationType>
+                <gmd:MD_SpatialRepresentationTypeCode
+                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode"
+                        codeListValue="grid">grid
+                </gmd:MD_SpatialRepresentationTypeCode>
+            </gmd:spatialRepresentationType>
+            <gmd:spatialResolution>
+                <gmd:MD_Resolution>
+                    <gmd:equivalentScale>
+                        <gmd:MD_RepresentativeFraction>
+                            <gmd:denominator>
+                                <gco:Integer>250000</gco:Integer>
+                            </gmd:denominator>
+                        </gmd:MD_RepresentativeFraction>
+                    </gmd:equivalentScale>
+                </gmd:MD_Resolution>
+            </gmd:spatialResolution>
+            <gmd:language>
+                <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="dut">Nederlands;
+                    Vlaams
+                </gmd:LanguageCode>
+            </gmd:language>
+            <gmd:characterSet>
+                <gmd:MD_CharacterSetCode
+                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode"
+                        codeListValue="utf8">utf8
+                </gmd:MD_CharacterSetCode>
+            </gmd:characterSet>
+            <gmd:topicCategory>
+                <gmd:MD_TopicCategoryCode>geoscientificInformation</gmd:MD_TopicCategoryCode>
+            </gmd:topicCategory>
+            <gmd:extent>
+                <gmd:EX_Extent>
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicBoundingBox>
+                            <gmd:westBoundLongitude>
+                                <gco:Decimal>3.358</gco:Decimal>
+                            </gmd:westBoundLongitude>
+                            <gmd:eastBoundLongitude>
+                                <gco:Decimal>7.227</gco:Decimal>
+                            </gmd:eastBoundLongitude>
+                            <gmd:southBoundLatitude>
+                                <gco:Decimal>50.750</gco:Decimal>
+                            </gmd:southBoundLatitude>
+                            <gmd:northBoundLatitude>
+                                <gco:Decimal>53.576</gco:Decimal>
+                            </gmd:northBoundLatitude>
+                        </gmd:EX_GeographicBoundingBox>
+                    </gmd:geographicElement>
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicDescription>
+                            <gmd:geographicIdentifier>
+                                <gmd:MD_Identifier>
+                                    <gmd:code>
+                                        <gmx:Anchor xlink:href="http://epsg.io/1275-area">Nederland (land)</gmx:Anchor>
+                                    </gmd:code>
+                                </gmd:MD_Identifier>
+                            </gmd:geographicIdentifier>
+                        </gmd:EX_GeographicDescription>
+                    </gmd:geographicElement>
+                </gmd:EX_Extent>
+            </gmd:extent>
+        </gmd:MD_DataIdentification>
+    </gmd:identificationInfo>
+    <gmd:distributionInfo>
+        <gmd:MD_Distribution>
+            <gmd:distributor>
+                <gmd:MD_Distributor>
+                    <gmd:distributorContact>
+                        <gmd:CI_ResponsibleParty>
+                            <gmd:organisationName>
+                                <gco:CharacterString>TNO Geologische Dienst Nederland</gco:CharacterString>
+                            </gmd:organisationName>
+                            <gmd:positionName>
+                                <gco:CharacterString>Dataset distributeur</gco:CharacterString>
+                            </gmd:positionName>
+                            <gmd:contactInfo>
+                                <gmd:CI_Contact>
+                                    <gmd:address>
+                                        <gmd:CI_Address>
+                                            <gmd:electronicMailAddress>
+                                                <gco:CharacterString>support@broservicedesk.nl</gco:CharacterString>
+                                            </gmd:electronicMailAddress>
+                                        </gmd:CI_Address>
+                                    </gmd:address>
+                                    <gmd:onlineResource>
+                                        <gmd:CI_OnlineResource>
+                                            <gmd:linkage>
+                                                <gmd:URL>https://www.basisregistratieondergrond.nl</gmd:URL>
+                                            </gmd:linkage>
+                                        </gmd:CI_OnlineResource>
+                                    </gmd:onlineResource>
+                                </gmd:CI_Contact>
+                            </gmd:contactInfo>
+                            <gmd:role>
+                                <gmd:CI_RoleCode
+                                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_RoleCode"
+                                        codeListValue="distributor">distributeur
+                                </gmd:CI_RoleCode>
+                            </gmd:role>
+                        </gmd:CI_ResponsibleParty>
+                    </gmd:distributorContact>
+                </gmd:MD_Distributor>
+            </gmd:distributor>
+            <gmd:transferOptions>
+                <gmd:MD_DigitalTransferOptions>
+                    <gmd:onLine>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL>
+                                    https://service.pdok.nl/bzk/bro-digitaal-geologisch-model/atom/digitaal_geologisch_model.xml
+                                </gmd:URL>
+                            </gmd:linkage>
+                            <gmd:protocol>
+                                <gmx:Anchor xlink:href="https://tools.ietf.org/html/rfc4287">INSPIRE Atom</gmx:Anchor>
+                            </gmd:protocol>
+                            <gmd:applicationProfile>
+                                <gmx:Anchor
+                                        xlink:href="http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/download">
+                                    download
+                                </gmx:Anchor>
+                            </gmd:applicationProfile>
+                            <gmd:name>
+                                <gco:CharacterString>BRO - Digitaal Geologisch Model (DGM) as-is - ATOM
+                                </gco:CharacterString>
+                            </gmd:name>
+                            <gmd:description>
+                                <gmx:Anchor
+                                        xlink:href="http://inspire.ec.europa.eu/metadata-codelist/OnLineDescriptionCode/accessPoint">
+                                    accessPoint
+                                </gmx:Anchor>
+                            </gmd:description>
+                            <gmd:function>
+                                <gmd:CI_OnLineFunctionCode
+                                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode"
+                                        codeListValue="download">download
+                                </gmd:CI_OnLineFunctionCode>
+                            </gmd:function>
+                        </gmd:CI_OnlineResource>
+                    </gmd:onLine>
+                </gmd:MD_DigitalTransferOptions>
+            </gmd:transferOptions>
+        </gmd:MD_Distribution>
+    </gmd:distributionInfo>
+    <gmd:dataQualityInfo>
+        <gmd:DQ_DataQuality>
+            <gmd:scope>
+                <gmd:DQ_Scope>
+                    <gmd:level>
+                        <gmd:MD_ScopeCode
+                                codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#MD_ScopeCode"
+                                codeListValue="dataset">dataset
+                        </gmd:MD_ScopeCode>
+                    </gmd:level>
+                </gmd:DQ_Scope>
+            </gmd:scope>
+            <gmd:report>
+                <gmd:DQ_DomainConsistency>
+                    <gmd:result>
+                        <gmd:DQ_ConformanceResult>
+                            <!-- specification is relates to conformance for both INSPIRE and HVD -->
+                            <gmd:specification>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gmx:Anchor xlink:href="https://docs.geostandaarden.nl/bro/DGM/">
+                                            Basisregistratie Ondergrond
+                                            Catalogus Digitaal Geologisch Model: Geonovum Informatiemodel
+                                        </gmx:Anchor>
+                                    </gmd:title>
+                                    <!-- date can be nilliable for HVD, therefore the if condition -->
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2019-05-07</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode
+                                                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
+                                                        codeListValue="publication">publicatie
+                                                </gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:specification>
+                            <gmd:explanation>
+                                <gco:CharacterString>Deze as-is dataset heeft een catalogus die het ondergrondmodel DGM
+                                    (Digitaal Geologisch Model) beschrijft.
+                                </gco:CharacterString>
+                            </gmd:explanation>
+                            <gmd:pass>
+                                <gco:Boolean>true</gco:Boolean>
+                            </gmd:pass>
+                        </gmd:DQ_ConformanceResult>
+                    </gmd:result>
+                </gmd:DQ_DomainConsistency>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_DomainConsistency>
+                    <gmd:result>
+                        <gmd:DQ_ConformanceResult>
+                            <!-- specification is relates to conformance for both INSPIRE and HVD -->
+                            <gmd:specification>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gmx:Anchor xlink:href="http://data.europa.eu/eli/reg/2010/1089">VERORDENING
+                                            (EU) Nr. 1089/2010 VAN DE COMMISSIE van 23 november 2010 ter uitvoering van
+                                            Richtlijn 2007/2/EG van het Europees Parlement en de Raad betreffende de
+                                            interoperabiliteit van verzamelingen ruimtelijke gegevens en van diensten
+                                            met betrekking tot ruimtelijke gegevens
+                                        </gmx:Anchor>
+                                    </gmd:title>
+                                    <!-- date can be nilliable for HVD, therefore the if condition -->
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2010-12-08</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode
+                                                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
+                                                        codeListValue="publication">publicatie
+                                                </gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:specification>
+                            <gmd:explanation>
+                                <gco:CharacterString>De services en de linkage in de metadata van deze as-is dataset
+                                    voldoen niet aan de verordening. De services en de linkage in de metadata van de
+                                    corresponderende INSPIRE geharmoniseerde dataset(s) voldoen hier wel aan of zullen
+                                    hier wel aan gaan voldoen.
+                                </gco:CharacterString>
+                            </gmd:explanation>
+                            <gmd:pass>
+                                <gco:Boolean>false</gco:Boolean>
+                            </gmd:pass>
+                        </gmd:DQ_ConformanceResult>
+                    </gmd:result>
+                </gmd:DQ_DomainConsistency>
+            </gmd:report>
+            <gmd:report>
+                <gmd:DQ_DomainConsistency>
+                    <gmd:result>
+                        <gmd:DQ_ConformanceResult>
+                            <!-- specification is relates to conformance for both INSPIRE and HVD -->
+                            <gmd:specification>
+                                <gmd:CI_Citation>
+                                    <gmd:title>
+                                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/id/document/tg/ge">D2.8.II.4
+                                            INSPIRE Data Specification on Geology – Technical Guidelines
+                                        </gmx:Anchor>
+                                    </gmd:title>
+                                    <!-- date can be nilliable for HVD, therefore the if condition -->
+                                    <gmd:date>
+                                        <gmd:CI_Date>
+                                            <gmd:date>
+                                                <gco:Date>2013-12-10</gco:Date>
+                                            </gmd:date>
+                                            <gmd:dateType>
+                                                <gmd:CI_DateTypeCode
+                                                        codeList="http://schemas.opengis.net/iso/19139/20060504/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
+                                                        codeListValue="publication">publicatie
+                                                </gmd:CI_DateTypeCode>
+                                            </gmd:dateType>
+                                        </gmd:CI_Date>
+                                    </gmd:date>
+                                </gmd:CI_Citation>
+                            </gmd:specification>
+                            <gmd:explanation>
+                                <gco:CharacterString>Deze as-is dataset, conform het BRO DGM domeinmodel, voldoet niet
+                                    aan de richtlijnen van INSPIRE voor het thema Geologie. De corresponderende INSPIRE
+                                    geharmoniseerde dataset voldoet hier wel aan of zal hier wel aan gaan voldoen. De
+                                    dataset wordt uiteindelijk afgeleid uit de Basisregistratie Ondergrond. Deze is nog
+                                    in ontwikkeling waardoor het datamodel nog zal wijzigen.
+                                </gco:CharacterString>
+                            </gmd:explanation>
+                            <gmd:pass>
+                                <gco:Boolean>false</gco:Boolean>
+                            </gmd:pass>
+                        </gmd:DQ_ConformanceResult>
+                    </gmd:result>
+                </gmd:DQ_DomainConsistency>
+            </gmd:report>
+            <gmd:lineage>
+                <gmd:LI_Lineage>
+                    <gmd:statement>
+                        <gco:CharacterString>De dataset is afkomstig uit de Basisregistratie Ondergrond (BRO).
+                        </gco:CharacterString>
+                    </gmd:statement>
+                </gmd:LI_Lineage>
+            </gmd:lineage>
+        </gmd:DQ_DataQuality>
+    </gmd:dataQualityInfo>
+</gmd:MD_Metadata>

@@ -1,26 +1,28 @@
 package repository
 
 import (
+	"errors"
 	"net/url"
 
 	"github.com/pdok/pdok-metadata-tool/pkg/client"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/dataset"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
+	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
 )
 
 // MetadataRepository is used for looking up metadata using the given CSW endpoint.
 type MetadataRepository struct {
 	CswClient *client.CswClient
+	HVDRepo   hvd.CategoryProvider
 }
 
 // NewMetadataRepository creates a new instance of MetadataRepository.
-func NewMetadataRepository(cswHost string, cswPath string) (*MetadataRepository, error) {
-	h, err := url.Parse(cswHost)
+func NewMetadataRepository(cswEndpoint string) (*MetadataRepository, error) {
+	h, err := url.Parse(cswEndpoint)
 	if err != nil {
 		return nil, err
 	}
-
-	h.Path = cswPath
 
 	cswClient := client.NewCswClient(h)
 
@@ -32,13 +34,18 @@ func NewMetadataRepository(cswHost string, cswPath string) (*MetadataRepository,
 // GetDatasetMetadataByID retrieves dataset metadata by id.
 func (mr *MetadataRepository) GetDatasetMetadataByID(
 	id string,
-) (datasetMetadata *dataset.NLDatasetMetadata, err error) {
+) (datasetMetadata *metadata.NLDatasetMetadata, err error) {
 	mdMetadata, err := mr.CswClient.GetRecordByID(id)
 	if err != nil {
 		return
 	}
 
-	datasetMetadata = dataset.NewNLDatasetMetadataFromMDMetadata(&mdMetadata)
+	if mdMetadata.IdentificationInfo.MDDataIdentification != nil {
+		datasetMetadata = metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
+			&mdMetadata,
+			mr.HVDRepo,
+		)
+	}
 
 	return
 }
@@ -49,11 +56,92 @@ func (mr *MetadataRepository) SearchDatasetMetadata(
 	id *string,
 ) (records []csw.SummaryRecord, err error) {
 	filter := csw.GetRecordsOgcFilter{
-		MetadataType: csw.Dataset,
+		MetadataType: iso1911x.Dataset,
 		Title:        title,
 		Identifier:   id,
 	}
 	records, err = mr.CswClient.GetRecordsWithOGCFilter(&filter)
 
 	return
+}
+
+// SetCache enables caching on the underlying CSW client.
+func (mr *MetadataRepository) SetCache(cacheDir string, ttlHours int) {
+	if mr != nil && mr.CswClient != nil {
+		mr.CswClient.SetCache(cacheDir, ttlHours)
+	}
+}
+
+// UnsetCache disables caching on the underlying CSW client.
+func (mr *MetadataRepository) UnsetCache() {
+	if mr != nil && mr.CswClient != nil {
+		mr.CswClient.UnsetCache()
+	}
+}
+
+// HarvestByCQLConstraint is a generic harvester that returns flat models based on the MetadataType in the constraint.
+// Usage:
+//   - For services: repo.HarvestByCQLConstraint[metadata.NLServiceMetadata](constraintWithTypeService)
+//   - For datasets: repo.HarvestByCQLConstraint[metadata.NLDatasetMetadata](constraintWithTypeDataset)
+func HarvestByCQLConstraint[T any](
+	mr *MetadataRepository,
+	constraint *csw.GetRecordsCQLConstraint,
+) (result []T, err error) {
+	if constraint == nil {
+		return nil, errors.New("constraint must not be nil")
+	}
+
+	if constraint.MetadataType == nil {
+		return nil, errors.New("constraint.MetadataType must be set to 'service' or 'dataset'")
+	}
+
+	var (
+		metadataType iso1911x.MetadataType
+		zero         T
+	)
+
+	switch any(zero).(type) {
+	case metadata.NLServiceMetadata:
+		metadataType = iso1911x.Service
+	case metadata.NLDatasetMetadata:
+		metadataType = iso1911x.Dataset
+	default:
+		return nil, errors.New("unsupported type parameter T; must be NLServiceMetadata or NLDatasetMetadata")
+	}
+
+	constraint.MetadataType = &metadataType
+
+	mds, err := mr.CswClient.HarvestByCQLConstraint(constraint)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range mds {
+		if metadataType == iso1911x.Service {
+			sm := metadata.NewNLServiceMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
+			if sm != nil {
+				v, ok := any(*sm).(T)
+				if ok {
+					result = append(result, v)
+				}
+			}
+		}
+
+		if metadataType == iso1911x.Dataset {
+			dm := metadata.NewNLDatasetMetadataFromMDMetadataWithHVDRepo(&mds[i], mr.HVDRepo)
+			if dm != nil {
+				v, ok := any(*dm).(T)
+				if ok {
+					result = append(result, v)
+				}
+			}
+		}
+	}
+
+	return result, nil
+}
+
+// SetHVDRepo sets the HVD category provider used to enrich HVD categories in flat models.
+func (mr *MetadataRepository) SetHVDRepo(repo hvd.CategoryProvider) {
+	mr.HVDRepo = repo
 }
