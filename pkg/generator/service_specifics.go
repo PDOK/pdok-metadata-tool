@@ -279,6 +279,10 @@ func (sc *ServiceConfig) Validate() error {
 		errors = append(errors, "serviceLicense is required (either local or global)")
 	}
 
+	if sc.GetBoundingBox() == nil {
+		errors = append(errors, "boundingBox is required (either local or global)")
+	}
+
 	if sc.GetQosAvailability() == "-999" {
 		errors = append(errors, "qosAvailability is required (either local or global)")
 	}
@@ -322,7 +326,7 @@ func (sc *ServiceConfig) GetTitle() string {
 	if sc.Globals.Title != nil {
 		postfix := ""
 
-		switch sc.Type {
+		switch strings.ToLower(sc.Type) {
 		case "wms":
 			postfix = " WMS"
 		case "wfs":
@@ -491,7 +495,11 @@ func (sc *ServiceConfig) GetBoundingBox() *BoundingBox {
 		return sc.BoundingBox
 	}
 
-	return sc.Globals.BoundingBox
+	if sc.Globals.BoundingBox != nil {
+		return sc.Globals.BoundingBox
+	}
+
+	return nil
 }
 
 // GetLinkedDatasets returns the (overrideable) linked datasets.
