@@ -51,6 +51,8 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 				LicenceURL:   "https://creativecommons.org/publicdomain/zero/1.0/deed.nl",
 				ThumbnailURL: "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/39d03482-fef0-4706-8f66-16ffb2617155/attachments/map%20(1).png",
+				CreationDate: "2024-04-25",
+				RevisionDate: "2024-11-22",
 				InspireThemes: []string{
 					"am",
 				},
@@ -98,6 +100,8 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 				LicenceURL:    "https://creativecommons.org/publicdomain/mark/1.0/deed.nl",
 				ThumbnailURL:  "",
+				CreationDate:  "",
+				RevisionDate:  "2016-01-13",
 				InspireThemes: nil,
 				HVDCategories: nil,
 			},
@@ -134,6 +138,8 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 				LicenceURL:   "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
 				ThumbnailURL: "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/dae8f9e3-99af-4d21-9feb-29f2a1693077/attachments/vervoers.jpg",
+				CreationDate: "2021-12-03",
+				RevisionDate: "2025-12-09",
 				InspireThemes: []string{
 					"tn",
 				},
@@ -168,6 +174,8 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 			assert.Equal(t, tc.Metadata.Endpoints, flat.Endpoints)
 			assert.Equal(t, tc.Metadata.LicenceURL, flat.LicenceURL)
 			assert.Equal(t, tc.Metadata.ThumbnailURL, flat.ThumbnailURL)
+			assert.Equal(t, tc.Metadata.CreationDate, flat.CreationDate)
+			assert.Equal(t, tc.Metadata.RevisionDate, flat.RevisionDate)
 			assert.Equal(t, tc.Metadata.InspireThemes, flat.InspireThemes)
 
 			if tc.Metadata.HVDCategories != nil {

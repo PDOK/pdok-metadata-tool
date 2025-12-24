@@ -54,6 +54,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					"hh",
 				},
 				HVDCategories: nil,
+				CreationDate:  "2015-11-01",
 				BoundingBox: &BoundingBox{
 					WestBoundLongitude: "3.37087",
 					EastBoundLongitude: "7.21097",
@@ -96,6 +97,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 						LabelDutch: "Mobiliteit",
 					},
 				},
+				CreationDate: "",
 				BoundingBox: &BoundingBox{
 					WestBoundLongitude: "3.30",
 					EastBoundLongitude: "7.24",
@@ -143,6 +145,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 						LabelDutch: "Emissies",
 					},
 				},
+				CreationDate: "2025-02-06",
 				BoundingBox: &BoundingBox{
 					WestBoundLongitude: "3.37",
 					EastBoundLongitude: "7.21",
@@ -191,6 +194,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 						LabelDutch: "Geologie",
 					},
 				},
+				CreationDate: "",
 				BoundingBox: &BoundingBox{
 					WestBoundLongitude: "3.358",
 					EastBoundLongitude: "7.227",
@@ -224,6 +228,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 			assert.Equal(t, tc.Metadata.UseLimitation, flat.UseLimitation)
 			assert.Equal(t, tc.Metadata.ThumbnailURL, flat.ThumbnailURL)
 			assert.Equal(t, tc.Metadata.InspireVariant, flat.InspireVariant)
+			assert.Equal(t, tc.Metadata.CreationDate, flat.CreationDate)
 			assert.Equal(t, tc.Metadata.InspireThemes, flat.InspireThemes)
 
 			if tc.Metadata.HVDCategories != nil {

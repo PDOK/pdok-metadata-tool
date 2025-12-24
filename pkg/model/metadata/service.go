@@ -22,6 +22,8 @@ type NLServiceMetadata struct {
 	//	InspireVariant *inspire.InspireVariant // A service does not have an inspire variant. Datasets have. The service can be conform inspire or not. But when a dataset is as-is the service is still 100% conform inspire. Thus, the conformity of a service is separate from the dataset it serves. This is our current interpretation. In the future we might call this field conformInspire. But this only reflects if the service is conform inspire and not if the dataset in the service is conform.
 	InspireThemes []string
 	HVDCategories []hvd.HVDCategory
+	CreationDate  string
+	RevisionDate  string
 }
 
 // NewNLServiceMetadataFromMDMetadata creates a new instance based on service metadata from a CSW response.
@@ -54,6 +56,8 @@ func NewNLServiceMetadataFromMDMetadataWithHVDRepo(
 		LicenceURL:    m.GetLicenseURL(),
 		InspireThemes: m.GetInspireThemes(),
 		HVDCategories: m.GetHVDCategories(hvdRepo),
+		CreationDate:  m.GetCreationDate(),
+		RevisionDate:  m.GetRevisionDate(),
 	}
 
 	// Organisation (point of contact organisation name)

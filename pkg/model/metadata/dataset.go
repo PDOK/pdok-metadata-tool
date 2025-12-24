@@ -24,6 +24,7 @@ type NLDatasetMetadata struct {
 	InspireThemes  []string
 	HVDCategories  []hvd.HVDCategory
 	BoundingBox    *BoundingBox
+	CreationDate   string
 }
 
 // NewNLDatasetMetadataFromMDMetadata creates a new instance based on dataset metadata from a CSW response.
@@ -64,6 +65,7 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 		InspireVariant: m.GetInspireVariantForDataset(),
 		InspireThemes:  m.GetInspireThemes(),
 		HVDCategories:  m.GetHVDCategories(hvdRepo),
+		CreationDate:   m.GetCreationDate(),
 		BoundingBox: &BoundingBox{
 			WestBoundLongitude: iso1911x.NormalizeXMLText(
 				m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude,
