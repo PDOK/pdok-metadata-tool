@@ -45,6 +45,7 @@ type MDMetadata struct {
 			DescriptiveKeywords []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
 			ServiceType         string                  `xml:"serviceType>LocalName"`
 			LicenseURL          []CSWAnchor             `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
+			Dates               []CSWDate               `xml:"citation>CI_Citation>date"`
 			OperatesOn          []struct {
 				Uuidref string `xml:"uuidref,attr"`
 				Href    string `xml:"href,attr"`
@@ -61,6 +62,7 @@ type MDMetadata struct {
 			ContactURL          string                  `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>onlineResource>CI_OnlineResource>linkage>URL"`
 			LicenseURL          []CSWAnchor             `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
 			UseLimitation       string                  `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
+			Dates               []CSWDate               `xml:"citation>CI_Citation>date"`
 			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
 			Extent              struct {
 				WestBoundLongitude string `xml:"westBoundLongitude>Decimal"`
@@ -89,6 +91,16 @@ type MDMetadata struct {
 			} `xml:"DQ_DomainConsistency>result"`
 		} `xml:"report"`
 	} `xml:"dataQualityInfo>DQ_DataQuality"`
+}
+
+// CSWDate models CI_Date for CSW response.
+type CSWDate struct {
+	Date     string `xml:"CI_Date>date>Date"`
+	DateTime string `xml:"CI_Date>date>DateTime"`
+	DateType struct {
+		CodeListValue string `xml:"codeListValue,attr"`
+		Value         string `xml:",chardata"`
+	} `xml:"CI_Date>dateType>CI_DateTypeCode"`
 }
 
 // CSWResponsibleParty represents a text or Anchor value for organisation names in CSW records.
@@ -527,6 +539,42 @@ func (m *MDMetadata) GetServiceContactForService() string {
 			)
 		} else if m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Anchor != "" {
 			return strings.TrimSpace(m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Anchor)
+		}
+	}
+
+	return ""
+}
+
+func (m *MDMetadata) GetCreationDate() string {
+	return m.getDateByType("creation")
+}
+
+func (m *MDMetadata) GetRevisionDate() string {
+	return m.getDateByType("revision")
+}
+
+func (m *MDMetadata) getDateByType(dateType string) string {
+	var dates []CSWDate
+
+	switch m.GetMetaDataType() {
+	case Service:
+		if m.IdentificationInfo.SVServiceIdentification != nil {
+			dates = m.IdentificationInfo.SVServiceIdentification.Dates
+		}
+	case Dataset:
+		if m.IdentificationInfo.MDDataIdentification != nil {
+			dates = m.IdentificationInfo.MDDataIdentification.Dates
+		}
+	}
+
+	for _, d := range dates {
+		if strings.Contains(strings.ToLower(d.DateType.CodeListValue), dateType) ||
+			strings.Contains(strings.ToLower(d.DateType.Value), dateType) {
+			if d.Date != "" {
+				return NormalizeXMLText(d.Date)
+			}
+
+			return NormalizeXMLText(d.DateTime)
 		}
 	}
 
