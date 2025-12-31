@@ -22,6 +22,20 @@ const (
 	Dataset MetadataType = "dataset"
 )
 
+const (
+	inspireThesaurusName            = "GEMET - INSPIRE themes, version 1.0"
+	thesaurusVocabularyDutch        = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+	thesaurusVocabularyDutchHttps   = "https://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+	thesaurusVocabularyEnglish      = "http://www.eionet.europa.eu/gemet/en/inspire-theme/"
+	thesaurusVocabularyEnglishHttps = "https://www.eionet.europa.eu/gemet/en/inspire-theme/"
+	inspireThemeRegistry            = "http://inspire.ec.europa.eu/theme/"
+	inspireThemeRegistryHttps       = "https://inspire.ec.europa.eu/theme/"
+	hvdConceptVocabulary            = "http://data.europa.eu/bna/"
+	hvdConceptVocabularyHttps       = "https://data.europa.eu/bna/"
+	hvdThesaurusTitleAnchor         = "http://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	hvdThesaurusTitleAnchorHttps    = "https://publications.europa.eu/resource/dataset/high-value-dataset-category"
+)
+
 // String returns the string representation of the MetadataType.
 func (m MetadataType) String() string { return string(m) }
 
@@ -221,38 +235,12 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 		}
 	}
 
-	const (
-		inspireThesaurusName    = "GEMET - INSPIRE themes, version 1.0"
-		inspireDutchVocabulary  = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
-		hvdConceptVocabulary    = "http://data.europa.eu/bna/"
-		hvdThesaurusTitleAnchor = "http://publications.europa.eu/resource/dataset/high-value-dataset-category"
-	)
-
 	for _, dk := range dks {
-		th := dk.MDKeywords.Thesaurus
-		// Skip INSPIRE keywords groups
-		if NormalizeXMLText(th.CharacterString) == inspireThesaurusName ||
-			NormalizeXMLText(th.Anchor.Text) == inspireThesaurusName ||
-			(th.Anchor.Href != "" && strings.Contains(th.Anchor.Href, inspireDutchVocabulary)) {
+		// Skip INSPIRE and HVD keyword groups
+		if m.isInspireGroup(dk) || m.isHVDGroup(dk) {
 			continue
 		}
-		// Skip HVD keywords groups
-		isHVDGroup := false
-		if th.Anchor.Href != "" && strings.Contains(th.Anchor.Href, hvdThesaurusTitleAnchor) {
-			isHVDGroup = true
-		} else {
-			for _, kw := range dk.MDKeywords.Keyword {
-				if kw.Anchor.Href != "" && strings.Contains(kw.Anchor.Href, hvdConceptVocabulary) {
-					isHVDGroup = true
 
-					break
-				}
-			}
-		}
-
-		if isHVDGroup {
-			continue
-		}
 		// Collect generic keywords
 		for _, kw := range dk.MDKeywords.Keyword {
 			if kw.CharacterString != "" {
@@ -377,13 +365,6 @@ func (m *MDMetadata) GetInspireVariantForDataset() inspire.InspireVariant {
 
 // GetInspireThemes is a generic version that returns INSPIRE themes for dataset or service.
 func (m *MDMetadata) GetInspireThemes() (themes []string) {
-	const (
-		thesaurusName              = "GEMET - INSPIRE themes, version 1.0"
-		thesaurusVocabularyDutch   = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
-		thesaurusVocabularyEnglish = "http://www.eionet.europa.eu/gemet/en/inspire-theme/"
-		inspireThemeRegistry       = "http://inspire.ec.europa.eu/theme/"
-	)
-
 	var dks []CSWDescriptiveKeyword
 
 	switch m.GetMetaDataType() {
@@ -397,24 +378,23 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 		}
 	}
 
-	for _, descriptiveKeyword := range dks {
-		thesaurus := descriptiveKeyword.MDKeywords.Thesaurus
+	expectedPrefixes := []string{
+		thesaurusVocabularyDutch,
+		thesaurusVocabularyDutchHttps,
+		thesaurusVocabularyEnglish,
+		thesaurusVocabularyEnglishHttps,
+		inspireThemeRegistry,
+		inspireThemeRegistryHttps,
+	}
 
-		if NormalizeXMLText(thesaurus.CharacterString) != thesaurusName &&
-			NormalizeXMLText(thesaurus.Anchor.Text) != thesaurusName {
-			// Skip, this is not the right thesaurus
+	for _, descriptiveKeyword := range dks {
+		if !m.isInspireGroup(descriptiveKeyword) {
 			continue
 		}
 
 		for _, keyword := range descriptiveKeyword.MDKeywords.Keyword {
 			if keyword.Anchor.Href != "" {
 				// Try to get the INSPIRE theme from the anchor according to TG Recommendation 1.5
-				expectedPrefixes := []string{
-					thesaurusVocabularyDutch,
-					thesaurusVocabularyEnglish,
-					inspireThemeRegistry,
-				}
-
 				for _, prefix := range expectedPrefixes {
 					if strings.Contains(keyword.Anchor.Href, prefix) {
 						theme := strings.ReplaceAll(keyword.Anchor.Href, prefix, "")
@@ -440,11 +420,10 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 // It detects whether the MDMetadata is a dataset or service, extracts HVD category codes
 // from the appropriate descriptive keywords, and (optionally) enriches them via the
 // provided HVDRepository to include full details.
+// nolint
 func (m *MDMetadata) GetHVDCategories(
 	hvdRepo hvd.CategoryProvider,
-) (categories []hvd.HVDCategory) { //nolint:lll
-	const thesaurusVocabulary = "http://data.europa.eu/bna/"
-
+) (categories []hvd.HVDCategory) {
 	// Use a map to avoid duplicates while preserving order via slice append checks
 	seen := map[string]bool{}
 
@@ -467,12 +446,24 @@ func (m *MDMetadata) GetHVDCategories(
 				continue
 			}
 
-			if !strings.Contains(keyword.Anchor.Href, thesaurusVocabulary) {
+			if !strings.Contains(keyword.Anchor.Href, hvdConceptVocabulary) &&
+				!strings.Contains(keyword.Anchor.Href, hvdConceptVocabularyHttps) {
 				continue
 			}
 
-			parts := strings.Split(keyword.Anchor.Href, "/")
-			code := strings.TrimSpace(parts[len(parts)-1])
+			var code string
+			if strings.Contains(keyword.Anchor.Href, hvdConceptVocabularyHttps) {
+				code = strings.ReplaceAll(keyword.Anchor.Href, hvdConceptVocabularyHttps, "")
+			} else {
+				code = strings.ReplaceAll(keyword.Anchor.Href, hvdConceptVocabulary, "")
+			}
+
+			if strings.Contains(code, "?uri=") {
+				parts := strings.Split(code, "?uri=")
+				code = parts[len(parts)-1]
+			}
+
+			code = strings.TrimSpace(code)
 			label := strings.TrimSpace(keyword.Anchor.Text)
 
 			if seen[code] {
@@ -551,6 +542,38 @@ func (m *MDMetadata) GetCreationDate() string {
 
 func (m *MDMetadata) GetRevisionDate() string {
 	return m.getDateByType("revision")
+}
+
+func (m *MDMetadata) isInspireGroup(dk CSWDescriptiveKeyword) bool {
+	th := dk.MDKeywords.Thesaurus
+	if NormalizeXMLText(th.CharacterString) == inspireThesaurusName ||
+		NormalizeXMLText(th.Anchor.Text) == inspireThesaurusName {
+		return true
+	}
+
+	if th.Anchor.Href != "" && (strings.Contains(th.Anchor.Href, thesaurusVocabularyDutch) ||
+		strings.Contains(th.Anchor.Href, thesaurusVocabularyDutchHttps)) {
+		return true
+	}
+
+	return false
+}
+
+func (m *MDMetadata) isHVDGroup(dk CSWDescriptiveKeyword) bool {
+	th := dk.MDKeywords.Thesaurus
+	if th.Anchor.Href != "" && (strings.Contains(th.Anchor.Href, hvdThesaurusTitleAnchor) ||
+		strings.Contains(th.Anchor.Href, hvdThesaurusTitleAnchorHttps)) {
+		return true
+	}
+
+	for _, kw := range dk.MDKeywords.Keyword {
+		if kw.Anchor.Href != "" && (strings.Contains(kw.Anchor.Href, hvdConceptVocabulary) ||
+			strings.Contains(kw.Anchor.Href, hvdConceptVocabularyHttps)) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (m *MDMetadata) getDateByType(dateType string) string {
