@@ -151,6 +151,35 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 			},
 		},
+		{
+			File: filepath.Join(examples, "0017219b-fb75-47aa-a6bf-496f2514e545.xml"),
+			Metadata: NLServiceMetadata{
+				MetadataID:       "0017219b-fb75-47aa-a6bf-496f2514e545",
+				Title:            "Aardkundige Waarden - Provincies (INSPIRE geharmoniseerd) ATOM",
+				Abstract:         "Deze nationale dataset bevat de Aardkundige waarden. De dataset Aardkundige waarden valt binnen het INSPIRE-thema Beschermde gebieden.",
+				OrganisationName: "Beheer PDOK",
+				Keywords: []string{
+					"infoFeatureAccessService",
+					"Nationaal",
+				},
+				ServiceType: "download",
+				OperatesOn: []string{
+					"f002bfc5-7d87-46b6-819e-8415422b65c9",
+				},
+				Endpoints: []iso1911x.ServiceEndpoint{
+					{
+						URL:      "https://service.pdok.nl/provincies/aardkundige-waarden/atom",
+						Protocol: "INSPIRE Atom",
+					},
+				},
+				LicenceURL:    "https://creativecommons.org/licenses/by/4.0/deed.nl",
+				ThumbnailURL:  "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/0017219b-fb75-47aa-a6bf-496f2514e545/attachments/AardkundigeWaarden.png",
+				CreationDate:  "2022-05-12",
+				RevisionDate:  "2025-07-14",
+				InspireThemes: []string{"ps"},
+				HVDCategories: nil,
+			},
+		},
 	}
 
 	for _, tc := range cases {
