@@ -339,7 +339,12 @@ func (sc *ServiceConfig) GetTitle() string {
 			postfix = " OGC API (Vector) Tiles"
 		}
 
-		return *sc.Globals.Title + postfix
+		// Only add the postfix if it's not already in the title
+		if !strings.HasSuffix(strings.ToLower(*sc.Globals.Title), strings.ToLower(postfix)) {
+			return *sc.Globals.Title + postfix
+		}
+
+		return *sc.Globals.Title
 	}
 
 	return ""
