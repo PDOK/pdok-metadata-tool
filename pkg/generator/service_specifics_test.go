@@ -107,6 +107,12 @@ func TestGetTitle(t *testing.T) {
 		},
 	}
 
+	globalConfigWithAtomPostfix := GlobalConfig{
+		OverrideableFields: OverrideableFields{
+			Title: common.Ptr("Title ATOM"),
+		},
+	}
+
 	var tests = []struct {
 		description   string
 		serviceConfig ServiceConfig
@@ -171,6 +177,14 @@ func TestGetTitle(t *testing.T) {
 				Globals: &GlobalConfig{},
 			},
 			expectedTitle: "",
+		},
+		{
+			description: "Global title with pre existing ATOM postfix",
+			serviceConfig: ServiceConfig{
+				Type:    "Atom",
+				Globals: &globalConfigWithAtomPostfix,
+			},
+			expectedTitle: "Title ATOM",
 		},
 	}
 	for _, test := range tests {

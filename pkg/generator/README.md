@@ -161,7 +161,7 @@ Note that currently there is no support for SDS Harmonised service metadata for 
 
 For HVD compliant services there are also some additional requirements for the related metadata.  
 These relevant HVD categories can be set by using the `hvdCategories` field, both on the global and service level.  
-Only existing id's of HVD cateogories should be used here. For example:    
+Only existing id's of HVD categories should be used here. For example:    
 
 ```yaml
 hvdCategories:
