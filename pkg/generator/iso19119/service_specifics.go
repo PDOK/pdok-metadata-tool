@@ -1,4 +1,4 @@
-package generator
+package iso19119
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 	"github.com/pdok/pdok-metadata-tool/internal/common"
 )
 
-// ServiceSpecifics struct for unmarshalling the input for metadata generation.
+// ServiceSpecifics struct for unmarshalling the input for service metadata generation.
 type ServiceSpecifics struct {
 	Globals  GlobalConfig    `json:"globals,omitempty"  yaml:"globals,omitempty"`
 	Services []ServiceConfig `json:"services,omitempty" yaml:"services,omitempty"`
@@ -38,6 +38,8 @@ type ServiceConfig struct {
 	// Pointer to globals
 	Globals *GlobalConfig `json:"globals,omitempty" yaml:"globals,omitempty"`
 }
+
+func (sc ServiceConfig) GetID() string { return sc.ID }
 
 // InspireDatasetType struct for unmarshalling service specifics input.
 type InspireDatasetType string
@@ -214,7 +216,7 @@ func (s *ServiceSpecifics) Validate() error {
 // Validate the ServiceSpecifics on service level.
 //
 //nolint:cyclop
-func (sc *ServiceConfig) Validate() error {
+func (sc ServiceConfig) Validate() error {
 	var errors []string
 
 	if sc.ID == "" {
@@ -318,7 +320,7 @@ func (sc *ServiceConfig) Validate() error {
 }
 
 // GetTitle returns the (overrideable) title, and possibly adds a postfix.
-func (sc *ServiceConfig) GetTitle() string {
+func (sc ServiceConfig) GetTitle() string {
 	if sc.Title != nil {
 		return *sc.Title
 	}
@@ -351,7 +353,7 @@ func (sc *ServiceConfig) GetTitle() string {
 }
 
 // GetCreationDate returns the (overrideable) creation date.
-func (sc *ServiceConfig) GetCreationDate() string {
+func (sc ServiceConfig) GetCreationDate() string {
 	if sc.CreationDate != nil {
 		return *sc.CreationDate
 	}
@@ -364,7 +366,7 @@ func (sc *ServiceConfig) GetCreationDate() string {
 }
 
 // GetRevisionDate returns the (overrideable) revision date.
-func (sc *ServiceConfig) GetRevisionDate() string {
+func (sc ServiceConfig) GetRevisionDate() string {
 	if sc.RevisionDate != nil {
 		return *sc.RevisionDate
 	}
@@ -377,7 +379,7 @@ func (sc *ServiceConfig) GetRevisionDate() string {
 }
 
 // GetAbstract returns the (overrideable) abstract.
-func (sc *ServiceConfig) GetAbstract() string {
+func (sc ServiceConfig) GetAbstract() string {
 	if sc.Abstract != nil {
 		return *sc.Abstract
 	}
@@ -390,7 +392,7 @@ func (sc *ServiceConfig) GetAbstract() string {
 }
 
 // GetKeywords returns the (overrideable) keywords.
-func (sc *ServiceConfig) GetKeywords() []string {
+func (sc ServiceConfig) GetKeywords() []string {
 	if len(sc.Keywords) > 0 {
 		return sc.Keywords
 	}
@@ -399,7 +401,7 @@ func (sc *ServiceConfig) GetKeywords() []string {
 }
 
 // GetContactOrganisationName returns the (overrideable) contact organisation name.
-func (sc *ServiceConfig) GetContactOrganisationName() string {
+func (sc ServiceConfig) GetContactOrganisationName() string {
 	if sc.ContactOrganisationName != nil {
 		return *sc.ContactOrganisationName
 	}
@@ -412,7 +414,7 @@ func (sc *ServiceConfig) GetContactOrganisationName() string {
 }
 
 // GetContactOrganisationURI returns the (overrideable) contact organisation URI.
-func (sc *ServiceConfig) GetContactOrganisationURI() string {
+func (sc ServiceConfig) GetContactOrganisationURI() string {
 	if sc.ContactOrganisationURI != nil {
 		return *sc.ContactOrganisationURI
 	}
@@ -425,7 +427,7 @@ func (sc *ServiceConfig) GetContactOrganisationURI() string {
 }
 
 // GetContactEmail returns the (overrideable) contact email.
-func (sc *ServiceConfig) GetContactEmail() string {
+func (sc ServiceConfig) GetContactEmail() string {
 	if sc.ContactEmail != nil {
 		return *sc.ContactEmail
 	}
@@ -438,7 +440,7 @@ func (sc *ServiceConfig) GetContactEmail() string {
 }
 
 // GetContactURL returns the (overrideable) contact URL.
-func (sc *ServiceConfig) GetContactURL() string {
+func (sc ServiceConfig) GetContactURL() string {
 	if sc.ContactURL != nil {
 		return *sc.ContactURL
 	}
@@ -451,7 +453,7 @@ func (sc *ServiceConfig) GetContactURL() string {
 }
 
 // GetInspireThemes returns the (overrideable) INSPIRE themes.
-func (sc *ServiceConfig) GetInspireThemes() []string {
+func (sc ServiceConfig) GetInspireThemes() []string {
 	if len(sc.InspireThemes) > 0 {
 		return sc.InspireThemes
 	}
@@ -460,7 +462,7 @@ func (sc *ServiceConfig) GetInspireThemes() []string {
 }
 
 // GetHvdCategories returns the (overrideable) HVD categories.
-func (sc *ServiceConfig) GetHvdCategories() []string {
+func (sc ServiceConfig) GetHvdCategories() []string {
 	if len(sc.HvdCategories) > 0 {
 		return sc.HvdCategories
 	}
@@ -469,7 +471,7 @@ func (sc *ServiceConfig) GetHvdCategories() []string {
 }
 
 // GetServiceLicense returns the (overrideable) service license.
-func (sc *ServiceConfig) GetServiceLicense() string {
+func (sc ServiceConfig) GetServiceLicense() string {
 	if sc.ServiceLicense != nil {
 		return *sc.ServiceLicense
 	}
@@ -482,7 +484,7 @@ func (sc *ServiceConfig) GetServiceLicense() string {
 }
 
 // GetUseLimitation returns the (overrideable) use limitation.
-func (sc *ServiceConfig) GetUseLimitation() string {
+func (sc ServiceConfig) GetUseLimitation() string {
 	if sc.UseLimitation != nil {
 		return *sc.UseLimitation
 	}
@@ -495,7 +497,7 @@ func (sc *ServiceConfig) GetUseLimitation() string {
 }
 
 // GetBoundingBox returns the (overrideable) bounding box.
-func (sc *ServiceConfig) GetBoundingBox() *BoundingBox {
+func (sc ServiceConfig) GetBoundingBox() *BoundingBox {
 	if sc.BoundingBox != nil {
 		return sc.BoundingBox
 	}
@@ -508,7 +510,7 @@ func (sc *ServiceConfig) GetBoundingBox() *BoundingBox {
 }
 
 // GetLinkedDatasets returns the (overrideable) linked datasets.
-func (sc *ServiceConfig) GetLinkedDatasets() []string {
+func (sc ServiceConfig) GetLinkedDatasets() []string {
 	if len(sc.LinkedDatasets) > 0 {
 		return sc.LinkedDatasets
 	}
@@ -517,7 +519,7 @@ func (sc *ServiceConfig) GetLinkedDatasets() []string {
 }
 
 // GetCoordinateReferenceSystem returns the (overrideable) coordinate reference system.
-func (sc *ServiceConfig) GetCoordinateReferenceSystem() string {
+func (sc ServiceConfig) GetCoordinateReferenceSystem() string {
 	if sc.CoordinateReferenceSystem != nil {
 		return *sc.CoordinateReferenceSystem
 	}
@@ -530,7 +532,7 @@ func (sc *ServiceConfig) GetCoordinateReferenceSystem() string {
 }
 
 // GetThumbnails returns the (overrideable) thumbnails.
-func (sc *ServiceConfig) GetThumbnails() []Thumbnail {
+func (sc ServiceConfig) GetThumbnails() []Thumbnail {
 	if len(sc.Thumbnails) > 0 {
 		return sc.Thumbnails
 	}
@@ -539,7 +541,7 @@ func (sc *ServiceConfig) GetThumbnails() []Thumbnail {
 }
 
 // GetQosAvailability returns the (overrideable) availability.
-func (sc *ServiceConfig) GetQosAvailability() string {
+func (sc ServiceConfig) GetQosAvailability() string {
 	var value float64 = -999
 	if sc.QosAvailability != nil {
 		value = *sc.QosAvailability
@@ -551,7 +553,7 @@ func (sc *ServiceConfig) GetQosAvailability() string {
 }
 
 // GetQosPerformance returns the (overrideable) performance.
-func (sc *ServiceConfig) GetQosPerformance() string {
+func (sc ServiceConfig) GetQosPerformance() string {
 	var value float64 = -999
 	if sc.QosPerformance != nil {
 		value = *sc.QosPerformance
@@ -563,7 +565,7 @@ func (sc *ServiceConfig) GetQosPerformance() string {
 }
 
 // GetQosCapacity returns the (overrideable) capacity.
-func (sc *ServiceConfig) GetQosCapacity() string {
+func (sc ServiceConfig) GetQosCapacity() string {
 	var value = -999
 	if sc.QosCapacity != nil {
 		value = *sc.QosCapacity

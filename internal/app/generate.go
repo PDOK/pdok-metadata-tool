@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
-	"github.com/pdok/pdok-metadata-tool/pkg/generator"
+	"github.com/pdok/pdok-metadata-tool/pkg/generator/iso19119"
 	"github.com/urfave/cli/v3"
 )
 
@@ -61,7 +61,7 @@ func getGenerateServiceCommand() *cli.Command {
 				outputDir = cwd
 			}
 
-			var serviceSpecifics generator.ServiceSpecifics
+			var serviceSpecifics iso19119.ServiceSpecifics
 
 			err := serviceSpecifics.LoadFromYamlOrJson(inputFile)
 			if err != nil {
@@ -73,7 +73,7 @@ func getGenerateServiceCommand() *cli.Command {
 				return err
 			}
 
-			ISO19119generator, err := generator.NewISO19119Generator(
+			ISO19119generator, err := iso19119.NewGenerator(
 				serviceSpecifics,
 				outputDir,
 				nil,
