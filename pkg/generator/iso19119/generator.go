@@ -4,12 +4,12 @@ package iso19119
 import (
 	"fmt"
 
-	"github.com/pdok/pdok-metadata-tool/internal/common"
-	"github.com/pdok/pdok-metadata-tool/pkg/generator/core"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/codelist"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
-	"github.com/pdok/pdok-metadata-tool/pkg/repository"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/generator/core"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/codelist"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/iso1911x"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/repository"
 )
 
 type Entry = core.MetadataEntry[iso1911x.ISO19119, ServiceConfig]

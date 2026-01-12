@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
 
-	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/ngr"
 )
 
 type NgrClient struct { //nolint:recvcheck

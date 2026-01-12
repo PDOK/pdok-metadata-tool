@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

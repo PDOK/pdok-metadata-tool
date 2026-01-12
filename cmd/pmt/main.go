@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pdok/pdok-metadata-tool/internal/app"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/app"
 )
 
 func main() {

@@ -4,11 +4,11 @@ import (
 	"errors"
 	"net/url"
 
-	"github.com/pdok/pdok-metadata-tool/pkg/client"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/client"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/iso1911x"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/metadata"
 )
 
 // MetadataRepository is used for looking up metadata using the given CSW endpoint.

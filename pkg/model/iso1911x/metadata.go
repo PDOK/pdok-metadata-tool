@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/inspire"
 )
 
 // MetadataType holds the possible types of metadata for MD_Metadata records.

@@ -5,10 +5,10 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/pdok/pdok-metadata-tool/pkg/client"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/metadata"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/client"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/inspire"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/metadata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

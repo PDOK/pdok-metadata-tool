@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/pdok/pdok-metadata-tool/internal/common"
-	"github.com/pdok/pdok-metadata-tool/pkg/generator/utils"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/generator/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
