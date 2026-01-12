@@ -80,7 +80,7 @@ func (f *FeatureCatalogueSpecifics) LoadFromYamlOrJson(filename string) error {
 	return nil
 }
 
-// Validate the FeatureCatalogueSpecifics on a global level, also calls Validate on service level.
+// Validate the FeatureCatalogueSpecifics on a global level, also calls Validate on feature catalogue level.
 func (f *FeatureCatalogueSpecifics) Validate() error {
 	var validationErrors []string
 
