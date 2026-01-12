@@ -244,7 +244,7 @@
         </gmd:MD_LegalConstraints>
       </gmd:resourceConstraints>
       <srv:serviceType>
-        <gco:LocalName codeSpace="http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType">download</gco:LocalName>
+        <gco:LocalName codeSpace="http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType">other</gco:LocalName>
       </srv:serviceType>
       <srv:extent>
         <gmd:EX_Extent>

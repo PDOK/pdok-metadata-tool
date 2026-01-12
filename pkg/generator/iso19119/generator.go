@@ -693,12 +693,17 @@ func (g *Generator) setIdentificationInfo() error {
 		return fmt.Errorf("no INSPIRE service type found for type: %s", config.Type)
 	}
 
+	serviceType := inspireServiceType.InspireServiceType
+	if config.isInspireSDS() {
+		serviceType = "other"
+	}
+
 	entry.Metadata.IdentificationInfo.ServiceIdentification.ServiceType = iso1911x.ServiceTypeTag{
 		// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#service-type
 		// Must match the element WMS_Capabilities/Capability/inspire_vs:ExtendedCapabilities/inspire_common:SpatialDataServiceType
 		LocalName: iso1911x.LocalNameTag{
 			CodeSpace: "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType",
-			Value:     inspireServiceType.InspireServiceType,
+			Value:     serviceType,
 		},
 	}
 
@@ -868,7 +873,7 @@ func (g *Generator) setDataQualityInfo() error {
 	}
 
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-service-metadata
-	if config.ServiceInspireType != nil && *config.ServiceInspireType == NetworkService {
+	if config.isInspireNetworkService() {
 		entry.Metadata.DataQualityInfo.DataQuality.Report = []iso1911x.ReportTag{
 			{
 				DomainConsistency: &iso1911x.DomainConsistencyTag{
@@ -965,8 +970,7 @@ func (g *Generator) setDataQualityInfo() error {
 
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-invocable-sds-metadata
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-interoperable-sds-metadata
-	if config.ServiceInspireType != nil &&
-		(*config.ServiceInspireType == Invocable || *config.ServiceInspireType == Interoperable) {
+	if config.isInspireSDS() {
 		SDSServiceCategory, ok := g.Codelist.GetSDSServiceCategoryBySDSCategory(
 			string(*config.ServiceInspireType),
 		)

@@ -30,10 +30,13 @@ const (
 	thesaurusVocabularyEnglishHttps = "https://www.eionet.europa.eu/gemet/en/inspire-theme/"
 	inspireThemeRegistry            = "http://inspire.ec.europa.eu/theme/"
 	inspireThemeRegistryHttps       = "https://inspire.ec.europa.eu/theme/"
-	hvdConceptVocabulary            = "http://data.europa.eu/bna/"
-	hvdConceptVocabularyHttps       = "https://data.europa.eu/bna/"
-	hvdThesaurusTitleAnchor         = "http://publications.europa.eu/resource/dataset/high-value-dataset-category"
-	hvdThesaurusTitleAnchorHttps    = "https://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	inspireGithubTg                 = "http://github.com/INSPIRE-MIF/technical-guidelines/tree/main/data/"
+	inspireGithubTgHttps            = "https://github.com/INSPIRE-MIF/technical-guidelines/tree/main/data/"
+
+	hvdConceptVocabulary         = "http://data.europa.eu/bna/"
+	hvdConceptVocabularyHttps    = "https://data.europa.eu/bna/"
+	hvdThesaurusTitleAnchor      = "http://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	hvdThesaurusTitleAnchorHttps = "https://publications.europa.eu/resource/dataset/high-value-dataset-category"
 )
 
 // String returns the string representation of the MetadataType.
@@ -385,6 +388,8 @@ func (m *MDMetadata) GetInspireThemes() (themes []string) {
 		thesaurusVocabularyEnglishHttps,
 		inspireThemeRegistry,
 		inspireThemeRegistryHttps,
+		inspireGithubTg,
+		inspireGithubTgHttps,
 	}
 
 	for _, descriptiveKeyword := range dks {
