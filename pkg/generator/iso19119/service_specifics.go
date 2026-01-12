@@ -620,7 +620,7 @@ func (s *ServiceSpecifics) setInspireTypes() {
 	}
 }
 
-func (sc *ServiceConfig) isInspireSDS() bool {
+func (sc ServiceConfig) isInspireSDS() bool {
 	if sc.ServiceInspireType == nil {
 		return false
 	}
@@ -628,7 +628,7 @@ func (sc *ServiceConfig) isInspireSDS() bool {
 	return *sc.ServiceInspireType == Interoperable || *sc.ServiceInspireType == Invocable
 }
 
-func (sc *ServiceConfig) isInspireNetworkService() bool {
+func (sc ServiceConfig) isInspireNetworkService() bool {
 	if sc.ServiceInspireType == nil {
 		return false
 	}
