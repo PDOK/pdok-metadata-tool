@@ -20,8 +20,8 @@ type IntegerTag struct {
 	Value int `xml:"gco:Integer"`
 }
 
-// OrganisationNameTag struct for XML marshalling.
-type OrganisationNameTag struct {
+// AnchorOrCharacterStringTag struct for XML marshalling.
+type AnchorOrCharacterStringTag struct {
 	Anchor          *AnchorTag `xml:"gmx:Anchor,omitempty"`
 	CharacterString *string    `xml:"gco:CharacterString,omitempty"`
 }

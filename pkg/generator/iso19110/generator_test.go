@@ -24,6 +24,12 @@ func TestGenerateMetadataISO19110(t *testing.T) {
 				"00000000-0000-0000-0000-000000000001.xml": "voorbeeld_geonovum.xml",
 			},
 		},
+		{
+			configFileName: filepath.Join(inputPath, "nwb_wegen.yaml"),
+			fileOutput: map[string]string{
+				"00000000-0000-0000-0000-000000000002.xml": "nwb_wegen_hectopunten.xml",
+			},
+		},
 	}
 
 	for _, test := range tests {

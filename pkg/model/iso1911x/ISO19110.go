@@ -12,12 +12,13 @@ type ISO19110 struct {
 	XmlnsXsi          string   `xml:"xmlns:xsi,attr"`
 	XmlnsXlink        string   `xml:"xmlns:xlink,attr"`
 	XsiSchemaLocation string   `xml:"xsi:schemaLocation,attr"`
+	Uuid              string   `xml:"uuid,attr"`
 
-	Name               CharacterStringTag  `xml:"gfc:name"`
-	Scope              *CharacterStringTag `xml:"gfc:scope,omitempty"`
-	FieldOfApplication *CharacterStringTag `xml:"gfc:fieldOfApplication,omitempty"`
-	VersionNumber      CharacterStringTag  `xml:"gfc:versionNumber"`
-	VersionDate        DateTag             `xml:"gfc:versionDate"`
+	Name               CharacterStringTag  `xml:"gmx:name"`
+	Scope              *CharacterStringTag `xml:"gmx:scope,omitempty"`
+	FieldOfApplication *CharacterStringTag `xml:"gmx:fieldOfApplication,omitempty"`
+	VersionNumber      CharacterStringTag  `xml:"gmx:versionNumber"`
+	VersionDate        DateTag             `xml:"gmx:versionDate"`
 	Producer           ProducerTag         `xml:"gfc:producer"`
 	FeatureType        FeatureTypeTag      `xml:"gfc:featureType"`
 }
@@ -29,8 +30,9 @@ type ProducerTag struct {
 
 // CIResponsibleParty struct for XML marshalling.
 type CIResponsibleParty struct {
-	OrganisationName OrganisationNameTag `xml:"gmd:organisationName"`
-	Role             RoleTag             `xml:"gmd:role"`
+	IndividualName   AnchorOrCharacterStringTag `xml:"gmd:individualName"`
+	OrganisationName AnchorOrCharacterStringTag `xml:"gmd:organisationName"`
+	Role             RoleTag                    `xml:"gmd:role"`
 }
 
 // FeatureTypeTag struct for XML marshalling.
@@ -40,14 +42,13 @@ type FeatureTypeTag struct {
 
 // FeatureType struct for XML marshalling.
 type FeatureType struct {
-	TypeName                 TypeNameTag                 `xml:"gfc:typeName"`
-	Code                     *CodeTag                    `xml:"gfc:code,omitempty"`
-	Definition               CharacterStringTag          `xml:"gfc:definition"`
-	IsAbstract               *BooleanTag                 `xml:"gfc:isAbstract,omitempty"`
-	Aliases                  *Aliases                    `xml:"gfc:aliases"`
-	FeatureCatalogue         *struct{}                   `xml:"gfc:featureCatalogue"`
-	ConstrainedBy            *ConstrainedBy              `xml:"gfc:constrainedBy,omitempty"`
-	CarrierOfCharacteristics CarrierOfCharacteristicsTag `xml:"gfc:carrierOfCharacteristics"`
+	TypeName                 TypeNameTag                   `xml:"gfc:typeName"`
+	Code                     *CodeTag                      `xml:"gfc:code,omitempty"`
+	Definition               CharacterStringTag            `xml:"gfc:definition"`
+	IsAbstract               *BooleanTag                   `xml:"gfc:isAbstract,omitempty"`
+	Aliases                  *Aliases                      `xml:"gfc:aliases"`
+	ConstrainedBy            *ConstrainedBy                `xml:"gfc:constrainedBy,omitempty"`
+	CarrierOfCharacteristics []CarrierOfCharacteristicsTag `xml:"gfc:carrierOfCharacteristics"`
 }
 
 // TypeNameTag struct for XML marshalling.
@@ -57,7 +58,7 @@ type TypeNameTag struct {
 
 // Aliases struct for XML marshalling.
 type Aliases struct {
-	LocalNameValue []LocalNameValue `xml:"gco:LocalName"`
+	LocalNameValues []LocalNameValue `xml:"gco:LocalName"`
 }
 
 // LocalNameValue struct for XML marshalling.
@@ -77,7 +78,7 @@ type Constraint struct {
 
 // CarrierOfCharacteristicsTag  struct for XML marshalling.
 type CarrierOfCharacteristicsTag struct {
-	FeatureAttributes []FeatureAttribute `xml:"gfc:FC_FeatureAttribute"`
+	FeatureAttribute FeatureAttribute `xml:"gfc:FC_FeatureAttribute"`
 }
 
 // FeatureAttribute struct for XML marshalling.
@@ -88,7 +89,7 @@ type FeatureAttribute struct {
 	Cardinality          *Cardinality       `xml:"gfc:cardinality,omitempty"`
 	ValueMeasurementUnit *UnitDefinition    `xml:"gfc:valueMeasurementUnit,omitempty"`
 	ValueType            *ValueTypeTag      `xml:"gfc:valueType,omitempty"`
-	ListedValues         *ListedValues      `xml:"gfc:listedValue,omitempty"`
+	ListedValues         []ListedValue      `xml:"gfc:listedValue,omitempty"`
 }
 
 // MemberNameTag struct for XML marshalling.
@@ -119,19 +120,19 @@ type MultiplicityRange struct {
 
 // LowerTag struct for XML marshalling.
 type LowerTag struct {
-	Integer IntegerTag `xml:"gco:Integer"`
+	Value int `xml:"gco:Integer"`
 }
 
 // UnlimitedIntegerHolder struct for XML marshalling.
 type UnlimitedIntegerHolder struct {
-	Unlimited UnlimitedInteger `xml:"gco:UnlimitedInteger"`
+	Unlimited UnlimitedInteger `xml:"gco:Integer"`
 }
 
 // UnlimitedInteger struct for XML marshalling.
 type UnlimitedInteger struct {
-	IsInfinite bool `xml:"isInfinite,attr"`
-	Nil        bool `xml:"xsi:nil,attr,omitempty"`
-	Value      *int `xml:",chardata"`
+	IsInfinite *bool `xml:"isInfinite,attr,omitempty"`
+	Nil        bool  `xml:"xsi:nil,attr,omitempty"`
+	Value      *int  `xml:",chardata"`
 }
 
 // ValueTypeTag struct for XML marshalling.
@@ -141,7 +142,7 @@ type ValueTypeTag struct {
 
 // TypeName struct for XML marshalling.
 type TypeName struct {
-	TypeNameWithAName TypeNameWithAName `xml:"gfc:valueType"`
+	AName CharacterStringTag `xml:"gco:aName"`
 }
 
 // TypeNameWithAName struct for XML marshalling.
@@ -150,12 +151,12 @@ type TypeNameWithAName struct {
 }
 
 // ListedValues struct for XML marshalling.
-type ListedValues struct {
-	FCListedValues []ListedValue `xml:"gfc:FC_ListedValue"`
+type ListedValue struct {
+	FCListedValues FCListedValue `xml:"gfc:FC_ListedValue"`
 }
 
-// ListedValue struct for XML marshalling.
-type ListedValue struct {
+// FCListedValues struct for XML marshalling.
+type FCListedValue struct {
 	Label      CharacterStringTag `xml:"gfc:label"`
 	Code       CharacterStringTag `xml:"gfc:code"`
 	Definition CharacterStringTag `xml:"gfc:definition"`

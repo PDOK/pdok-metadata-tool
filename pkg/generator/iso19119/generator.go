@@ -196,7 +196,7 @@ func (g *Generator) setGeneralInfo() error {
 		Contact: iso1911x.ContactTag{
 			ResponsibleParty: iso1911x.ResponsibleParty{
 				// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#verantwoordelijke-organisatie-metadata
-				OrganisationName: iso1911x.OrganisationNameTag{
+				OrganisationName: iso1911x.AnchorOrCharacterStringTag{
 					Anchor: &iso1911x.AnchorTag{
 						Href:  config.GetContactOrganisationURI(),
 						Value: config.GetContactOrganisationName(),
@@ -314,7 +314,7 @@ func (g *Generator) setIdentificationInfo() error {
 				// The organisation which is responsible for the service
 				ResponsibleParty: iso1911x.ResponsibleParty{
 					// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#verantwoordelijke-organisatie-bron
-					OrganisationName: iso1911x.OrganisationNameTag{
+					OrganisationName: iso1911x.AnchorOrCharacterStringTag{
 						Anchor: &iso1911x.AnchorTag{
 							Href:  config.GetContactOrganisationURI(),
 							Value: config.GetContactOrganisationName(),

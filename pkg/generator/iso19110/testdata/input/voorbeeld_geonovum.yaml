@@ -1,5 +1,3 @@
-globals:
-  title: "Test regular"
 featureCatalogues:
   - id: "00000000-0000-0000-0000-000000000001"
     name: "voorbeeld feature catalogue"

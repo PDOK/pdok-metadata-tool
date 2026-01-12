@@ -1,0 +1,20 @@
+featureCatalogues:
+  - versionNumber: "1.0"
+    versionDate: "2017-02-21"
+    contactOrganisationName: "Unit test Organisation"
+    featureAttributes:
+      - memberName: "memberName 1"
+        definition: "definition 1"
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "valueType 1"
+      - memberName: "memberName 2"
+        definition: "definition 2"
+        listedValues:
+          - label: "Label 1"
+            code: "Code 1"
+            definition: "Definition 1"
+          - label: "Label 2"
+            code: "Code 2"
+            definition: "Definition 2"

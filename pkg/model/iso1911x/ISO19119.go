@@ -64,9 +64,9 @@ type ContactTag struct {
 
 // ResponsibleParty struct for XML marshalling.
 type ResponsibleParty struct {
-	OrganisationName OrganisationNameTag `xml:"gmd:organisationName"`
-	ContactInfo      ContactInfoTag      `xml:"gmd:contactInfo"`
-	Role             RoleTag             `xml:"gmd:role"`
+	OrganisationName AnchorOrCharacterStringTag `xml:"gmd:organisationName"`
+	ContactInfo      ContactInfoTag             `xml:"gmd:contactInfo"`
+	Role             RoleTag                    `xml:"gmd:role"`
 }
 
 // ContactInfoTag struct for XML marshalling.
