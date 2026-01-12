@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pdok/pdok-metadata-tool/internal/common"
-	"github.com/pdok/pdok-metadata-tool/pkg/generator/iso19110"
-	"github.com/pdok/pdok-metadata-tool/pkg/generator/iso19119"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/generator/iso19110"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/generator/iso19119"
 	"github.com/urfave/cli/v3"
 )
 

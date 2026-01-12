@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/pdok/pdok-metadata-tool/internal/common"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
-	"github.com/pdok/pdok-metadata-tool/pkg/repository"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/repository"
 
 	"github.com/urfave/cli/v3"
 )

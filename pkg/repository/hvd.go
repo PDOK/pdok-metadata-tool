@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pdok/pdok-metadata-tool/internal/common"
-	model "github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
+	model "github.com/pdok/pdok-metadata-tool/v2/pkg/model/hvd"
 )
 
 // HVDRepository is used for retrieving HVD related information.

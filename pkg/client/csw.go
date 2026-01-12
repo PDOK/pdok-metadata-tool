@@ -13,8 +13,8 @@ import (
 
 	"log/slog"
 
-	"github.com/pdok/pdok-metadata-tool/pkg/model/csw"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/csw"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/iso1911x"
 )
 
 // CswClient is used as a client for doing CSW requests.

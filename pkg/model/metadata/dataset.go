@@ -2,9 +2,9 @@
 package metadata
 
 import (
-	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/hvd"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/inspire"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/iso1911x"
 )
 
 // NLDatasetMetadata is used for retrieving the relevant fields from dataset metadata.

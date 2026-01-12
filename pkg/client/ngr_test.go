@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pdok/pdok-metadata-tool/pkg/model/ngr"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/ngr"
 	"github.com/stretchr/testify/assert"
 )
 

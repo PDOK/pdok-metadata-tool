@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/google/uuid"
-	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
 )
 
 // ServiceSpecifics struct for unmarshalling the input for service metadata generation.

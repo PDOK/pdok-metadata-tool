@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/iso1911x"
 )
 
 // Note: Use iso1911x.MetadataType directly for type and constants (Service/Dataset).

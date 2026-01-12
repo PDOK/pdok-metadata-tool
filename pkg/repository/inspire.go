@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/pdok/pdok-metadata-tool/internal/common"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/inspire"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/inspire"
 )
 
 // InspireRepository is used for retrieving INSPIRE related information.

@@ -2,8 +2,8 @@
 package iso19110
 
 import (
-	"github.com/pdok/pdok-metadata-tool/pkg/generator/core"
-	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/generator/core"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/iso1911x"
 )
 
 type Entry = core.MetadataEntry[iso1911x.ISO19110, FeatureCatalogueConfig]

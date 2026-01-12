@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/pdok/pdok-metadata-tool/internal/app"
-	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/app"
+	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
 	clidocs "github.com/urfave/cli-docs/v3"
 )
 
