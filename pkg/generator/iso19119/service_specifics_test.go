@@ -1,4 +1,4 @@
-package generator
+package iso19119
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServiceSpecificsLoadFromYAMLTestServiceSpecificsValidate(t *testing.T) {
+func TestServiceSpecificsLoadFromYAMLAndValidate(t *testing.T) {
 	var tests = []struct {
 		filename                 string
 		expectedValid            bool

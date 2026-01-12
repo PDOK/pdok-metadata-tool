@@ -1,0 +1,14 @@
+featureCatalogues:
+  - id: "00000000-0000-0000-0000-000000000001"
+    name: "voorbeeld feature catalogue"
+    versionNumber: "1.0"
+    versionDate: "2017-02-21"
+    contactOrganisationName: "Geonovum"
+    typeName: "Administratieve eenheden"
+    code:
+      href: "http://inspire.ec.europa.eu/theme/au"
+      value: "au"
+    definition: "Door administratieve grenzen gescheiden lokale, regionale en nationale bestuurlijke eenheden die deel uitmaken van gebieden waarover de lidstaten rechtsbevoegdheid hebben en/of uitoefenen."
+    featureAttributes:
+      - memberName: "Gemeentecode"
+        definition: "gemeentecode, conform cbs gemeentecodelijst 2017"

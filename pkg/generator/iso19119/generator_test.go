@@ -1,24 +1,21 @@
-package generator
+package iso19119
 
 import (
-	"encoding/xml"
-	"os"
 	"path"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/pkg/generator/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/ucarion/c14n"
 )
 
 const inputPath = "testdata/input/"
 const outputFolder = "testdata/output"
 const expectedPath = "testdata/expected"
 
-func TestGenerateMetadata(t *testing.T) {
+func TestGenerateMetadataISO19119(t *testing.T) {
 	var tests = []struct {
 		configFileName string
 		fileOutput     map[string]string
@@ -93,17 +90,17 @@ func TestGenerateMetadata(t *testing.T) {
 		err = serviceSpecifics.Validate()
 		require.NoError(t, err)
 
-		generator, err := NewISO19119Generator(serviceSpecifics, outputFolder, nil, &hvdCachePath)
+		generator, err := NewGenerator(serviceSpecifics, outputFolder, nil, &hvdCachePath)
 		require.NoError(t, err)
 
 		err = generator.Generate()
 		require.NoError(t, err)
 
 		for createdOutput, expectedOutput := range test.fileOutput {
-			xml1, err := canonicalizeXML(filepath.Join(outputFolder, createdOutput))
+			xml1, err := utils.CanonicalizeXML(filepath.Join(outputFolder, createdOutput))
 			require.NoError(t, err)
 
-			xml2, err := canonicalizeXML(filepath.Join(expectedPath, expectedOutput))
+			xml2, err := utils.CanonicalizeXML(filepath.Join(expectedPath, expectedOutput))
 			require.NoError(t, err)
 
 			assert.Equal(t, xml1, xml2, "Canonicalized XML files should be equal")
@@ -123,20 +120,4 @@ func TestGenerateMetadata(t *testing.T) {
 			assert.True(t, ok)
 		}
 	}
-}
-
-func canonicalizeXML(path string) (string, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return "", err
-	}
-
-	decoder := xml.NewDecoder(strings.NewReader(string(data)))
-
-	canonical, err := c14n.Canonicalize(decoder)
-	if err != nil {
-		return "", err
-	}
-
-	return string(canonical), nil
 }

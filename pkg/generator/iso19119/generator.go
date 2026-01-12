@@ -1,41 +1,46 @@
-// Package generator holds the logic for generating metadata.
-package generator
+// Package iso19119 holds the logic for generating iso19119 metadata.
+package iso19119
 
 import (
-	"encoding/xml"
 	"fmt"
-	"os"
-	"path/filepath"
 
 	"github.com/pdok/pdok-metadata-tool/internal/common"
+	"github.com/pdok/pdok-metadata-tool/pkg/generator/core"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/codelist"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/hvd"
 	"github.com/pdok/pdok-metadata-tool/pkg/model/iso1911x"
 	"github.com/pdok/pdok-metadata-tool/pkg/repository"
 )
 
-// ISO19119Generator is used for generating service metadata according to ISO19119 format.
-type ISO19119Generator struct {
-	MetadataHolder map[string]*MetadataEntry
-	currentID      *string
-	Codelist       *codelist.Codelist
-	HVDRepository  *repository.HVDRepository
-	outputDir      string
+type Entry = core.MetadataEntry[iso1911x.ISO19119, ServiceConfig]
+
+// Generator is used for generating service metadata according to ISO19119 format.
+type Generator struct {
+	*core.Generator[iso1911x.ISO19119, ServiceConfig]
+
+	Codelist      *codelist.Codelist
+	HVDRepository *repository.HVDRepository
 }
 
-// NewISO19119Generator creates a new instance of the ISO19119 generator and sets up the metadata holder.
-func NewISO19119Generator(
-	serviceSpecifics ServiceSpecifics,
+// NewGenerator creates a new instance of the ISO19119 generator and sets up the metadata holder.
+func NewGenerator(
+	spec ServiceSpecifics,
 	outputDir string,
 	hvdEndpoint *string,
 	hvdLocalRDFPath *string,
-) (*ISO19119Generator, error) {
-	// Setup holder for serviceSpecifics-config and output
-	holder := make(map[string]*MetadataEntry)
-	for _, serviceConfig := range serviceSpecifics.Services {
-		holder[serviceConfig.ID] = &MetadataEntry{
+) (*Generator, error) {
+	// Setup holder for service-config and output
+	holder := make(map[string]*Entry)
+	for _, serviceConfig := range spec.Services {
+		holder[serviceConfig.ID] = &Entry{
 			Config: serviceConfig,
 		}
+	}
+
+	// Setup base generator
+	base := &core.Generator[iso1911x.ISO19119, ServiceConfig]{
+		MetadataHolder: holder,
+		OutputDir:      outputDir,
 	}
 
 	codelists, err := codelist.NewCodelist()
@@ -55,61 +60,34 @@ func NewISO19119Generator(
 
 	hvdRepo := repository.NewHVDRepository(thesaurusEndpoint, thesaurusLocalCachePath)
 
-	return &ISO19119Generator{
-		MetadataHolder: holder,
-		Codelist:       codelists,
-		HVDRepository:  hvdRepo,
-		outputDir:      outputDir,
+	return &Generator{
+		Generator:     base,
+		Codelist:      codelists,
+		HVDRepository: hvdRepo,
 	}, nil
 }
 
-// CurrentEntry returns the current MetadataEntry for processing.
-func (g *ISO19119Generator) CurrentEntry() (*MetadataEntry, error) {
-	entry, ok := g.MetadataHolder[*g.currentID]
-	if !ok {
-		return nil, fmt.Errorf("no entry found for id: %s", *g.currentID)
-	}
-
-	return entry, nil
-}
-
-// MetadataEntry is used for processing the metadata generation.
-type MetadataEntry struct {
-	Config   ServiceConfig
-	Metadata iso1911x.ISO19119
-	output   []byte
-	filename string
-}
-
-func (e *MetadataEntry) setFilename() {
-	e.filename = e.Config.ID + ".xml"
-}
-
-func (e *MetadataEntry) getID() string {
-	return e.Config.ID
-}
-
 // Generate generates metadata and writes a file for each entry in the metadata holder.
-func (g *ISO19119Generator) Generate() error {
+func (g *Generator) Generate() error {
 	if err := g.generateMetadataEntries(); err != nil {
 		return err
 	}
 
 	for id := range g.MetadataHolder {
-		g.currentID = &id
+		g.CurrentID = &id
 
 		if err := g.WriteToFile(); err != nil {
 			return err
 		}
 
-		g.currentID = nil
+		g.CurrentID = nil
 	}
 
 	return nil
 }
 
 // GenerateAsStrings generates and returns metadata for each entry in the metadata holder.
-func (g *ISO19119Generator) GenerateAsStrings() (map[string]string, error) {
+func (g *Generator) GenerateAsStrings() (map[string]string, error) {
 	strings := make(map[string]string)
 
 	if err := g.generateMetadataEntries(); err != nil {
@@ -117,14 +95,14 @@ func (g *ISO19119Generator) GenerateAsStrings() (map[string]string, error) {
 	}
 
 	for _, entry := range g.MetadataHolder {
-		strings[entry.getID()] = string(entry.output)
+		strings[entry.GetID()] = string(entry.Output)
 	}
 
 	return strings, nil
 }
 
 // SetMetadata sets all the values for the metadata.
-func (g *ISO19119Generator) SetMetadata() error {
+func (g *Generator) SetMetadata() error {
 	if err := g.setGeneralInfo(); err != nil {
 		return err
 	}
@@ -144,60 +122,10 @@ func (g *ISO19119Generator) SetMetadata() error {
 	return nil
 }
 
-// CreateXML creates XML based on the available metadata.
-func (g *ISO19119Generator) CreateXML() error {
-	entry, err := g.CurrentEntry()
-	if err != nil {
-		return err
-	}
-
-	output, err := xml.MarshalIndent(entry.Metadata, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	entry.output = output
-
-	return nil
-}
-
-// WriteToFile writes the available metadata to a file.
-func (g *ISO19119Generator) WriteToFile() error {
-	entry, err := g.CurrentEntry()
-	if err != nil {
-		return err
-	}
-
-	perm := 750
-	if err1 := os.MkdirAll(g.outputDir, os.FileMode(perm)); err1 != nil {
-		return err1
-	}
-
-	entry.setFilename()
-
-	path := filepath.Join(g.outputDir, entry.filename)
-
-	perm = 0600
-	if err = os.WriteFile(path, entry.output, os.FileMode(perm)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// PrintSummary prints a summary of the generated metadata files.
-func (g *ISO19119Generator) PrintSummary() {
-	fmt.Printf("The following metadata has been created in %s: \n", g.outputDir)
-
-	for _, entry := range g.MetadataHolder {
-		fmt.Printf("  - %s\n", entry.filename)
-	}
-}
-
 // generateMetadataEntries generates the metadata for each entry in the metadata holder.
-func (g *ISO19119Generator) generateMetadataEntries() error {
+func (g *Generator) generateMetadataEntries() error {
 	for id := range g.MetadataHolder {
-		g.currentID = &id
+		g.CurrentID = &id
 		if err := g.SetMetadata(); err != nil {
 			return err
 		}
@@ -206,13 +134,13 @@ func (g *ISO19119Generator) generateMetadataEntries() error {
 			return err
 		}
 
-		g.currentID = nil
+		g.CurrentID = nil
 	}
 
 	return nil
 }
 
-func (g *ISO19119Generator) setGeneralInfo() error {
+func (g *Generator) setGeneralInfo() error {
 	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err
@@ -268,8 +196,8 @@ func (g *ISO19119Generator) setGeneralInfo() error {
 		Contact: iso1911x.ContactTag{
 			ResponsibleParty: iso1911x.ResponsibleParty{
 				// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#verantwoordelijke-organisatie-metadata
-				OrganisationName: iso1911x.OrganisationNameTag{
-					Anchor: iso1911x.AnchorTag{
+				OrganisationName: iso1911x.AnchorOrCharacterStringTag{
+					Anchor: &iso1911x.AnchorTag{
 						Href:  config.GetContactOrganisationURI(),
 						Value: config.GetContactOrganisationName(),
 					},
@@ -321,7 +249,7 @@ func (g *ISO19119Generator) setGeneralInfo() error {
 }
 
 //nolint:funlen,maintidx
-func (g *ISO19119Generator) setIdentificationInfo() error {
+func (g *Generator) setIdentificationInfo() error {
 	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err
@@ -386,8 +314,8 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 				// The organisation which is responsible for the service
 				ResponsibleParty: iso1911x.ResponsibleParty{
 					// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#verantwoordelijke-organisatie-bron
-					OrganisationName: iso1911x.OrganisationNameTag{
-						Anchor: iso1911x.AnchorTag{
+					OrganisationName: iso1911x.AnchorOrCharacterStringTag{
+						Anchor: &iso1911x.AnchorTag{
 							Href:  config.GetContactOrganisationURI(),
 							Value: config.GetContactOrganisationName(),
 						},
@@ -857,7 +785,7 @@ func (g *ISO19119Generator) setIdentificationInfo() error {
 	return nil
 }
 
-func (g *ISO19119Generator) setDistributionInfo() error {
+func (g *Generator) setDistributionInfo() error {
 	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err
@@ -906,7 +834,7 @@ func (g *ISO19119Generator) setDistributionInfo() error {
 }
 
 //nolint:funlen,maintidx
-func (g *ISO19119Generator) setDataQualityInfo() error {
+func (g *Generator) setDataQualityInfo() error {
 	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err

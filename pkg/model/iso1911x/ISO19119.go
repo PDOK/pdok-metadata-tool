@@ -35,11 +35,6 @@ type ISO19119 struct {
 	DataQualityInfo    DataQualityInfo    `xml:"gmd:dataQualityInfo"`
 }
 
-// CharacterStringTag struct for XML marshalling.
-type CharacterStringTag struct {
-	CharacterString string `xml:"gco:CharacterString"`
-}
-
 // CodeListValueTag struct for XML marshalling.
 type CodeListValueTag struct {
 	CodeList      string `xml:"codeList,attr"`
@@ -69,20 +64,9 @@ type ContactTag struct {
 
 // ResponsibleParty struct for XML marshalling.
 type ResponsibleParty struct {
-	OrganisationName OrganisationNameTag `xml:"gmd:organisationName"`
-	ContactInfo      ContactInfoTag      `xml:"gmd:contactInfo"`
-	Role             RoleTag             `xml:"gmd:role"`
-}
-
-// OrganisationNameTag struct for XML marshalling.
-type OrganisationNameTag struct {
-	Anchor AnchorTag `xml:"gmx:Anchor"`
-}
-
-// AnchorTag struct for XML marshalling.
-type AnchorTag struct {
-	Href  string `xml:"xlink:href,attr"`
-	Value string `xml:",chardata"`
+	OrganisationName AnchorOrCharacterStringTag `xml:"gmd:organisationName"`
+	ContactInfo      ContactInfoTag             `xml:"gmd:contactInfo"`
+	Role             RoleTag                    `xml:"gmd:role"`
 }
 
 // ContactInfoTag struct for XML marshalling.
@@ -161,11 +145,6 @@ type KeywordTypeTag struct {
 	Code CodeListValueTag `xml:"gmd:MD_KeywordTypeCode"`
 }
 
-// DateTag struct for XML marshalling.
-type DateTag struct {
-	Date string `xml:"gco:Date"`
-}
-
 // IdentificationInfo struct for XML marshalling.
 type IdentificationInfo struct {
 	ServiceIdentification ServiceIdentification `xml:"srv:SV_ServiceIdentification"`
@@ -228,11 +207,6 @@ type IdentifierTag struct {
 // MDIdentifier struct for XML marshalling.
 type MDIdentifier struct {
 	Code CodeTag `xml:"gmd:code"`
-}
-
-// CodeTag struct for XML marshalling.
-type CodeTag struct {
-	Anchor AnchorTag `xml:"gmx:Anchor"`
 }
 
 // DistributionInfo struct for XML marshalling.
@@ -369,11 +343,6 @@ type ValueUnitTag struct {
 type RecordTag struct {
 	Type  string `xml:"xsi:type,attr"`
 	Value string `xml:",chardata"`
-}
-
-// BooleanTag struct for XML marshalling.
-type BooleanTag struct {
-	Value bool `xml:"gco:Boolean"`
 }
 
 // ResourceConstraint struct for XML marshalling.

@@ -31,13 +31,27 @@ Used to generate metadata records.
 
 Generates service metadata in "Nederlands profiel ISO 19119" version 2.1.0.
 
-**--input_file_service_specifics**="": Path to input file containing service specifics in json, yml or yaml format. See config-example for an example of the input file.
+**--input_file_service_specifics**="": Path to input file containing service specifics in json, yml or yaml format. See service-config-example for an example of the input file.
 
 **--output_dir**="": Location used to store service metadata as xml. If omitted the current working directory is used.
 
-### config-example
+### service-config-example
 
 Shows example of <input_file_service_specifics> for users that are not familiar with the service specifics.
+
+**-o**="": Output file in json, yml or yaml format.
+
+### feature-catalogue
+
+Generates feature catalogue metadata in "Nederlands profiel ISO 19110".
+
+**--input_file_feature_catalogue_specifics**="": Path to input file containing feature catalogue specifics in json, yml or yaml format. See feature-catalogue-config-example for an example of the input file.
+
+**--output_dir**="": Location used to store feature catalogue metadata as xml. If omitted the current working directory is used.
+
+### feature-catalogue-example
+
+Shows example of <input_file_service_specifics> for users that are not familiar with the feature catalogue specifics.
 
 **-o**="": Output file in json, yml or yaml format.
 

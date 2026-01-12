@@ -1,0 +1,71 @@
+featureCatalogues:
+  - id: "00000000-0000-0000-0000-000000000002"
+    name: "nwb_wegen_hectopunten"
+    versionNumber: "1.0"
+    versionDate: "2024-05-15"
+    scope: "Scope"
+    fieldOfApplication: "Field of application"
+    contactIndividualName: "John Doe"
+    typeName: "NWB wegen hectopunten"
+    definition: "Bevat de hectopunten uit het Nationaal Wegen Bestand (NWB) en geeft gedetailleerde informatie per hectopunt zoals hectometrering, afstand, zijde en hectoletter weer."
+    isAbstract: false
+    aliases:
+      - "Hectometerpunten"
+    constrainedBy:
+      - "nwb_wegen hectopunten"
+    featureAttributes:
+      - memberName: "objectid"
+        definition: "Objectid"
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "objectid"
+      - memberName: "hectomtrng"
+        definition: "Hectometrering conform hmp-bordje in hectometers."
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "numeric long"
+      - memberName: "afstand"
+        definition: "De locatie van het hmp-bordje op de lijn van het wegvak gezien vanuit het begin van het wegvak."
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "numeric long"
+      - memberName: "wvk_id"
+        definition: "De unieke identificatie van een wegvak."
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "numeric double"
+      - memberName: "wvk_begdat"
+        definition: "De begindatum van het wegvak_efemeride (de datum waarop het betreffende wegvak is vastgelegd in de database)."
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "date"
+      - memberName: "zijde"
+        definition: "De kant zoals opgenomen op het hmp-bordje (Li of Re)."
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "tekst"
+        listedValues:
+          - label: "Links"
+            code: "Li"
+            definition: "Links van de rijbaan, gezien vanaf het 'begin' van de weg. Aan deze kant lopen de kilometerwaarden af."
+          - label: "Rechts"
+            code: "Re"
+            definition: "Rechts van de rijbaan, gezien vanaf het 'begin' van de weg. Aan deze kant lopen de kilometerwaarden op."
+      - memberName: "hectlttr"
+        definition: "De hmp-letter zoals opgenomen op het hmp-bordje."
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "tekst"
+      - memberName: "shape"
+        definition: "De geometrie."
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "geometry"

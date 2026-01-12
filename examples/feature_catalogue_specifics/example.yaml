@@ -1,0 +1,35 @@
+featureCatalogues:
+  - id: "00000000-0000-0000-0000-000000000003"
+    name: "example_name"
+    versionNumber: "1.0"
+    versionDate: "2024-05-15"
+    scope: "Example scope"
+    fieldOfApplication: "Example field of application"
+    contactIndividualName: "Example individual name"
+    typeName: "Example typeName"
+    definition: "Example definition."
+    isAbstract: false
+    aliases:
+      - "Example alias"
+    constrainedBy:
+      - "example_contraint"
+    featureAttributes:
+      - memberName: "example_attribute_1"
+        definition: "Example definition 1"
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "numeric long"
+      - memberName: "example_attribute_2"
+        definition: "Example definition 2"
+        cardinality:
+          lower: 0
+          upper: 0
+        valueType: "text"
+        listedValues:
+          - label: "Label 1"
+            code: "code1"
+            definition: "Example definition for code1."
+          - label: "Label 2"
+            code: "code2"
+            definition: "Example definition for code2."
