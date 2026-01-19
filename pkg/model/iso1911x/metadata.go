@@ -66,6 +66,7 @@ type MDMetadata struct {
 			DescriptiveKeywords []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
 			ServiceType         string                  `xml:"serviceType>LocalName"`
 			LicenseURL          []CSWAnchor             `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
+			UseLimitation       string                  `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
 			Dates               []CSWDate               `xml:"citation>CI_Citation>date"`
 			OperatesOn          []struct {
 				Uuidref string `xml:"uuidref,attr"`
@@ -295,6 +296,25 @@ func (m *MDMetadata) GetLicenseURL() string {
 
 		if strings.Contains(val.Text, "Geo Gedeeld") {
 			return NormalizeXMLText(val.Href)
+		}
+	}
+
+	return ""
+}
+
+// GetUseLimitation returns the use limitation from either dataset or service metadata.
+func (m *MDMetadata) GetUseLimitation() string {
+	switch m.GetMetaDataType() {
+	case Service:
+		if m.IdentificationInfo.SVServiceIdentification != nil {
+			return m.IdentificationInfo.SVServiceIdentification.UseLimitation
+		}
+
+		return m.IdentificationInfo.SVServiceIdentification.UseLimitation
+
+	case Dataset:
+		if m.IdentificationInfo.MDDataIdentification != nil {
+			return m.IdentificationInfo.MDDataIdentification.UseLimitation
 		}
 	}
 
