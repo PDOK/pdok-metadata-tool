@@ -23,20 +23,24 @@ const (
 )
 
 const (
-	inspireThesaurusName            = "GEMET - INSPIRE themes, version 1.0"
-	thesaurusVocabularyDutch        = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
-	thesaurusVocabularyDutchHttps   = "https://www.eionet.europa.eu/gemet/nl/inspire-theme/"
-	thesaurusVocabularyEnglish      = "http://www.eionet.europa.eu/gemet/en/inspire-theme/"
-	thesaurusVocabularyEnglishHttps = "https://www.eionet.europa.eu/gemet/en/inspire-theme/"
-	inspireThemeRegistry            = "http://inspire.ec.europa.eu/theme/"
-	inspireThemeRegistryHttps       = "https://inspire.ec.europa.eu/theme/"
-	inspireGithubTg                 = "http://github.com/INSPIRE-MIF/technical-guidelines/tree/main/data/"
-	inspireGithubTgHttps            = "https://github.com/INSPIRE-MIF/technical-guidelines/tree/main/data/"
+	inspireThesaurusName                           = "GEMET - INSPIRE themes, version 1.0"
+	thesaurusVocabularyDutch                       = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+	thesaurusVocabularyDutchHttps                  = "https://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+	thesaurusVocabularyEnglish                     = "http://www.eionet.europa.eu/gemet/en/inspire-theme/"
+	thesaurusVocabularyEnglishHttps                = "https://www.eionet.europa.eu/gemet/en/inspire-theme/"
+	inspireThemeRegistry                           = "http://inspire.ec.europa.eu/theme/"
+	inspireThemeRegistryHttps                      = "https://inspire.ec.europa.eu/theme/"
+	inspireGithubTg                                = "http://github.com/INSPIRE-MIF/technical-guidelines/tree/main/data/"
+	inspireGithubTgHttps                           = "https://github.com/INSPIRE-MIF/technical-guidelines/tree/main/data/"
+	inspireSpatialDataServiceCategoryCodelist      = "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory"
+	inspireSpatialDataServiceCategoryCodelistHttps = "https://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory"
 
-	hvdConceptVocabulary         = "http://data.europa.eu/bna/"
-	hvdConceptVocabularyHttps    = "https://data.europa.eu/bna/"
-	hvdThesaurusTitleAnchor      = "http://publications.europa.eu/resource/dataset/high-value-dataset-category"
-	hvdThesaurusTitleAnchorHttps = "https://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	hvdConceptVocabulary             = "http://data.europa.eu/bna/"
+	hvdConceptVocabularyHttps        = "https://data.europa.eu/bna/"
+	hvdThesaurusTitleAnchor          = "http://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	hvdThesaurusTitleAnchorHttps     = "https://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	hvdRegulationImplementation      = "http://data.europa.eu/eli/reg_impl/2023/138/oj"
+	hvdRegulationImplementationHttps = "https://data.europa.eu/eli/reg_impl/2023/138/oj"
 )
 
 // String returns the string representation of the MetadataType.
@@ -246,6 +250,14 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 
 		// Collect generic keywords
 		for _, kw := range dk.MDKeywords.Keyword {
+			if m.isHVDImplementingRegulation(kw) {
+				continue
+			}
+
+			if m.isInspireSpatialDataServiceCategory(kw) {
+				continue
+			}
+
 			if kw.CharacterString != "" {
 				keywords = append(keywords, NormalizeXMLText(kw.CharacterString))
 			} else if kw.Anchor.Text != "" {
@@ -259,26 +271,30 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 
 // GetLicenseURL returns a license URL for either dataset or service (if present).
 func (m *MDMetadata) GetLicenseURL() string {
+	var otherConstraints []CSWAnchor
+
 	switch m.GetMetaDataType() {
 	case Dataset:
 		if m.IdentificationInfo.MDDataIdentification == nil {
 			return ""
 		}
 
-		for _, val := range m.IdentificationInfo.MDDataIdentification.LicenseURL {
-			if strings.Contains(val.Href, "creativecommons.org") {
-				return NormalizeXMLText(val.Href)
-			}
-		}
+		otherConstraints = m.IdentificationInfo.MDDataIdentification.LicenseURL
 	case Service:
 		if m.IdentificationInfo.SVServiceIdentification == nil {
 			return ""
 		}
 
-		for _, val := range m.IdentificationInfo.SVServiceIdentification.LicenseURL {
-			if strings.Contains(val.Href, "creativecommons.org") {
-				return NormalizeXMLText(val.Href)
-			}
+		otherConstraints = m.IdentificationInfo.SVServiceIdentification.LicenseURL
+	}
+
+	for _, val := range otherConstraints {
+		if strings.Contains(val.Href, "creativecommons.org") {
+			return NormalizeXMLText(val.Href)
+		}
+
+		if strings.Contains(val.Text, "Geo Gedeeld") {
+			return NormalizeXMLText(val.Href)
 		}
 	}
 
@@ -556,12 +572,27 @@ func (m *MDMetadata) isInspireGroup(dk CSWDescriptiveKeyword) bool {
 		return true
 	}
 
-	if th.Anchor.Href != "" && (strings.Contains(th.Anchor.Href, thesaurusVocabularyDutch) ||
-		strings.Contains(th.Anchor.Href, thesaurusVocabularyDutchHttps)) {
-		return true
+	inspireThesauruses := []string{
+		thesaurusVocabularyDutch,
+		thesaurusVocabularyDutchHttps,
+		thesaurusVocabularyEnglish,
+		thesaurusVocabularyEnglishHttps,
+	}
+
+	if th.Anchor.Href != "" {
+		for _, thesaurus := range inspireThesauruses {
+			if strings.Contains(th.Anchor.Href, thesaurus) {
+				return true
+			}
+		}
 	}
 
 	return false
+}
+
+func (m *MDMetadata) isInspireSpatialDataServiceCategory(kw CSWKeywordEntry) bool {
+	return strings.HasPrefix(kw.Anchor.Href, inspireSpatialDataServiceCategoryCodelist) ||
+		strings.HasPrefix(kw.Anchor.Href, inspireSpatialDataServiceCategoryCodelistHttps)
 }
 
 func (m *MDMetadata) isHVDGroup(dk CSWDescriptiveKeyword) bool {
@@ -574,6 +605,20 @@ func (m *MDMetadata) isHVDGroup(dk CSWDescriptiveKeyword) bool {
 	for _, kw := range dk.MDKeywords.Keyword {
 		if kw.Anchor.Href != "" && (strings.Contains(kw.Anchor.Href, hvdConceptVocabulary) ||
 			strings.Contains(kw.Anchor.Href, hvdConceptVocabularyHttps)) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (m *MDMetadata) isHVDImplementingRegulation(kw CSWKeywordEntry) bool {
+	if kw.Anchor.Text == "HVD" {
+		if kw.Anchor.Href == hvdRegulationImplementation {
+			return true
+		}
+
+		if kw.Anchor.Href == hvdRegulationImplementationHttps {
 			return true
 		}
 	}

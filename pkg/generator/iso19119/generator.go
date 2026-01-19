@@ -3,6 +3,8 @@ package iso19119
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
 
 	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
 	"github.com/pdok/pdok-metadata-tool/v2/pkg/generator/core"
@@ -248,7 +250,7 @@ func (g *Generator) setGeneralInfo() error {
 	return nil
 }
 
-//nolint:funlen,maintidx
+//nolint:funlen,maintidx,cyclop
 func (g *Generator) setIdentificationInfo() error {
 	entry, err := g.CurrentEntry()
 	if err != nil {
@@ -602,8 +604,17 @@ func (g *Generator) setIdentificationInfo() error {
 
 	licenseURI := config.GetServiceLicense()
 
+	// Determine license description
+	var licenseDescription string
+
 	dataLicense, ok := g.Codelist.GetDataLicenseByURI(licenseURI)
-	if !ok {
+	switch {
+	case ok:
+		licenseDescription = dataLicense.Description
+	case isValidHTTPURL(licenseURI):
+		// If the license URI is a valid URL but not Creative Commons, we assume it's Geo Gedeeld
+		licenseDescription = "Geo Gedeeld licentie"
+	default:
 		return fmt.Errorf("no data license found for license URI: %s", licenseURI)
 	}
 
@@ -632,7 +643,7 @@ func (g *Generator) setIdentificationInfo() error {
 				{
 					Anchor: iso1911x.AnchorTag{
 						Href:  licenseURI,
-						Value: dataLicense.Description,
+						Value: licenseDescription,
 					},
 				},
 			},
@@ -1197,4 +1208,25 @@ func (g *Generator) setDataQualityInfo() error {
 	}
 
 	return nil
+}
+
+func isValidHTTPURL(s string) bool {
+	if strings.TrimSpace(s) != s || strings.ContainsAny(s, " \t\n\r") {
+		return false
+	}
+
+	u, err := url.Parse(s)
+	if err != nil {
+		return false
+	}
+
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return false
+	}
+
+	if u.Host == "" {
+		return false
+	}
+
+	return true
 }

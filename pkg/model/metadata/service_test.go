@@ -32,12 +32,10 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				Abstract:         "Dit is de web feature service van INSPIRE thema Gebiedsbeheer geharmoniseerde agglomeraties zoals gerapporteerd naar de Europese Commissie tbv EU rapportage Stedelijk Afvalwater 2020.",
 				OrganisationName: "Beheer PDOK",
 				Keywords: []string{
-					"infoFeatureAccessService",
 					"Kwetsbaar gebied",
 					"Richtlijn 91/271/EEG",
 					"31991L0271",
 					"Agglomeraties",
-					"HVD",
 				},
 				ServiceType: "other",
 				OperatesOn: []string{
@@ -114,9 +112,7 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				Abstract:         "INSPIRE transportnetwerken, geharmoniseerd, gevuld met relevante objecten uit TOP10NL (onderdeel van de Basisregistreatie Topografie BRT), geproduceerd en beheerd door het Kadaster.",
 				OrganisationName: "Beheer PDOK",
 				Keywords: []string{
-					"infoMapAccessService",
 					"Transport Networks",
-					"HVD",
 				},
 				ServiceType: "view",
 				OperatesOn: []string{
@@ -159,7 +155,6 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				Abstract:         "Deze nationale dataset bevat de Aardkundige waarden. De dataset Aardkundige waarden valt binnen het INSPIRE-thema Beschermde gebieden.",
 				OrganisationName: "Beheer PDOK",
 				Keywords: []string{
-					"infoFeatureAccessService",
 					"Nationaal",
 				},
 				ServiceType: "download",
