@@ -201,7 +201,7 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 			assert.Equal(t, tc.Metadata.OperatesOn, flat.OperatesOn)
 			assert.Equal(t, tc.Metadata.Endpoints, flat.Endpoints)
 			assert.Equal(t, tc.Metadata.LicenceURL, flat.LicenceURL)
-			assert.Equal(t, tc.Metadata.UseLimitation, flat.UseLimitation) //  TODO
+			assert.Equal(t, tc.Metadata.UseLimitation, flat.UseLimitation)
 			assert.Equal(t, tc.Metadata.ThumbnailURL, flat.ThumbnailURL)
 			assert.Equal(t, tc.Metadata.CreationDate, flat.CreationDate)
 			assert.Equal(t, tc.Metadata.RevisionDate, flat.RevisionDate)
