@@ -77,6 +77,13 @@ func TestGenerateMetadataISO19119(t *testing.T) {
 				"00000000-0000-0000-0000-000000000016.xml": "inspire_hvd_complex_oaf_interoperable.xml",
 			},
 		},
+		{
+			configFileName: filepath.Join(inputPath, "geo_gedeeld.yaml"),
+			fileOutput: map[string]string{
+				"00000000-0000-0000-0000-000000000017.xml": "geo_gedeeld_wms.xml",
+				"00000000-0000-0000-0000-000000000018.xml": "geo_gedeeld_wfs.xml",
+			},
+		},
 	}
 
 	hvdCachePath := path.Join(common.GetProjectRoot(), common.HvdLocalRDFPath)

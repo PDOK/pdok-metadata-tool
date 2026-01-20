@@ -206,9 +206,6 @@
                         <gco:CharacterString>DGM</gco:CharacterString>
                     </gmd:keyword>
                     <gmd:keyword>
-                        <gco:CharacterString>infoFeatureAccessService</gco:CharacterString>
-                    </gmd:keyword>
-                    <gmd:keyword>
                         <gco:CharacterString>humanGeographicViewer</gco:CharacterString>
                     </gmd:keyword>
                     <gmd:keyword>

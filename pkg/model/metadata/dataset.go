@@ -59,7 +59,7 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 		Keywords:   m.GetKeywords(),
 		LicenceURL: m.GetLicenseURL(),
 		UseLimitation: iso1911x.NormalizeXMLText(
-			m.IdentificationInfo.MDDataIdentification.UseLimitation,
+			m.GetUseLimitation(),
 		),
 		ThumbnailURL:   m.GetThumbnailURL(),
 		InspireVariant: m.GetInspireVariantForDataset(),
