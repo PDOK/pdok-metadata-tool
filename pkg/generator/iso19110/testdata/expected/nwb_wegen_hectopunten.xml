@@ -47,6 +47,7 @@
       <gfc:aliases>
         <gco:LocalName>Hectometerpunten</gco:LocalName>
       </gfc:aliases>
+      <gfc:featureCatalogue></gfc:featureCatalogue>
       <gfc:constrainedBy>
         <gfc:FC_Constraint>
           <gfc:description>
@@ -71,7 +72,7 @@
                     <gco:Integer>0</gco:Integer>
                   </gco:lower>
                   <gco:upper>
-                    <gco:Integer>0</gco:Integer>
+                    <gco:UnlimitedInteger>0</gco:UnlimitedInteger>
                   </gco:upper>
                 </gco:MultiplicityRange>
               </gco:range>
@@ -103,7 +104,7 @@
                     <gco:Integer>0</gco:Integer>
                   </gco:lower>
                   <gco:upper>
-                    <gco:Integer>0</gco:Integer>
+                    <gco:UnlimitedInteger>0</gco:UnlimitedInteger>
                   </gco:upper>
                 </gco:MultiplicityRange>
               </gco:range>
@@ -135,7 +136,7 @@
                     <gco:Integer>0</gco:Integer>
                   </gco:lower>
                   <gco:upper>
-                    <gco:Integer>0</gco:Integer>
+                    <gco:UnlimitedInteger>0</gco:UnlimitedInteger>
                   </gco:upper>
                 </gco:MultiplicityRange>
               </gco:range>
@@ -167,7 +168,7 @@
                     <gco:Integer>0</gco:Integer>
                   </gco:lower>
                   <gco:upper>
-                    <gco:Integer>0</gco:Integer>
+                    <gco:UnlimitedInteger>0</gco:UnlimitedInteger>
                   </gco:upper>
                 </gco:MultiplicityRange>
               </gco:range>
@@ -199,7 +200,7 @@
                     <gco:Integer>0</gco:Integer>
                   </gco:lower>
                   <gco:upper>
-                    <gco:Integer>0</gco:Integer>
+                    <gco:UnlimitedInteger>0</gco:UnlimitedInteger>
                   </gco:upper>
                 </gco:MultiplicityRange>
               </gco:range>
@@ -231,7 +232,7 @@
                     <gco:Integer>0</gco:Integer>
                   </gco:lower>
                   <gco:upper>
-                    <gco:Integer>0</gco:Integer>
+                    <gco:UnlimitedInteger>0</gco:UnlimitedInteger>
                   </gco:upper>
                 </gco:MultiplicityRange>
               </gco:range>
@@ -289,7 +290,7 @@
                     <gco:Integer>0</gco:Integer>
                   </gco:lower>
                   <gco:upper>
-                    <gco:Integer>0</gco:Integer>
+                    <gco:UnlimitedInteger>0</gco:UnlimitedInteger>
                   </gco:upper>
                 </gco:MultiplicityRange>
               </gco:range>
@@ -321,7 +322,7 @@
                     <gco:Integer>0</gco:Integer>
                   </gco:lower>
                   <gco:upper>
-                    <gco:Integer>0</gco:Integer>
+                    <gco:UnlimitedInteger>0</gco:UnlimitedInteger>
                   </gco:upper>
                 </gco:MultiplicityRange>
               </gco:range>

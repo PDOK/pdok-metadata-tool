@@ -47,6 +47,7 @@ type FeatureType struct {
 	Definition               CharacterStringTag            `xml:"gfc:definition"`
 	IsAbstract               *BooleanTag                   `xml:"gfc:isAbstract,omitempty"`
 	Aliases                  *Aliases                      `xml:"gfc:aliases"`
+	FeatureCatalogue         struct{}                      `xml:"gfc:featureCatalogue"`
 	ConstrainedBy            *ConstrainedBy                `xml:"gfc:constrainedBy,omitempty"`
 	CarrierOfCharacteristics []CarrierOfCharacteristicsTag `xml:"gfc:carrierOfCharacteristics"`
 }
