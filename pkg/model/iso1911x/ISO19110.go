@@ -125,7 +125,7 @@ type LowerTag struct {
 
 // UnlimitedIntegerHolder struct for XML marshalling.
 type UnlimitedIntegerHolder struct {
-	Unlimited UnlimitedInteger `xml:"gco:Integer"`
+	Unlimited UnlimitedInteger `xml:"gco:UnlimitedInteger"`
 }
 
 // UnlimitedInteger struct for XML marshalling.
