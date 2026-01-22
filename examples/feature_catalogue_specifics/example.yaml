@@ -18,13 +18,19 @@ featureCatalogues:
         definition: "Example definition 1"
         cardinality:
           lower: 0
-          upper: 0
+          upper: 1
+        valueMeasurementUnit:
+          unitDefinitionId: "uom-metre"
+          codespace: "http://www.opengis.net/def/uom/SI"
+          identifier: "m"
+          name: "metre"
+          catalogSymbol: "m"
         valueType: "numeric long"
       - memberName: "example_attribute_2"
         definition: "Example definition 2"
         cardinality:
           lower: 0
-          upper: 0
+          upper: 1
         valueType: "text"
         listedValues:
           - label: "Label 1"

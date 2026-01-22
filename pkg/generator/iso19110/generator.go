@@ -100,6 +100,7 @@ func (g *Generator) setGeneralInfo() error {
 		XmlnsGco:          "http://www.isotc211.org/2005/gco",
 		XmlnsGmd:          "http://www.isotc211.org/2005/gmd",
 		XmlnsGmx:          "http://www.isotc211.org/2005/gmx",
+		XmlnsGml:          "http://www.opengis.net/gml/3.2",
 		XmlnsXsi:          "http://www.w3.org/2001/XMLSchema-instance",
 		XmlnsXlink:        "http://www.w3.org/1999/xlink",
 		XsiSchemaLocation: "http://www.isotc211.org/2005/gfc http://www.isotc211.org/2005/gfc/gfc.xsd",
@@ -222,10 +223,6 @@ func (g *Generator) setFeatureTypeInfo() error {
 		}
 	}
 
-	// carrier := iso1911x.CarrierOfCharacteristicsTag{
-	//	FeatureAttribute: []iso1911x.FeatureAttribute{},
-	//}
-
 	for _, attribute := range config.FeatureAttributes {
 		carrier := iso1911x.CarrierOfCharacteristicsTag{
 			FeatureAttribute: iso1911x.FeatureAttribute{
@@ -254,6 +251,20 @@ func (g *Generator) setFeatureTypeInfo() error {
 								},
 							},
 						},
+					},
+				},
+			}
+		}
+
+		if attribute.ValueMeasurementUnit != nil {
+			carrier.FeatureAttribute.ValueMeasurementUnit = &iso1911x.ValueMeasurementUnit{
+				UnitDefinition: iso1911x.UnitDefinition{
+					ID:            attribute.ValueMeasurementUnit.UnitDefinitionId,
+					Name:          attribute.ValueMeasurementUnit.Name,
+					CatalogSymbol: attribute.ValueMeasurementUnit.CatalogSymbol,
+					Identifier: iso1911x.Identifier{
+						CodeSpace: attribute.ValueMeasurementUnit.Codespace,
+						Value:     attribute.ValueMeasurementUnit.Name,
 					},
 				},
 			}
