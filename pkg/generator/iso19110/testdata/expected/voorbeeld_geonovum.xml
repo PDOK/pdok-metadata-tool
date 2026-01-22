@@ -38,6 +38,7 @@
       <gfc:definition>
         <gco:CharacterString>Door administratieve grenzen gescheiden lokale, regionale en nationale bestuurlijke eenheden die deel uitmaken van gebieden waarover de lidstaten rechtsbevoegdheid hebben en/of uitoefenen.</gco:CharacterString>
       </gfc:definition>
+      <gfc:featureCatalogue></gfc:featureCatalogue>
       <gfc:carrierOfCharacteristics>
         <gfc:FC_FeatureAttribute>
           <gfc:featureType/>

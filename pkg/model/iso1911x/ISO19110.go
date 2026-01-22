@@ -47,6 +47,7 @@ type FeatureType struct {
 	Definition               CharacterStringTag            `xml:"gfc:definition"`
 	IsAbstract               *BooleanTag                   `xml:"gfc:isAbstract,omitempty"`
 	Aliases                  *Aliases                      `xml:"gfc:aliases"`
+	FeatureCatalogue         struct{}                      `xml:"gfc:featureCatalogue"`
 	ConstrainedBy            *ConstrainedBy                `xml:"gfc:constrainedBy,omitempty"`
 	CarrierOfCharacteristics []CarrierOfCharacteristicsTag `xml:"gfc:carrierOfCharacteristics"`
 }
@@ -125,7 +126,7 @@ type LowerTag struct {
 
 // UnlimitedIntegerHolder struct for XML marshalling.
 type UnlimitedIntegerHolder struct {
-	Unlimited UnlimitedInteger `xml:"gco:Integer"`
+	Unlimited UnlimitedInteger `xml:"gco:UnlimitedInteger"`
 }
 
 // UnlimitedInteger struct for XML marshalling.
