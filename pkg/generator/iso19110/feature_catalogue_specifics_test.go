@@ -44,6 +44,16 @@ func TestServiceSpecificsLoadFromYAMLAndValidate(t *testing.T) {
 				".; memberName is required for all attributes",
 			},
 		},
+		{
+			filename:      "invalid_empty_value_measurement_unit.yaml",
+			expectedValid: false,
+			expectedValidationErrors: []string{
+				"codespace is required if a valueMeasurementUnit is set.",
+				"catalogSymbol is required if a valueMeasurementUnit is set.",
+				"unitDefinitionId is required if a valueMeasurementUnit is set.",
+				"Identifier is required if a valueMeasurementUnit is set.",
+			},
+		},
 	}
 
 	for _, test := range tests {

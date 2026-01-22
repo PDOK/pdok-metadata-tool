@@ -3,6 +3,7 @@
         xmlns:gco="http://www.isotc211.org/2005/gco"
         xmlns:gmd="http://www.isotc211.org/2005/gmd"
         xmlns:gmx="http://www.isotc211.org/2005/gmx"
+        xmlns:gml="http://www.opengis.net/gml/3.2"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xlink="http://www.w3.org/1999/xlink"
         xsi:schemaLocation="http://www.isotc211.org/2005/gfc http://www.isotc211.org/2005/gfc/gfc.xsd"
@@ -142,6 +143,13 @@
               </gco:range>
             </gco:Multiplicity>
           </gfc:cardinality>
+          <gfc:valueMeasurementUnit>
+            <gml:UnitDefinition gml:id="uom-metre">
+              <gml:identifier codeSpace="http://www.opengis.net/def/uom/SI">metre</gml:identifier>
+              <gml:name>metre</gml:name>
+              <gml:catalogSymbol>m</gml:catalogSymbol>
+            </gml:UnitDefinition>
+          </gfc:valueMeasurementUnit>
           <gfc:valueType>
             <gco:TypeName>
               <gco:aName>

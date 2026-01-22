@@ -9,6 +9,7 @@ type ISO19110 struct {
 	XmlnsGco          string   `xml:"xmlns:gco,attr"`
 	XmlnsGmd          string   `xml:"xmlns:gmd,attr"`
 	XmlnsGmx          string   `xml:"xmlns:gmx,attr"`
+	XmlnsGml          string   `xml:"xmlns:gml,attr"`
 	XmlnsXsi          string   `xml:"xmlns:xsi,attr"`
 	XmlnsXlink        string   `xml:"xmlns:xlink,attr"`
 	XsiSchemaLocation string   `xml:"xsi:schemaLocation,attr"`
@@ -84,13 +85,13 @@ type CarrierOfCharacteristicsTag struct {
 
 // FeatureAttribute struct for XML marshalling.
 type FeatureAttribute struct {
-	FeatureType          *struct{}          `xml:"gfc:featureType"`
-	MemberName           MemberNameTag      `xml:"gfc:memberName"`
-	Definition           CharacterStringTag `xml:"gfc:definition"`
-	Cardinality          *Cardinality       `xml:"gfc:cardinality,omitempty"`
-	ValueMeasurementUnit *UnitDefinition    `xml:"gfc:valueMeasurementUnit,omitempty"`
-	ValueType            *ValueTypeTag      `xml:"gfc:valueType,omitempty"`
-	ListedValues         []ListedValue      `xml:"gfc:listedValue,omitempty"`
+	FeatureType          *struct{}             `xml:"gfc:featureType"`
+	MemberName           MemberNameTag         `xml:"gfc:memberName"`
+	Definition           CharacterStringTag    `xml:"gfc:definition"`
+	Cardinality          *Cardinality          `xml:"gfc:cardinality,omitempty"`
+	ValueMeasurementUnit *ValueMeasurementUnit `xml:"gfc:valueMeasurementUnit,omitempty"`
+	ValueType            *ValueTypeTag         `xml:"gfc:valueType,omitempty"`
+	ListedValues         []ListedValue         `xml:"gfc:listedValue,omitempty"`
 }
 
 // MemberNameTag struct for XML marshalling.
@@ -165,15 +166,17 @@ type FCListedValue struct {
 
 // ValueMeasurementUnit struct for XML marshalling.
 type ValueMeasurementUnit struct {
-	*UnitDefinition `xml:"gml:UnitDefinition"`
+	UnitDefinition UnitDefinition `xml:"gml:UnitDefinition"`
 }
 
 // UnitDefinition struct for XML marshalling.
 type UnitDefinition struct {
-	XmlnsGml    string     `xml:"xmlns:gml,attr,omitempty"`
-	ID          string     `xml:"gml:id,attr,omitempty"`
-	Description *string    `xml:"gml:description"`
-	Identifier  Identifier `xml:"gml:identifier"`
+	XmlnsGml      string     `xml:"xmlns:gml,attr,omitempty"`
+	ID            string     `xml:"gml:id,attr,omitempty"`
+	Description   *string    `xml:"gml:description"`
+	Identifier    Identifier `xml:"gml:identifier"`
+	Name          string     `xml:"gml:name"`
+	CatalogSymbol string     `xml:"gml:catalogSymbol"`
 }
 
 // Identifier struct for XML marshalling.

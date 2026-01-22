@@ -1,5 +1,5 @@
 featureCatalogues:
-  - id: "00000000-0000-0000-0000-000000000002"
+  - id: "00000000-0000-0000-0000-000000000123"
     name: "nwb_wegen_hectopunten"
     versionNumber: "1.0"
     versionDate: "2024-05-15"
@@ -11,26 +11,24 @@ featureCatalogues:
     isAbstract: false
     aliases:
       - "Hectometerpunten"
-    constrainedBy:
-      - "nwb_wegen hectopunten"
     featureAttributes:
       - memberName: "objectid"
         definition: "Objectid"
         cardinality:
-          lower: 0
-          upper: 0
+          lower: 1
+          upper: 1
         valueType: "objectid"
       - memberName: "hectomtrng"
         definition: "Hectometrering conform hmp-bordje in hectometers."
         cardinality:
           lower: 0
-          upper: 0
+          upper: 1
         valueType: "numeric long"
       - memberName: "afstand"
         definition: "De locatie van het hmp-bordje op de lijn van het wegvak gezien vanuit het begin van het wegvak."
         cardinality:
           lower: 0
-          upper: 0
+          upper: 1
         valueMeasurementUnit:
           unitDefinitionId: "uom-metre"
           codespace: "http://www.opengis.net/def/uom/SI"
@@ -41,21 +39,23 @@ featureCatalogues:
       - memberName: "wvk_id"
         definition: "De unieke identificatie van een wegvak."
         cardinality:
-          lower: 0
-          upper: 0
-        valueType: "numeric double"
+          lower: 1
+          upper: 1
+        valueType: "Positive integer"
+        constraints:
+          - "nwb_wegen hectopunten"
       - memberName: "wvk_begdat"
         definition: "De begindatum van het wegvak_efemeride (de datum waarop het betreffende wegvak is vastgelegd in de database)."
         cardinality:
           lower: 0
-          upper: 0
-        valueType: "date"
+          upper: 1
+        valueType: "Date"
       - memberName: "zijde"
         definition: "De kant zoals opgenomen op het hmp-bordje (Li of Re)."
         cardinality:
           lower: 0
-          upper: 0
-        valueType: "tekst"
+          upper: 1
+        valueType: "Text"
         listedValues:
           - label: "Links"
             code: "Li"
@@ -67,11 +67,11 @@ featureCatalogues:
         definition: "De hmp-letter zoals opgenomen op het hmp-bordje."
         cardinality:
           lower: 0
-          upper: 0
-        valueType: "tekst"
+          upper: 1
+        valueType: "Text"
       - memberName: "shape"
         definition: "De geometrie."
         cardinality:
           lower: 0
-          upper: 0
-        valueType: "geometry"
+          upper: 1
+        valueType: "Geometry"

@@ -45,16 +45,25 @@ type CodeTag struct {
 }
 
 type FeatureAttribute struct {
-	MemberName   string        `json:"memberName"            yaml:"memberName"`
-	Definition   string        `json:"definition"            yaml:"definition"`
-	Cardinality  *Cardinality  `json:"cardinality,omitempty" yaml:"cardinality,omitempty"`
-	ValueType    *string       `json:"valueType,omitempty"   yaml:"valueType,omitempty"`
-	ListedValues []ListedValue `json:"listedValues"          yaml:"listedValues"`
+	MemberName           string                `json:"memberName"                     yaml:"memberName"`
+	Definition           string                `json:"definition"                     yaml:"definition"`
+	Cardinality          *Cardinality          `json:"cardinality,omitempty"          yaml:"cardinality,omitempty"`
+	ValueMeasurementUnit *ValueMeasurementUnit `json:"valueMeasurementUnit,omitempty" yaml:"valueMeasurementUnit,omitempty"`
+	ValueType            *string               `json:"valueType,omitempty"            yaml:"valueType,omitempty"`
+	ListedValues         []ListedValue         `json:"listedValues"                   yaml:"listedValues"`
 }
 
 type Cardinality struct {
 	Lower int `json:"lower" yaml:"lower"`
 	Upper int `json:"upper" yaml:"upper"`
+}
+
+type ValueMeasurementUnit struct {
+	UnitDefinitionId string `json:"unitDefinitionId" yaml:"unitDefinitionId"`
+	Codespace        string `json:"codespace"        yaml:"codespace"`
+	Identifier       string `json:"identifier"       yaml:"identifier"`
+	Name             string `json:"name"             yaml:"name"`
+	CatalogSymbol    string `json:"catalogSymbol"    yaml:"catalogSymbol"`
 }
 
 type ListedValue struct {
@@ -145,6 +154,35 @@ func (fc FeatureCatalogueConfig) Validate() error {
 		if attribute.Definition == "" && !hasMissingDefinition {
 			errors = append(errors, "definition is required for all attributes.")
 			hasMissingDefinition = true
+		}
+
+		if attribute.ValueMeasurementUnit != nil {
+			vmu := attribute.ValueMeasurementUnit
+			if vmu.Codespace == "" {
+				errors = append(errors, "codespace is required if a valueMeasurementUnit is set.")
+			}
+
+			if vmu.Name == "" {
+				errors = append(errors, "name is required if a valueMeasurementUnit is set.")
+			}
+
+			if vmu.CatalogSymbol == "" {
+				errors = append(
+					errors,
+					"catalogSymbol is required if a valueMeasurementUnit is set.",
+				)
+			}
+
+			if vmu.UnitDefinitionId == "" {
+				errors = append(
+					errors,
+					"unitDefinitionId is required if a valueMeasurementUnit is set.",
+				)
+			}
+
+			if vmu.Identifier == "" {
+				errors = append(errors, "Identifier is required if a valueMeasurementUnit is set.")
+			}
 		}
 	}
 
