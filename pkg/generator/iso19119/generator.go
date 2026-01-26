@@ -346,7 +346,7 @@ func (g *Generator) setIdentificationInfo() error {
 						CIRoleCode: iso1911x.CodeListValueTag{
 							CodeList:      "https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode",
 							CodeListValue: "custodian",
-							Value:         "beheerder",
+							Value:         "custodian",
 						},
 					},
 				},
