@@ -130,7 +130,7 @@
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
-            <gmx:Anchor xlink:href="https://www.eionet.europa.eu/gemet/nl/inspire-theme/ps">Beschermde gebieden</gmx:Anchor>
+            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-theme/ps">Beschermde gebieden</gmx:Anchor>
           </gmd:keyword>
           <gmd:type>
             <gmd:MD_KeywordTypeCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>
@@ -138,7 +138,7 @@
           <gmd:thesaurusName>
             <gmd:CI_Citation>
               <gmd:title>
-                <gmx:Anchor xlink:href="https://www.eionet.europa.eu/gemet/nl/inspire-themes/">GEMET - INSPIRE themes, version 1.0</gmx:Anchor>
+                <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-themes/">GEMET - INSPIRE themes, version 1.0</gmx:Anchor>
               </gmd:title>
               <gmd:date>
                 <gmd:CI_Date>

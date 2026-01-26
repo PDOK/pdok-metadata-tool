@@ -166,7 +166,7 @@
           <gmd:thesaurusName>
             <gmd:CI_Citation>
               <gmd:title>
-                <gmx:Anchor xlink:href="https://www.eionet.europa.eu/gemet/nl/inspire-themes/">GEMET - INSPIRE themes, version 1.0</gmx:Anchor>
+                <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/nl/inspire-themes/">GEMET - INSPIRE themes, version 1.0</gmx:Anchor>
               </gmd:title>
               <gmd:date>
                 <gmd:CI_Date>

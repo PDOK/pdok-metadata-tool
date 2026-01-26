@@ -454,7 +454,8 @@ func (g *Generator) setIdentificationInfo() error {
 					CICitation: iso1911x.CICitation{
 						Title: iso1911x.TitleTag{
 							Anchor: &iso1911x.AnchorTag{
-								Href:  "https://www.eionet.europa.eu/gemet/nl/inspire-themes/",
+								// Current NGR validation expects http
+								Href:  "http://www.eionet.europa.eu/gemet/nl/inspire-themes/",
 								Value: "GEMET - INSPIRE themes, version 1.0",
 							},
 						},
@@ -503,7 +504,8 @@ func (g *Generator) setIdentificationInfo() error {
 				// in which the INSPIRE theme as defined in the GEMET Thesaurus is included
 				// Name of the INSPIRE theme as defined in the GEMET Thesaurus and written in the language of this metadata document
 				Anchor: &iso1911x.AnchorTag{
-					Href:  inspireTheme,
+					// Current NGR validation expects http
+					Href:  strings.Replace(inspireTheme, "https://", "http://", 1),
 					Value: *inspireThemeLabel,
 				},
 			}
