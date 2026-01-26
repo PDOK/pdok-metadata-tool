@@ -1134,9 +1134,11 @@ func (g *Generator) setDataQualityInfo() error {
 							ValueUnit: iso1911x.ValueUnitTag{
 								Href: "urn:ogc:def:uom:OGC::percent",
 							},
-							Value: iso1911x.RecordTag{
-								Type:  "xs:double",
-								Value: config.GetQosAvailability(),
+							Value: iso1911x.ValueTag{
+								Record: iso1911x.RecordTag{
+									Type:  "xs:double",
+									Value: config.GetQosAvailability(),
+								},
 							},
 						},
 					},
@@ -1163,9 +1165,11 @@ func (g *Generator) setDataQualityInfo() error {
 							ValueUnit: iso1911x.ValueUnitTag{
 								Href: "http://www.opengis.net/def/uom/SI/second",
 							},
-							Value: iso1911x.RecordTag{
-								Type:  "xs:double",
-								Value: config.GetQosPerformance(),
+							Value: iso1911x.ValueTag{
+								Record: iso1911x.RecordTag{
+									Type:  "xs:double",
+									Value: config.GetQosPerformance(),
+								},
 							},
 						},
 					},
@@ -1192,9 +1196,11 @@ func (g *Generator) setDataQualityInfo() error {
 							ValueUnit: iso1911x.ValueUnitTag{
 								Href: "http://www.opengis.net/def/uom/OGC/1.0/unity",
 							},
-							Value: iso1911x.RecordTag{
-								Type:  "xs:integer",
-								Value: config.GetQosCapacity(),
+							Value: iso1911x.ValueTag{
+								Record: iso1911x.RecordTag{
+									Type:  "xs:integer",
+									Value: config.GetQosCapacity(),
+								},
 							},
 						},
 					},

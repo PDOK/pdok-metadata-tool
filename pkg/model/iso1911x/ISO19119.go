@@ -331,12 +331,17 @@ type QuantitativeResult struct {
 // DQQuantitativeResult struct for XML marshalling.
 type DQQuantitativeResult struct {
 	ValueUnit ValueUnitTag `xml:"gmd:valueUnit"`
-	Value     RecordTag    `xml:"gmd:value"`
+	Value     ValueTag     `xml:"gmd:value"`
 }
 
 // ValueUnitTag struct for XML marshalling.
 type ValueUnitTag struct {
 	Href string `xml:"xlink:href,attr"`
+}
+
+// ValueTag struct for XML marshalling.
+type ValueTag struct {
+	Record RecordTag `xml:"gco:Record"`
 }
 
 // RecordTag struct for XML marshalling.
