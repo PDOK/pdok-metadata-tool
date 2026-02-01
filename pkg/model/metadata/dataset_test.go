@@ -27,13 +27,14 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 		{
 			File: filepath.Join(examples, "500d396f-5ec6-4e4b-a151-5fb3cddd8082.xml"),
 			Metadata: NLDatasetMetadata{
-				MetadataID:   "500d396f-5ec6-4e4b-a151-5fb3cddd8082",
-				SourceID:     "440c4a06-6924-4f9c-a9e2-6f61340f711b",
-				Title:        "Gemeten Zwaveldioxide concentraties in buitenlucht.",
-				Abstract:     "Ruwe ongevalideerde uurwaarden zwaveldioxide (SO2) op grondniveau in de buitenlucht gemeten in het Landelijk Meetnet Luchtkwaliteit (LML). Zwaveldioxide is een kleurloos gas. Het wordt voornamelijk gevormd het gebruik van zwavelhoudende brandstoffen. Belangrijke bronnen zijn kolengestookte energiecentrales, raffinaderijen en het verkeer (de laatste jaren is voornamelijk de internationale scheepvaart van belang). De concentraties zwaveldioxide zijn in Nederland sterk gedaald door maatregelen op de belangrijkste bronnen. Sinds de jaren 90 van de vorige eeuw zijn er geen normoverschrijdingen meer geweest. Bij hoge concentraties heeft zwaveldioxide negatieve effecten op de menselijke gezondheid en draagt het bij aan de verzuring van ecosystemen. Zwaveldioxide wordt in de lucht gedeeltelijk omgezet in sulfaatdeeltjes en heeft zo een bijdrage aan fijn stof.",
-				ContactName:  "",
-				ContactEmail: "geodata@rivm.nl",
-				ContactURL:   "",
+				MetadataID:              "500d396f-5ec6-4e4b-a151-5fb3cddd8082",
+				SourceID:                "440c4a06-6924-4f9c-a9e2-6f61340f711b",
+				Title:                   "Gemeten Zwaveldioxide concentraties in buitenlucht.",
+				Abstract:                "Ruwe ongevalideerde uurwaarden zwaveldioxide (SO2) op grondniveau in de buitenlucht gemeten in het Landelijk Meetnet Luchtkwaliteit (LML). Zwaveldioxide is een kleurloos gas. Het wordt voornamelijk gevormd het gebruik van zwavelhoudende brandstoffen. Belangrijke bronnen zijn kolengestookte energiecentrales, raffinaderijen en het verkeer (de laatste jaren is voornamelijk de internationale scheepvaart van belang). De concentraties zwaveldioxide zijn in Nederland sterk gedaald door maatregelen op de belangrijkste bronnen. Sinds de jaren 90 van de vorige eeuw zijn er geen normoverschrijdingen meer geweest. Bij hoge concentraties heeft zwaveldioxide negatieve effecten op de menselijke gezondheid en draagt het bij aan de verzuring van ecosystemen. Zwaveldioxide wordt in de lucht gedeeltelijk omgezet in sulfaatdeeltjes en heeft zo een bijdrage aan fijn stof.",
+				ContactName:             "",
+				ContactEmail:            "geodata@rivm.nl",
+				ContactURL:              "",
+				ContactOrganisationName: "RIVM",
 				Keywords: []string{
 					"Zwaveldioxide",
 					"Vegetatie",
@@ -61,18 +62,29 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					SouthBoundLatitude: "50.7539",
 					NorthBoundLatitude: "53.4658",
 				},
+				DigitalTransferOptions: []OnLine{
+					{
+						URL:      "",
+						Protocol: "",
+					},
+					{
+						URL:      "https://inspire.rivm.nl/sos/eaq/service?service=AQD&version=1.0.0&request=GetCapabilities",
+						Protocol: "OGC:SOS",
+					},
+				},
 			},
 		},
 		{
 			File: filepath.Join(examples, "5951efa2-1ff3-4763-a966-a2f5497679ee.xml"),
 			Metadata: NLDatasetMetadata{
-				MetadataID:   "5951efa2-1ff3-4763-a966-a2f5497679ee",
-				SourceID:     "2482250f-3b00-4439-9f93-f3118229b226",
-				Title:        "Vervoersnetwerken: Waterwegen - Transport Networks: Water (INSPIRE geharmoniseerd)",
-				Abstract:     "INSPIRE Vervoersnetwerken: Waterwegen (Transport Networks: Water) themalaag, geharmoniseerd, gevuld met relevante objecten uit TOP10NL (onderdeel van de Basisregistratie Topografie BRT), geproduceerd en beheerd door het Kadaster.",
-				ContactName:  "Klantcontactcenter",
-				ContactEmail: "kcc@kadaster.nl",
-				ContactURL:   "https://www.kadaster.nl",
+				MetadataID:              "5951efa2-1ff3-4763-a966-a2f5497679ee",
+				SourceID:                "2482250f-3b00-4439-9f93-f3118229b226",
+				Title:                   "Vervoersnetwerken: Waterwegen - Transport Networks: Water (INSPIRE geharmoniseerd)",
+				Abstract:                "INSPIRE Vervoersnetwerken: Waterwegen (Transport Networks: Water) themalaag, geharmoniseerd, gevuld met relevante objecten uit TOP10NL (onderdeel van de Basisregistratie Topografie BRT), geproduceerd en beheerd door het Kadaster.",
+				ContactName:             "Klantcontactcenter",
+				ContactEmail:            "kcc@kadaster.nl",
+				ContactURL:              "https://www.kadaster.nl",
+				ContactOrganisationName: "Kadaster",
 				Keywords: []string{
 					"vervoersnetwerken",
 					"waterwegen",
@@ -108,13 +120,14 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 		{
 			File: filepath.Join(examples, "a90027f8-7323-45d6-86a7-9374d0de05bf.xml"),
 			Metadata: NLDatasetMetadata{
-				MetadataID:   "a90027f8-7323-45d6-86a7-9374d0de05bf",
-				SourceID:     "948874aa-c599-4c0f-b0c2-e6b357e73566",
-				Title:        "Emissies naar het riool vanuit de industrie (2019 - heden) (INSPIRE)",
-				Abstract:     "Emissies naar het riool vanuit de industrie worden via het e-MJV (elektronisch Milieujaarverslag) gerapporteerd wanneer bedrijven bepaalde drempelwaarden overschrijden, zoals vastgelegd in het EPRTR-protocol (European Pollutant Release and Transfer Register). Bij lozingen op het riool gaat het om stoffen die via industriële processen in het bedrijfsafvalwater terechtkomen en via het gemeentelijk riool naar een rioolwaterzuiveringsinstallatie (RWZI) worden afgevoerd. Bedrijven moeten deze emissies rapporteren als ze onder de reikwijdte van de E-PRTR-verordening vallen én als de emissies van bepaalde stoffen boven de rapportagedrempels uitkomen.",
-				ContactName:  "",
-				ContactEmail: "emissieregistratie@rivm.nl",
-				ContactURL:   "",
+				MetadataID:              "a90027f8-7323-45d6-86a7-9374d0de05bf",
+				SourceID:                "948874aa-c599-4c0f-b0c2-e6b357e73566",
+				Title:                   "Emissies naar het riool vanuit de industrie (2019 - heden) (INSPIRE)",
+				Abstract:                "Emissies naar het riool vanuit de industrie worden via het e-MJV (elektronisch Milieujaarverslag) gerapporteerd wanneer bedrijven bepaalde drempelwaarden overschrijden, zoals vastgelegd in het EPRTR-protocol (European Pollutant Release and Transfer Register). Bij lozingen op het riool gaat het om stoffen die via industriële processen in het bedrijfsafvalwater terechtkomen en via het gemeentelijk riool naar een rioolwaterzuiveringsinstallatie (RWZI) worden afgevoerd. Bedrijven moeten deze emissies rapporteren als ze onder de reikwijdte van de E-PRTR-verordening vallen én als de emissies van bepaalde stoffen boven de rapportagedrempels uitkomen.",
+				ContactName:             "",
+				ContactEmail:            "emissieregistratie@rivm.nl",
+				ContactURL:              "",
+				ContactOrganisationName: "Rijksinstituut voor Volksgezondheid en Milieu",
 				Keywords: []string{
 					"Nationaal",
 					"Emissies (Richtlijn Industriële emissies)",
@@ -155,13 +168,14 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 		{
 			File: filepath.Join(examples, "F646DFB9-5BF6-EAB9-042B-CAB6FF2DC275.xml"),
 			Metadata: NLDatasetMetadata{
-				MetadataID:   "F646DFB9-5BF6-EAB9-042B-CAB6FF2DC275",
-				SourceID:     "23c5bc1b-212b-49b5-8375-846ccabd544d",
-				Title:        "BRO - Digitaal Geologisch Model (DGM) as-is",
-				Abstract:     "Het Digitaal Geologisch Model (DGM) is een driedimensionaal lagenmodel van de Nederlandse ondergrond tot een diepte van ongeveer 500 m onder NAP, met lokaal uitschieters tot 1200 m. De ondergrondlagen in dit deel van de ondergrond bestaan hoofdzakelijk uit onverharde sedimenten, waarin de grondsoorten klei, zand, grind en veen voorkomen. De lagen worden op basis van verschillen in lithologie en andere eigenschappen ingedeeld in lithostratigrafische eenheden. DGM is een model van de opbouw en de samenhang (geometrie) van deze lithostratigrafische eenheden. De hoogteligging van de onder- en bovenkant en de dikte van de eenheden worden vastgelegd in gridbestanden (rasters) met een celgrootte van 100 bij 100 m. Behalve de laaginformatie bevat DGM ook de geïnterpreteerde boorbeschrijvingen die bij het maken van het model gebruikt zijn. Het modelgebied van DGM bestaat uit het vasteland van Nederland. De ondergrond van het Nederlandse deel van het Continentaal Plat is niet in DGM opgenomen. DGM is een regionaal model. Het is niet geschikt voor gebruik op lokale schaal; voor het maken van een lokaal ondergrondmodel zullen altijd aanvullende gegevens nodig zijn. Voor verdere informatie wordt verwezen naar de website van de BRO: https://basisregistratieondergrond.nl/",
-				ContactName:  "",
-				ContactEmail: "support@broservicedesk.nl",
-				ContactURL:   "https://www.basisregistratieondergrond.nl",
+				MetadataID:              "F646DFB9-5BF6-EAB9-042B-CAB6FF2DC275",
+				SourceID:                "23c5bc1b-212b-49b5-8375-846ccabd544d",
+				Title:                   "BRO - Digitaal Geologisch Model (DGM) as-is",
+				Abstract:                "Het Digitaal Geologisch Model (DGM) is een driedimensionaal lagenmodel van de Nederlandse ondergrond tot een diepte van ongeveer 500 m onder NAP, met lokaal uitschieters tot 1200 m. De ondergrondlagen in dit deel van de ondergrond bestaan hoofdzakelijk uit onverharde sedimenten, waarin de grondsoorten klei, zand, grind en veen voorkomen. De lagen worden op basis van verschillen in lithologie en andere eigenschappen ingedeeld in lithostratigrafische eenheden. DGM is een model van de opbouw en de samenhang (geometrie) van deze lithostratigrafische eenheden. De hoogteligging van de onder- en bovenkant en de dikte van de eenheden worden vastgelegd in gridbestanden (rasters) met een celgrootte van 100 bij 100 m. Behalve de laaginformatie bevat DGM ook de geïnterpreteerde boorbeschrijvingen die bij het maken van het model gebruikt zijn. Het modelgebied van DGM bestaat uit het vasteland van Nederland. De ondergrond van het Nederlandse deel van het Continentaal Plat is niet in DGM opgenomen. DGM is een regionaal model. Het is niet geschikt voor gebruik op lokale schaal; voor het maken van een lokaal ondergrondmodel zullen altijd aanvullende gegevens nodig zijn. Voor verdere informatie wordt verwezen naar de website van de BRO: https://basisregistratieondergrond.nl/",
+				ContactName:             "",
+				ContactEmail:            "support@broservicedesk.nl",
+				ContactURL:              "https://www.basisregistratieondergrond.nl",
+				ContactOrganisationName: "TNO Geologische Dienst Nederland",
 				Keywords: []string{
 					"Digitaal Geologisch Model",
 					"DGM",
@@ -255,6 +269,14 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 						flat.BoundingBox.NorthBoundLatitude,
 					)
 				}
+			}
+
+			// Test temp fields for validation script
+			assert.Equal(t, tc.Metadata.ContactOrganisationName, flat.ContactOrganisationName)
+
+			if tc.Metadata.DigitalTransferOptions != nil {
+				assert.NotEmpty(t, flat.DigitalTransferOptions)
+				assert.Equal(t, tc.Metadata.DigitalTransferOptions, flat.DigitalTransferOptions)
 			}
 		})
 	}

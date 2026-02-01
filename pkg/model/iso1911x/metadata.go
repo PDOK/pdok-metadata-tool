@@ -85,7 +85,7 @@ type MDMetadata struct {
 			LicenseURL          []CSWAnchor             `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
 			UseLimitation       string                  `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
 			Dates               []CSWDate               `xml:"citation>CI_Citation>date"`
-			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
+			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>organisationName"`
 			Extent              struct {
 				WestBoundLongitude string `xml:"westBoundLongitude>Decimal"`
 				EastBoundLongitude string `xml:"eastBoundLongitude>Decimal"`
@@ -94,13 +94,7 @@ type MDMetadata struct {
 			} `xml:"extent>EX_Extent>geographicElement>EX_GeographicBoundingBox"`
 		} `xml:"MD_DataIdentification"`
 	} `xml:"identificationInfo"`
-	// todo: also implement transferOptions>MD_DigitalTransferOptions>onLine for datasets
-	OnLine []struct {
-		URL      string `xml:"CI_OnlineResource>linkage>URL"`
-		Protocol struct {
-			Anchor CSWAnchor `xml:"Anchor"`
-		} `xml:"CI_OnlineResource>protocol"`
-	} `xml:"distributionInfo>MD_Distribution>transferOptions>MD_DigitalTransferOptions>onLine"`
+	OnLine        []OnLine `xml:"distributionInfo>MD_Distribution>transferOptions>MD_DigitalTransferOptions>onLine"`
 	DQDataQuality struct {
 		Report []struct {
 			ConsistencyResult []struct {
@@ -113,6 +107,18 @@ type MDMetadata struct {
 			} `xml:"DQ_DomainConsistency>result"`
 		} `xml:"report"`
 	} `xml:"dataQualityInfo>DQ_DataQuality"`
+}
+
+// OnLine models CI_Date for CSW response.
+type OnLine struct {
+	URL      string   `xml:"CI_OnlineResource>linkage>URL"`
+	Protocol Protocol `xml:"CI_OnlineResource>protocol"`
+}
+
+// Protocol models CI_Date for CSW response.
+type Protocol struct {
+	CharacterString string    `xml:"CharacterString"`
+	Anchor          CSWAnchor `xml:"Anchor"`
 }
 
 // CSWDate models CI_Date for CSW response.
@@ -226,6 +232,14 @@ func (m *MDMetadata) GetMetaDataType() MetadataType {
 	}
 	// Default to dataset when unknown
 	return Dataset
+}
+
+func (m *MDMetadata) GetContactOrganisationName() (organisationname string) {
+	if m.IdentificationInfo.MDDataIdentification.ResponsibleParty.Char != "" {
+		return m.IdentificationInfo.MDDataIdentification.ResponsibleParty.Char
+	}
+
+	return m.IdentificationInfo.MDDataIdentification.ResponsibleParty.Anchor
 }
 
 // GetKeywords returns non-INSPIRE, non-HVD keywords for both dataset and service metadata.

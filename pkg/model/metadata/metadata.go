@@ -6,3 +6,8 @@ type BoundingBox struct {
 	SouthBoundLatitude string
 	NorthBoundLatitude string
 }
+
+type OnLine struct {
+	URL      string
+	Protocol string
+}

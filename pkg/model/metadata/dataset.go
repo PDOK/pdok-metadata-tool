@@ -25,6 +25,10 @@ type NLDatasetMetadata struct {
 	HVDCategories  []hvd.HVDCategory
 	BoundingBox    *BoundingBox
 	CreationDate   string
+
+	// Temp fields for validation script
+	ContactOrganisationName string
+	DigitalTransferOptions  []OnLine
 }
 
 // NewNLDatasetMetadataFromMDMetadata creates a new instance based on dataset metadata from a CSW response.
@@ -80,5 +84,29 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 				m.IdentificationInfo.MDDataIdentification.Extent.NorthBoundLatitude,
 			),
 		},
+		// Fill temp fields for validation script
+		ContactOrganisationName: iso1911x.NormalizeXMLText(
+			m.GetContactOrganisationName(),
+		),
+		DigitalTransferOptions: getDigitalTransferOptions(m),
 	}
+}
+
+func getDigitalTransferOptions(m *iso1911x.MDMetadata) []OnLine {
+	var ret []OnLine
+
+	for _, do := range m.OnLine {
+		online := OnLine{
+			URL: iso1911x.NormalizeXMLText(do.URL),
+		}
+		if do.Protocol.Anchor.Text != "" {
+			online.Protocol = iso1911x.NormalizeXMLText(do.Protocol.Anchor.Text)
+		} else {
+			online.Protocol = iso1911x.NormalizeXMLText(do.Protocol.CharacterString)
+		}
+
+		ret = append(ret, online)
+	}
+
+	return ret
 }
