@@ -234,7 +234,11 @@ func (m *MDMetadata) GetMetaDataType() MetadataType {
 	return Dataset
 }
 
-func (m *MDMetadata) GetContactOrganisationName() (organisationname string) {
+func (m *MDMetadata) GetContactOrganisationName() string {
+	if m.IdentificationInfo.MDDataIdentification == nil || m.IdentificationInfo.MDDataIdentification.ResponsibleParty == nil {
+		return ""
+	}
+
 	if m.IdentificationInfo.MDDataIdentification.ResponsibleParty.Char != "" {
 		return m.IdentificationInfo.MDDataIdentification.ResponsibleParty.Char
 	}
