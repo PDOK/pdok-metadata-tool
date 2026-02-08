@@ -320,6 +320,38 @@ func (m *MDMetadata) GetLicenseURL() string {
 	return ""
 }
 
+// GetLicenseText returns a license text value for either dataset or service (if present).
+func (m *MDMetadata) GetLicenseText() string {
+	var otherConstraints []CSWAnchor
+
+	switch m.GetMetaDataType() {
+	case Dataset:
+		if m.IdentificationInfo.MDDataIdentification == nil {
+			return ""
+		}
+
+		otherConstraints = m.IdentificationInfo.MDDataIdentification.LicenseURL
+	case Service:
+		if m.IdentificationInfo.SVServiceIdentification == nil {
+			return ""
+		}
+
+		otherConstraints = m.IdentificationInfo.SVServiceIdentification.LicenseURL
+	}
+
+	for _, val := range otherConstraints {
+		if strings.Contains(val.Href, "creativecommons.org") {
+			return NormalizeXMLText(val.Text)
+		}
+
+		if strings.Contains(val.Text, "Geo Gedeeld") {
+			return NormalizeXMLText(val.Text)
+		}
+	}
+
+	return ""
+}
+
 // GetUseLimitation returns the use limitation from either dataset or service metadata.
 func (m *MDMetadata) GetUseLimitation() string {
 	switch m.GetMetaDataType() {
