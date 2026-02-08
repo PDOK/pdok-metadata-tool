@@ -18,6 +18,7 @@ type NLDatasetMetadata struct {
 	ContactURL     string
 	Keywords       []string
 	LicenceURL     string
+	LicenseText    string
 	UseLimitation  string
 	ThumbnailURL   string
 	InspireVariant inspire.InspireVariant
@@ -60,8 +61,9 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 		ContactURL: iso1911x.NormalizeXMLText(
 			m.IdentificationInfo.MDDataIdentification.ContactURL,
 		),
-		Keywords:   m.GetKeywords(),
-		LicenceURL: m.GetLicenseURL(),
+		Keywords:    m.GetKeywords(),
+		LicenceURL:  m.GetLicenseURL(),
+		LicenseText: m.GetLicenseText(),
 		UseLimitation: iso1911x.NormalizeXMLText(
 			m.GetUseLimitation(),
 		),
