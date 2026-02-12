@@ -106,7 +106,9 @@ func HarvestByCQLConstraint[T any](
 	case metadata.NLDatasetMetadata:
 		metadataType = iso1911x.Dataset
 	default:
-		return nil, errors.New("unsupported type parameter T; must be NLServiceMetadata or NLDatasetMetadata")
+		return nil, errors.New(
+			"unsupported type parameter T; must be NLServiceMetadata or NLDatasetMetadata",
+		)
 	}
 
 	constraint.MetadataType = &metadataType

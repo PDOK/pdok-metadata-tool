@@ -13,11 +13,6 @@ import (
 const GetRecordByID = "/?service=CSW&request=GetRecordById"
 const GetRecords = "/?service=CSW&request=GetRecords"
 
-const (
-	ContentTypeJSON = "application/json"
-	ContentTypeXML  = "application/xml"
-)
-
 func preTestSetup() *httptest.Server {
 	ngrServer := buildMockWebserverNgr()
 
@@ -53,6 +48,14 @@ func buildMockWebserverNgr() *httptest.Server {
 			}
 
 			getCreated = !getCreated
+
+		case strings.EqualFold(url, "/geonetwork/srv/api/records/validate?uuids=689c413e-a057-11f0-8de9-0242ac120002"):
+			writeCreatedResponse(
+				"./testdata/API_Records_Validate_nwbwegen.json",
+				rw,
+				ContentTypeJSON,
+			)
+
 		case strings.HasPrefix(url, GetRecordByID):
 			var responsePath string
 
@@ -114,7 +117,11 @@ func buildMockWebserverNgr() *httptest.Server {
 
 					bodyMatched = true
 				} else if strings.Contains(requestBody, "<ogc:Literal>dataset</ogc:Literal>") {
-					writeOkResponse("./testdata/CSW_GetRecordsResponse_Dataset.xml", rw, ContentTypeXML)
+					writeOkResponse(
+						"./testdata/CSW_GetRecordsResponse_Dataset.xml",
+						rw,
+						ContentTypeXML,
+					)
 
 					bodyMatched = true
 				}
@@ -149,13 +156,26 @@ func wrapAsGetRecordByIDResponse(metadata string) string {
 }
 
 func writeOkResponse(responsePath string, rw http.ResponseWriter, contentType string) {
+	writeResponse(responsePath, rw, contentType, http.StatusOK)
+}
+
+func writeCreatedResponse(responsePath string, rw http.ResponseWriter, contentType string) {
+	writeResponse(responsePath, rw, contentType, http.StatusCreated)
+}
+
+func writeResponse(
+	responsePath string,
+	rw http.ResponseWriter,
+	contentType string,
+	statusCode int,
+) {
 	response, err := readFileToString(responsePath)
 	if err != nil {
 		slog.Error("error reading file", "err", err)
 	}
 
 	rw.Header().Set("Content-Type", contentType)
-	rw.WriteHeader(http.StatusOK)
+	rw.WriteHeader(statusCode)
 	_, _ = fmt.Fprint(rw, response)
 }
 
