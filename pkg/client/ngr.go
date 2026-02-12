@@ -1,14 +1,12 @@
 package client
 
 import (
-	"errors"
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
-
 	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/ngr"
 )
 
@@ -54,56 +52,6 @@ func (c *NgrClient) GetRecordTags(uuid string) (ngr.RecordTagsResponse, error) {
 	return recordTagsResponse, nil
 }
 
-func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
-	// Build URL
-	url := *ngrConfig.NgrUrl + API_LOGIN_PART
-
-	// Create HTTP client and request
-	req, err := http.NewRequest(http.MethodPost, url, nil)
-	if err != nil {
-		return "", fmt.Errorf("cannot create request: %w", err)
-	}
-
-	// Set Basic Auth
-	username := ngrConfig.NgrUserName
-	password := ngrConfig.NgrPassword
-	req.SetBasicAuth(*username, *password)
-
-	client := &http.Client{}
-	//nolint:bodyclose // We use common.SafeClose to handle closing the response body
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("error executing request: %w", err)
-	}
-
-	defer common.SafeClose(resp.Body)
-	// Look for 403 Forbidden
-	if resp.StatusCode == http.StatusForbidden { //nolint:nestif
-		// Parse cookies from headers
-		cookies := resp.Header.Values("Set-Cookie")
-		for _, c := range cookies {
-			if strings.Contains(c, "XSRF-TOKEN=") {
-				parts := strings.Split(c, ";")
-				for _, part := range parts {
-					part = strings.TrimSpace(part)
-					if strings.HasPrefix(part, "XSRF-TOKEN=") {
-						two := 2
-
-						split := strings.SplitN(part, "=", two)
-						if len(split) == two {
-							return split[1], nil
-						}
-					}
-				}
-			}
-		}
-
-		return "", errors.New("cannot obtain XSRF token from cookie")
-	}
-
-	return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-}
-
 // CreateOrUpdateServiceMetadataRecord does a PUT request on NGR to create or update a record.
 func (c *NgrClient) CreateOrUpdateServiceMetadataRecord(
 	record string,
@@ -134,7 +82,14 @@ func (c *NgrClient) CreateOrUpdateServiceMetadataRecord(
 		params,
 	)
 
-	_, err := getNgrResponseBody(c.NgrConfig, url, http.MethodPut, &record, *c.NgrClient)
+	_, err := getNgrResponseBody(
+		c.NgrConfig,
+		url,
+		http.MethodPut,
+		&record,
+		*c.NgrClient,
+		ContentTypeXML,
+	)
 
 	return err
 }
@@ -155,6 +110,7 @@ func (c *NgrClient) GetRecord(uuid string) (string, error) {
 		http.MethodGet,
 		nil,
 		*c.NgrClient,
+		ContentTypeXML,
 	)
 
 	if responseBodyByteArr != nil {
@@ -171,7 +127,14 @@ func (c *NgrClient) DeleteRecord(uuid string) error {
 		API_RECORDS_TEMPLATE,
 		uuid,
 	)
-	_, err := getNgrResponseBody(c.NgrConfig, ngrUrl, http.MethodDelete, nil, *c.NgrClient)
+	_, err := getNgrResponseBody(
+		c.NgrConfig,
+		ngrUrl,
+		http.MethodDelete,
+		nil,
+		*c.NgrClient,
+		ContentTypeXML,
+	)
 
 	return err
 }
@@ -184,7 +147,76 @@ func (c *NgrClient) AddTagToRecord(uuid string, tagId int) error {
 		uuid,
 		tagId,
 	)
-	_, err := getNgrResponseBody(c.NgrConfig, ngrUrl, http.MethodPut, nil, *c.NgrClient)
+	_, err := getNgrResponseBody(
+		c.NgrConfig,
+		ngrUrl,
+		http.MethodPut,
+		nil,
+		*c.NgrClient,
+		ContentTypeXML,
+	)
 
 	return err
+}
+
+// ValidateRecord does a PUT request on NGR to validate a record.
+func (c *NgrClient) ValidateRecord(uuid string) (ValidationResult, error) {
+	ngrUrl := fmt.Sprintf("%s%s/validate?uuids=%s",
+		*c.NgrConfig.NgrUrl,
+		API_RECORDS_TEMPLATE,
+		uuid,
+	)
+
+	response, err := getNgrResponseBody(
+		c.NgrConfig,
+		ngrUrl,
+		http.MethodPut,
+		nil,
+		*c.NgrClient,
+		ContentTypeJSON,
+	)
+	if err != nil {
+		return ValidationResult{}, err
+	}
+
+	ngrResponse := ValidationResult{}
+	if err = json.Unmarshal(response, &ngrResponse); err != nil {
+		return ValidationResult{}, err
+	}
+
+	return ngrResponse, nil
+}
+
+func obtainXSRFToken(ngrConfig *NgrConfig) (string, error) {
+	// Build URL
+	url := *ngrConfig.NgrUrl + API_LOGIN_PART
+
+	// Create HTTP client and request
+	req, err := http.NewRequest(http.MethodPost, url, nil)
+	if err != nil {
+		return "", fmt.Errorf("cannot create request: %w", err)
+	}
+
+	username := ngrConfig.NgrUserName
+	password := ngrConfig.NgrPassword
+	req.SetBasicAuth(*username, *password)
+
+	client := &http.Client{}
+	//nolint:bodyclose // We use common.SafeClose to handle closing the response body
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("error executing request: %w", err)
+	}
+
+	defer common.SafeClose(resp.Body)
+
+	// Look for 403 Forbidden
+	if resp.StatusCode == http.StatusForbidden { //nolint:nestif
+		// Parse cookies from headers
+		cookies := resp.Header.Values("Set-Cookie")
+
+		return getCookieValueByName(cookies, "XSRF-TOKEN")
+	}
+
+	return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 }

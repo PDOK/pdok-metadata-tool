@@ -1,0 +1,45 @@
+{
+  "errors": [
+  ],
+  "infos": [
+  ],
+  "uuid": "4129cc6d-df49-4484-b9de-3d52d877e63e",
+  "metadata": [
+    70462035
+  ],
+  "metadataErrors": {
+    "70462035": [
+      {
+        "message": "(689c413e-a057-11f0-8de9-0242ac120002) Is invalid",
+        "uuid": "689c413e-a057-11f0-8de9-0242ac120002",
+        "draft": true,
+        "approved": false,
+        "date": "2026-02-12T10:30:43.58969Z",
+        "stack": ""
+      },
+      {
+        "message": "E-mail van de verantwoordelijke organisatie van de service ontbreekt of is ongeldig",
+        "uuid": "689c413e-a057-11f0-8de9-0242ac120002",
+        "draft": true,
+        "approved": false,
+        "date": "2026-02-12T10:30:43.591778Z",
+        "stack": ""
+      }
+    ]
+  },
+  "metadataInfos": {
+  },
+  "numberOfNullRecords": 0,
+  "numberOfRecordsProcessed": 1,
+  "numberOfRecordsUnchanged": 0,
+  "numberOfRecordsWithErrors": 1,
+  "numberOfRecordNotFound": 0,
+  "numberOfRecordsNotEditable": 0,
+  "numberOfRecords": 1,
+  "type": "SimpleMetadataProcessingReport",
+  "startIsoDateTime": "2026-02-12T10:30:43.499241Z",
+  "endIsoDateTime": "2026-02-12T10:30:43.703506Z",
+  "ellapsedTimeInSeconds": 0,
+  "totalTimeInSeconds": 0,
+  "running": false
+}

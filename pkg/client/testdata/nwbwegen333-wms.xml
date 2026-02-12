@@ -25,7 +25,7 @@
           <gmd:address>
             <gmd:CI_Address>
               <gmd:electronicMailAddress>
-                <gco:CharacterString>beheerpdok@kadaster.nl</gco:CharacterString>
+                <gco:CharacterString>beheerpdok.kadaster.nl</gco:CharacterString>
               </gmd:electronicMailAddress>
             </gmd:CI_Address>
           </gmd:address>
@@ -94,7 +94,7 @@
               <gmd:address>
                 <gmd:CI_Address>
                   <gmd:electronicMailAddress>
-                    <gco:CharacterString>beheerpdok@kadaster.nl</gco:CharacterString>
+                    <gco:CharacterString>beheerpdok.kadaster.nl</gco:CharacterString>
                   </gmd:electronicMailAddress>
                 </gmd:CI_Address>
               </gmd:address>

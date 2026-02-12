@@ -570,7 +570,9 @@ func (m *MDMetadata) GetServiceContactForService() string {
 				m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Char,
 			)
 		} else if m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Anchor != "" {
-			return strings.TrimSpace(m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Anchor)
+			return strings.TrimSpace(
+				m.IdentificationInfo.SVServiceIdentification.ResponsibleParty.Anchor,
+			)
 		}
 	}
 

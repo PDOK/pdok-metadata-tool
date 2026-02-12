@@ -64,7 +64,10 @@ func (c *CswClient) GetRecordByID(uuid string) (iso1911x.MDMetadata, error) {
 	}
 
 	cswResponse := csw.GetRecordByIDResponse{}
-	if err := xml.Unmarshal(raw, &cswResponse); err != nil { //nolint:musttag // model types contain tags
+	if err := xml.Unmarshal(
+		raw,
+		&cswResponse, //nolint:musttag // model types contain tags
+	); err != nil {
 		return iso1911x.MDMetadata{}, err
 	}
 
@@ -221,7 +224,7 @@ func (c *CswClient) GetRecordsWithOGCFilter(
 
 func (c *CswClient) getRecordByIDUrl(
 	uuid string,
-) string { //nolint:stylecheck // matches existing naming convention
+) string {
 	return c.endpoint.String() +
 		"?service=CSW" +
 		"&request=GetRecordById" +
@@ -324,13 +327,37 @@ func (c *CswClient) getRecordsRecursiveWithState(
 		slog.Info("Found records; paging recursively until end", "total", matched)
 	} else {
 		// Detect changes in total matches and restart if necessary
-		slog.Debug("Paging recursively until end", "total", matched, "baseline", baselineMatched, "offset", offset)
+		slog.Debug(
+			"Paging recursively until end",
+			"total",
+			matched,
+			"baseline",
+			baselineMatched,
+			"offset",
+			offset,
+		)
 
 		if baselineMatched >= 0 && matched != baselineMatched {
 			if restarts >= maxRestarts {
-				slog.Warn("NumberOfRecordsMatched keeps changing; giving up restarts", "baseline", baselineMatched, "current", matched, "restarts", restarts)
+				slog.Warn(
+					"NumberOfRecordsMatched keeps changing; giving up restarts",
+					"baseline",
+					baselineMatched,
+					"current",
+					matched,
+					"restarts",
+					restarts,
+				)
 			} else {
-				slog.Warn("NumberOfRecordsMatched changed during paging; restarting from offset 1", "baseline", baselineMatched, "current", matched, "restarts", restarts+1)
+				slog.Warn(
+					"NumberOfRecordsMatched changed during paging; restarting from offset 1",
+					"baseline",
+					baselineMatched,
+					"current",
+					matched,
+					"restarts",
+					restarts+1,
+				)
 				// Reset results and restart from beginning with new baseline
 				*result = (*result)[:0]
 

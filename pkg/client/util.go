@@ -4,12 +4,18 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
 
 	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
+)
+
+const (
+	ContentTypeJSON = "application/json"
+	ContentTypeXML  = "application/xml"
 )
 
 func getUnmarshalledXMLResponse(
@@ -92,6 +98,7 @@ func getNgrResponseBody(
 	method string,
 	requestBody *string,
 	client http.Client,
+	contentType string,
 ) ([]byte, error) {
 	var req *http.Request
 	if requestBody != nil {
@@ -105,8 +112,7 @@ func getNgrResponseBody(
 		return nil, fmt.Errorf("failed to obtain XSRF token: %w", err)
 	}
 
-	req.Header.Set("X-Xsrf-Token", xsrfToken)
-	req.Header.Set("Cookie", "XSRF-TOKEN="+xsrfToken)
+	setXsrfToken(req, xsrfToken)
 
 	username := ngrConfig.NgrUserName
 	password := ngrConfig.NgrPassword
@@ -114,7 +120,7 @@ func getNgrResponseBody(
 
 	req.Header.Set("User-Agent", "pdok.nl (pdok-metadata-tool)")
 	req.Header.Set("Accept", "*/*;q=0.8,application/signed-exchange")
-	req.Header.Set("Content-Type", "application/xml")
+	req.Header.Set("Content-Type", contentType)
 
 	//nolint:bodyclose // We use common.SafeClose to handle closing the response body
 	resp, err := client.Do(req)
@@ -133,4 +139,30 @@ func getNgrResponseBody(
 	}
 
 	return io.ReadAll(resp.Body)
+}
+
+func setXsrfToken(req *http.Request, xsrfToken string) {
+	req.Header.Set("X-Xsrf-Token", xsrfToken)
+	req.AddCookie(&http.Cookie{Name: "XSRF-TOKEN", Value: xsrfToken})
+}
+
+func getCookieValueByName(cookies []string, name string) (string, error) {
+	for _, c := range cookies {
+		if strings.Contains(c, name+"=") {
+			parts := strings.Split(c, ";")
+			for _, part := range parts {
+				part = strings.TrimSpace(part)
+				if strings.HasPrefix(part, name+"=") {
+					two := 2
+
+					split := strings.SplitN(part, "=", two)
+					if len(split) == two {
+						return split[1], nil
+					}
+				}
+			}
+		}
+	}
+
+	return "", errors.New("cannot obtain " + name + " from cookie")
 }

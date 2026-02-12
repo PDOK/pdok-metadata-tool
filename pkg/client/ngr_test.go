@@ -3,6 +3,7 @@ package client
 import (
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -140,6 +141,52 @@ func TestNgrClient_updateServiceMetadataRecord(t *testing.T) {
 
 			err = ngrClient.DeleteRecord(tt.args.uuid)
 			assert.NoError(t, err)
+		})
+	}
+}
+
+func TestNgrClient_createAndValidateServiceMetadataRecord(t *testing.T) {
+	mockedNGRServer := preTestSetup()
+	ngrClient := getNgrClient(mockedNGRServer)
+
+	type args struct {
+		uuid string
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name:    "test_validate",
+			wantErr: false,
+			args: args{
+				uuid: "689c413e-a057-11f0-8de9-0242ac120002",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			validationResult, err := ngrClient.ValidateRecord(tt.args.uuid)
+			assert.NoError(t, err)
+
+			assert.NotNil(t, validationResult)
+			assert.Equal(t, 1, validationResult.NumberOfRecords)
+			assert.Equal(t, 1, validationResult.NumberOfRecordsProcessed)
+			assert.Equal(t, 1, validationResult.NumberOfRecordsWithErrors)
+			assert.Len(t, validationResult.Metadata, 1)
+			assert.Len(t, validationResult.MetadataErrors, 1)
+
+			errors := validationResult.MetadataErrors[strconv.Itoa(int(validationResult.Metadata[0]))]
+			assert.Len(t, errors, 2)
+
+			assert.Equal(t, "(689c413e-a057-11f0-8de9-0242ac120002) Is invalid", errors[0].Message)
+			assert.Equal(
+				t,
+				"E-mail van de verantwoordelijke organisatie van de service ontbreekt of is ongeldig",
+				errors[1].Message,
+			)
 		})
 	}
 }
