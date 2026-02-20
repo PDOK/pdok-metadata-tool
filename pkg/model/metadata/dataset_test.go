@@ -45,7 +45,10 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					"Buitenlucht",
 					"Kwaliteitsmetingen en modelleringsgegevens (Richtlijn Luchtkwaliteit)",
 				},
-				LicenceURL:     "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+				License: iso1911x.License{
+					Url:  "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+					Text: "Geen\n                            beperkingen\n                        ",
+				},
 				UseLimitation:  "Geen",
 				ThumbnailURL:   "http://inspire.rivm.nl/sos/eaq/#map",
 				InspireVariant: "ASIS",
@@ -83,7 +86,10 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					"veerverbinding",
 					"Nationaal",
 				},
-				LicenceURL:     "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+				License: iso1911x.License{
+					Url:  "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+					Text: "Geen\n                            beperkingen\n                        ",
+				},
 				UseLimitation:  "Geen gebruiksbeperkingen",
 				ThumbnailURL:   "https://github.com/kadaster/top10nl/raw/master/TOP10NL.JPG",
 				InspireVariant: "HARMONISED",
@@ -125,7 +131,10 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					"Trefwoord zonder thesaurus",
 					"Tweede trefwoord zonder thesaurus",
 				},
-				LicenceURL:     "https://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+				License: iso1911x.License{
+					Url:  "https://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+					Text: "Geen\n                            beperkingen\n                        ",
+				},
 				UseLimitation:  "Geen beperkingen",
 				ThumbnailURL:   "URL naar voorbeeldweergave van de dataset", // This is legit the value they filled in
 				InspireVariant: "ASIS",
@@ -173,7 +182,10 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					"basisset NOVEX",
 					"Nationaal",
 				},
-				LicenceURL:     "http://creativecommons.org/publicdomain/zero/1.0/deed.nl",
+				License: iso1911x.License{
+					Url:  "http://creativecommons.org/publicdomain/zero/1.0/deed.nl",
+					Text: "Geen\n                            beperkingen\n                        ",
+				},
 				UseLimitation:  "Geen gebruiksbeperkingen",
 				ThumbnailURL:   "",
 				InspireVariant: "ASIS",
@@ -220,7 +232,8 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 			assert.Equal(t, tc.Metadata.ContactEmail, flat.ContactEmail)
 			assert.Equal(t, tc.Metadata.ContactURL, flat.ContactURL)
 			assert.Equal(t, tc.Metadata.Keywords, flat.Keywords)
-			assert.Equal(t, tc.Metadata.LicenceURL, flat.LicenceURL)
+			assert.Equal(t, tc.Metadata.License.Url, flat.License.Url)
+			assert.Equal(t, tc.Metadata.License.Text, flat.License.Text)
 			assert.Equal(t, tc.Metadata.UseLimitation, flat.UseLimitation)
 			assert.Equal(t, tc.Metadata.ThumbnailURL, flat.ThumbnailURL)
 			assert.Equal(t, tc.Metadata.InspireVariant, flat.InspireVariant)
