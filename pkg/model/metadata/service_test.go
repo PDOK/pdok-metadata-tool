@@ -49,7 +49,7 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 				License: iso1911x.License{
 					Url:  "https://creativecommons.org/publicdomain/zero/1.0/deed.nl",
-					Text: "Geen\n                            beperkingen\n                        ",
+					Text: "Geen beperkingen",
 				},
 				UseLimitation: "Geen beperkingen",
 				ThumbnailURL:  "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/39d03482-fef0-4706-8f66-16ffb2617155/attachments/map%20(1).png",
@@ -102,7 +102,7 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 				License: iso1911x.License{
 					Url:  "https://creativecommons.org/publicdomain/mark/1.0/deed.nl",
-					Text: "Geen\n                            beperkingen\n                        ",
+					Text: "Geen beperkingen",
 				},
 				UseLimitation: "Geen beperkingen",
 				ThumbnailURL:  "",

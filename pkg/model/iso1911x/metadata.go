@@ -301,7 +301,7 @@ func (m *MDMetadata) GetLicense() License {
 		if strings.Contains(val.Href, "creativecommons.org") ||
 			strings.Contains(val.Text, "Geo Gedeeld") {
 			license.Url = NormalizeXMLText(val.Href)
-			license.Text = val.Text
+			license.Text = NormalizeXMLText(val.Text)
 
 			return license
 		}

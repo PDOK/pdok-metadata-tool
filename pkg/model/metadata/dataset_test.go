@@ -47,7 +47,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 				License: iso1911x.License{
 					Url:  "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
-					Text: "Geen\n                            beperkingen\n                        ",
+					Text: "Geen beperkingen",
 				},
 				UseLimitation:  "Geen",
 				ThumbnailURL:   "http://inspire.rivm.nl/sos/eaq/#map",
@@ -88,7 +88,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 				License: iso1911x.License{
 					Url:  "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
-					Text: "Geen\n                            beperkingen\n                        ",
+					Text: "Geen beperkingen",
 				},
 				UseLimitation:  "Geen gebruiksbeperkingen",
 				ThumbnailURL:   "https://github.com/kadaster/top10nl/raw/master/TOP10NL.JPG",
@@ -133,7 +133,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 				License: iso1911x.License{
 					Url:  "https://creativecommons.org/publicdomain/mark/1.0/deed.nl",
-					Text: "Geen\n                            beperkingen\n                        ",
+					Text: "Geen beperkingen",
 				},
 				UseLimitation:  "Geen beperkingen",
 				ThumbnailURL:   "URL naar voorbeeldweergave van de dataset", // This is legit the value they filled in
@@ -184,7 +184,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 				},
 				License: iso1911x.License{
 					Url:  "http://creativecommons.org/publicdomain/zero/1.0/deed.nl",
-					Text: "Geen\n                            beperkingen\n                        ",
+					Text: "Geen beperkingen",
 				},
 				UseLimitation:  "Geen gebruiksbeperkingen",
 				ThumbnailURL:   "",
