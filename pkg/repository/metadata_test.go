@@ -174,7 +174,7 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 			}
 
 			if tt.wantLicenceURL != "" {
-				assert.Equal(t, tt.wantLicenceURL, metadataRecord.LicenceURL)
+				assert.Equal(t, tt.wantLicenceURL, metadataRecord.License.Url)
 			}
 
 			if tt.wantUseLimitation != "" {

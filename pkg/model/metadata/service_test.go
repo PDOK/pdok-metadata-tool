@@ -47,7 +47,10 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 						Protocol: "OGC:WFS",
 					},
 				},
-				LicenceURL:    "https://creativecommons.org/publicdomain/zero/1.0/deed.nl",
+				License: iso1911x.License{
+					Url:  "https://creativecommons.org/publicdomain/zero/1.0/deed.nl",
+					Text: "Geen beperkingen",
+				},
 				UseLimitation: "Geen beperkingen",
 				ThumbnailURL:  "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/39d03482-fef0-4706-8f66-16ffb2617155/attachments/map%20(1).png",
 				CreationDate:  "2024-04-25",
@@ -97,7 +100,10 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 						Protocol: "OGC:WMS",
 					},
 				},
-				LicenceURL:    "https://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+				License: iso1911x.License{
+					Url:  "https://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+					Text: "Geen beperkingen",
+				},
 				UseLimitation: "Geen beperkingen",
 				ThumbnailURL:  "",
 				CreationDate:  "",
@@ -134,7 +140,10 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 						Protocol: "OGC:WMS",
 					},
 				},
-				LicenceURL:    "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+				License: iso1911x.License{
+					Url:  "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
+					Text: "Geen beperkingen",
+				},
 				UseLimitation: "Geen beperkingen",
 				ThumbnailURL:  "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/dae8f9e3-99af-4d21-9feb-29f2a1693077/attachments/vervoers.jpg",
 				CreationDate:  "2021-12-03",
@@ -170,7 +179,10 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 						Protocol: "INSPIRE Atom",
 					},
 				},
-				LicenceURL:    "https://creativecommons.org/licenses/by/4.0/deed.nl",
+				License: iso1911x.License{
+					Url:  "https://creativecommons.org/licenses/by/4.0/deed.nl",
+					Text: "Naamsvermelding verplicht, organisatienaam",
+				},
 				UseLimitation: "Geen gebruiksbeperkingen",
 				ThumbnailURL:  "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/0017219b-fb75-47aa-a6bf-496f2514e545/attachments/AardkundigeWaarden.png",
 				CreationDate:  "2022-05-12",
@@ -200,7 +212,8 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 			assert.Equal(t, tc.Metadata.ServiceType, flat.ServiceType)
 			assert.Equal(t, tc.Metadata.OperatesOn, flat.OperatesOn)
 			assert.Equal(t, tc.Metadata.Endpoints, flat.Endpoints)
-			assert.Equal(t, tc.Metadata.LicenceURL, flat.LicenceURL)
+			assert.Equal(t, tc.Metadata.License.Url, flat.License.Url)
+			assert.Equal(t, tc.Metadata.License.Text, flat.License.Text)
 			assert.Equal(t, tc.Metadata.UseLimitation, flat.UseLimitation)
 			assert.Equal(t, tc.Metadata.ThumbnailURL, flat.ThumbnailURL)
 			assert.Equal(t, tc.Metadata.CreationDate, flat.CreationDate)

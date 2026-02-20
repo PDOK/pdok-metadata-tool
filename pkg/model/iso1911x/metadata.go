@@ -82,7 +82,7 @@ type MDMetadata struct {
 			ContactName         string                  `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
 			ContactEmail        string                  `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>address>CI_Address>electronicMailAddress>CharacterString"`
 			ContactURL          string                  `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>onlineResource>CI_OnlineResource>linkage>URL"`
-			LicenseURL          []CSWAnchor             `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
+			LicenseAnchors      []CSWAnchor             `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
 			UseLimitation       string                  `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
 			Dates               []CSWDate               `xml:"citation>CI_Citation>date"`
 			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
@@ -270,36 +270,44 @@ func (m *MDMetadata) GetKeywords() (keywords []string) {
 	return keywords
 }
 
+type License struct {
+	Url  string
+	Text string
+}
+
 // GetLicenseURL returns a license URL for either dataset or service (if present).
-func (m *MDMetadata) GetLicenseURL() string {
-	var otherConstraints []CSWAnchor
+func (m *MDMetadata) GetLicense() License {
+	var (
+		otherConstraints []CSWAnchor
+		license          License
+	)
 
 	switch m.GetMetaDataType() {
 	case Dataset:
 		if m.IdentificationInfo.MDDataIdentification == nil {
-			return ""
+			return license
 		}
 
-		otherConstraints = m.IdentificationInfo.MDDataIdentification.LicenseURL
+		otherConstraints = m.IdentificationInfo.MDDataIdentification.LicenseAnchors
 	case Service:
 		if m.IdentificationInfo.SVServiceIdentification == nil {
-			return ""
+			return license
 		}
 
 		otherConstraints = m.IdentificationInfo.SVServiceIdentification.LicenseURL
 	}
 
 	for _, val := range otherConstraints {
-		if strings.Contains(val.Href, "creativecommons.org") {
-			return NormalizeXMLText(val.Href)
-		}
+		if strings.Contains(val.Href, "creativecommons.org") ||
+			strings.Contains(val.Text, "Geo Gedeeld") {
+			license.Url = NormalizeXMLText(val.Href)
+			license.Text = NormalizeXMLText(val.Text)
 
-		if strings.Contains(val.Text, "Geo Gedeeld") {
-			return NormalizeXMLText(val.Href)
+			return license
 		}
 	}
 
-	return ""
+	return license
 }
 
 // GetUseLimitation returns the use limitation from either dataset or service metadata.

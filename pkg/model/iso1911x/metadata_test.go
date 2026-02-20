@@ -111,7 +111,7 @@ func TestMDMetadata_GetLicenseURL(t *testing.T) {
 			filename := filepath.Join("..", "..", "..", "examples", tt.standard, tt.filename)
 			md := loadMDMetadataFromXML(t, filename)
 
-			if gotLicenseURL := md.GetLicenseURL(); !reflect.DeepEqual(
+			if gotLicenseURL := md.GetLicense().Url; !reflect.DeepEqual(
 				gotLicenseURL,
 				tt.wantLicenseURL,
 			) {
