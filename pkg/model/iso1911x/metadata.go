@@ -277,8 +277,10 @@ type License struct {
 
 // GetLicenseURL returns a license URL for either dataset or service (if present).
 func (m *MDMetadata) GetLicense() License {
-	var otherConstraints []CSWAnchor
-	var license License
+	var (
+		otherConstraints []CSWAnchor
+		license          License
+	)
 
 	switch m.GetMetaDataType() {
 	case Dataset:
@@ -296,9 +298,11 @@ func (m *MDMetadata) GetLicense() License {
 	}
 
 	for _, val := range otherConstraints {
-		if strings.Contains(val.Href, "creativecommons.org") || strings.Contains(val.Text, "Geo Gedeeld") {
+		if strings.Contains(val.Href, "creativecommons.org") ||
+			strings.Contains(val.Text, "Geo Gedeeld") {
 			license.Url = NormalizeXMLText(val.Href)
 			license.Text = val.Text
+
 			return license
 		}
 	}

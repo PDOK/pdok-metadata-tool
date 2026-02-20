@@ -27,6 +27,7 @@ var PDOKMetadataToolCLI = &cli.Command{
 		if env := os.Getenv("PMT_LOG_LEVEL"); strings.TrimSpace(env) != "" {
 			val = env
 		}
+
 		lvl := parseLogLevel(val)
 		handler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: lvl})
 		slog.SetDefault(slog.New(handler))
