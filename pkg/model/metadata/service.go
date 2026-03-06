@@ -17,7 +17,7 @@ type NLServiceMetadata struct {
 	ServiceType      string
 	OperatesOn       []string
 	Endpoints        []iso1911x.ServiceEndpoint
-	ThumbnailURL     string
+	Thumbnail        *Thumbnail
 	License          iso1911x.License
 	UseLimitation    string
 	//	InspireVariant *inspire.InspireVariant // A service does not have an inspire variant. Datasets have. The service can be conform inspire or not. But when a dataset is as-is the service is still 100% conform inspire. Thus, the conformity of a service is separate from the dataset it serves. This is our current interpretation. In the future we might call this field conformInspire. But this only reflects if the service is conform inspire and not if the dataset in the service is conform.
@@ -53,7 +53,7 @@ func NewNLServiceMetadataFromMDMetadataWithHVDRepo(
 		),
 		OperatesOn:    m.GetOperatesOnForService(),
 		Endpoints:     m.GetServiceEndpointsForService(),
-		ThumbnailURL:  m.GetThumbnailURL(),
+		Thumbnail:     getThumbnail(m),
 		License:       m.GetLicense(),
 		UseLimitation: m.GetUseLimitation(),
 		InspireThemes: m.GetInspireThemes(),
@@ -61,8 +61,6 @@ func NewNLServiceMetadataFromMDMetadataWithHVDRepo(
 		CreationDate:  m.GetCreationDate(),
 		RevisionDate:  m.GetRevisionDate(),
 	}
-
-	// Organisation (point of contact organisation name)
 
 	return sm
 }

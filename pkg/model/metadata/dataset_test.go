@@ -49,8 +49,10 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					Url:  "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
 					Text: "Geen beperkingen",
 				},
-				UseLimitation:  "Geen",
-				ThumbnailURL:   "http://inspire.rivm.nl/sos/eaq/#map",
+				UseLimitation: "Geen",
+				Thumbnail: &Thumbnail{
+					URL: "http://inspire.rivm.nl/sos/eaq/#map",
+				},
 				InspireVariant: "ASIS",
 				InspireThemes: []string{
 					"ef",
@@ -90,8 +92,12 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					Url:  "http://creativecommons.org/publicdomain/mark/1.0/deed.nl",
 					Text: "Geen beperkingen",
 				},
-				UseLimitation:  "Geen gebruiksbeperkingen",
-				ThumbnailURL:   "https://github.com/kadaster/top10nl/raw/master/TOP10NL.JPG",
+				UseLimitation: "Geen gebruiksbeperkingen",
+				Thumbnail: &Thumbnail{
+					URL:         "https://github.com/kadaster/top10nl/raw/master/TOP10NL.JPG",
+					Description: "thumbnail",
+					Type:        "jpg",
+				},
 				InspireVariant: "HARMONISED",
 				InspireThemes: []string{
 					"tn",
@@ -135,8 +141,10 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					Url:  "https://creativecommons.org/publicdomain/mark/1.0/deed.nl",
 					Text: "Geen beperkingen",
 				},
-				UseLimitation:  "Geen beperkingen",
-				ThumbnailURL:   "URL naar voorbeeldweergave van de dataset", // This is legit the value they filled in
+				UseLimitation: "Geen beperkingen",
+				Thumbnail: &Thumbnail{
+					URL: "URL naar voorbeeldweergave van de dataset", // This is legit the value they filled in
+				},
 				InspireVariant: "ASIS",
 				InspireThemes: []string{
 					"us",
@@ -187,7 +195,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					Text: "Geen beperkingen",
 				},
 				UseLimitation:  "Geen gebruiksbeperkingen",
-				ThumbnailURL:   "",
+				Thumbnail:      nil,
 				InspireVariant: "ASIS",
 				InspireThemes: []string{
 					"ge",
@@ -235,7 +243,7 @@ func TestNewNLDatasetMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 			assert.Equal(t, tc.Metadata.License.Url, flat.License.Url)
 			assert.Equal(t, tc.Metadata.License.Text, flat.License.Text)
 			assert.Equal(t, tc.Metadata.UseLimitation, flat.UseLimitation)
-			assert.Equal(t, tc.Metadata.ThumbnailURL, flat.ThumbnailURL)
+			assert.Equal(t, tc.Metadata.Thumbnail, flat.Thumbnail)
 			assert.Equal(t, tc.Metadata.InspireVariant, flat.InspireVariant)
 			assert.Equal(t, tc.Metadata.CreationDate, flat.CreationDate)
 			assert.Equal(t, tc.Metadata.InspireThemes, flat.InspireThemes)

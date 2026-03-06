@@ -52,9 +52,11 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					Text: "Geen beperkingen",
 				},
 				UseLimitation: "Geen beperkingen",
-				ThumbnailURL:  "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/39d03482-fef0-4706-8f66-16ffb2617155/attachments/map%20(1).png",
-				CreationDate:  "2024-04-25",
-				RevisionDate:  "2024-11-22",
+				Thumbnail: &Thumbnail{
+					URL: "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/39d03482-fef0-4706-8f66-16ffb2617155/attachments/map%20(1).png",
+				},
+				CreationDate: "2024-04-25",
+				RevisionDate: "2024-11-22",
 				InspireThemes: []string{
 					"am",
 				},
@@ -105,7 +107,7 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					Text: "Geen beperkingen",
 				},
 				UseLimitation: "Geen beperkingen",
-				ThumbnailURL:  "",
+				Thumbnail:     nil,
 				CreationDate:  "",
 				RevisionDate:  "2016-01-13",
 				InspireThemes: nil,
@@ -145,9 +147,11 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					Text: "Geen beperkingen",
 				},
 				UseLimitation: "Geen beperkingen",
-				ThumbnailURL:  "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/dae8f9e3-99af-4d21-9feb-29f2a1693077/attachments/vervoers.jpg",
-				CreationDate:  "2021-12-03",
-				RevisionDate:  "2025-12-09",
+				Thumbnail: &Thumbnail{
+					URL: "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/dae8f9e3-99af-4d21-9feb-29f2a1693077/attachments/vervoers.jpg",
+				},
+				CreationDate: "2021-12-03",
+				RevisionDate: "2025-12-09",
 				InspireThemes: []string{
 					"tn",
 				},
@@ -184,7 +188,9 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 					Text: "Naamsvermelding verplicht, organisatienaam",
 				},
 				UseLimitation: "Geen gebruiksbeperkingen",
-				ThumbnailURL:  "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/0017219b-fb75-47aa-a6bf-496f2514e545/attachments/AardkundigeWaarden.png",
+				Thumbnail: &Thumbnail{
+					URL: "https://www.nationaalgeoregister.nl/geonetwork/srv/api/records/0017219b-fb75-47aa-a6bf-496f2514e545/attachments/AardkundigeWaarden.png",
+				},
 				CreationDate:  "2022-05-12",
 				RevisionDate:  "2025-07-14",
 				InspireThemes: []string{"ps"},
@@ -215,7 +221,7 @@ func TestNewNLServiceMetadataFromMDMetadataWithHVDRepo_StaticExamples(t *testing
 			assert.Equal(t, tc.Metadata.License.Url, flat.License.Url)
 			assert.Equal(t, tc.Metadata.License.Text, flat.License.Text)
 			assert.Equal(t, tc.Metadata.UseLimitation, flat.UseLimitation)
-			assert.Equal(t, tc.Metadata.ThumbnailURL, flat.ThumbnailURL)
+			assert.Equal(t, tc.Metadata.Thumbnail, flat.Thumbnail)
 			assert.Equal(t, tc.Metadata.CreationDate, flat.CreationDate)
 			assert.Equal(t, tc.Metadata.RevisionDate, flat.RevisionDate)
 			assert.Equal(t, tc.Metadata.InspireThemes, flat.InspireThemes)
