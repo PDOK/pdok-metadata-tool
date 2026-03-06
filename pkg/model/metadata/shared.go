@@ -50,6 +50,7 @@ func getThumbnail(m *iso1911x.MDMetadata) *Thumbnail {
 		}
 
 		browseGraphic := m.IdentificationInfo.SVServiceIdentification.GraphicOverview.MDBrowseGraphic
+
 		return &Thumbnail{
 			URL:         iso1911x.NormalizeXMLText(browseGraphic.FileName),
 			Description: browseGraphic.FileDescription,
@@ -62,6 +63,7 @@ func getThumbnail(m *iso1911x.MDMetadata) *Thumbnail {
 		}
 
 		browseGraphic := m.IdentificationInfo.MDDataIdentification.GraphicOverview.MDBrowseGraphic
+
 		return &Thumbnail{
 			URL:         iso1911x.NormalizeXMLText(browseGraphic.FileName),
 			Description: browseGraphic.FileDescription,
