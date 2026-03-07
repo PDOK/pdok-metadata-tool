@@ -19,7 +19,7 @@ type NLDatasetMetadata struct {
 	Keywords       []string
 	License        iso1911x.License
 	UseLimitation  string
-	ThumbnailURL   string
+	Thumbnail      *Thumbnail
 	InspireVariant inspire.InspireVariant
 	InspireThemes  []string
 	HVDCategories  []hvd.HVDCategory
@@ -61,24 +61,11 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 		UseLimitation: iso1911x.NormalizeXMLText(
 			m.GetUseLimitation(),
 		),
-		ThumbnailURL:   m.GetThumbnailURL(),
+		Thumbnail:      getThumbnail(m),
 		InspireVariant: m.GetInspireVariantForDataset(),
 		InspireThemes:  m.GetInspireThemes(),
 		HVDCategories:  m.GetHVDCategories(hvdRepo),
 		CreationDate:   m.GetCreationDate(),
-		BoundingBox: &BoundingBox{
-			WestBoundLongitude: iso1911x.NormalizeXMLText(
-				m.IdentificationInfo.MDDataIdentification.Extent.WestBoundLongitude,
-			),
-			EastBoundLongitude: iso1911x.NormalizeXMLText(
-				m.IdentificationInfo.MDDataIdentification.Extent.EastBoundLongitude,
-			),
-			SouthBoundLatitude: iso1911x.NormalizeXMLText(
-				m.IdentificationInfo.MDDataIdentification.Extent.SouthBoundLatitude,
-			),
-			NorthBoundLatitude: iso1911x.NormalizeXMLText(
-				m.IdentificationInfo.MDDataIdentification.Extent.NorthBoundLatitude,
-			),
-		},
+		BoundingBox:    getBoundingBox(m),
 	}
 }

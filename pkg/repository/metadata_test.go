@@ -42,7 +42,7 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 		wantKeywords       []string
 		wantLicenceURL     string
 		wantUseLimitation  string
-		wantThumbnailURL   string
+		wantThumbnail      *metadata.Thumbnail
 		wantInspireVariant inspire.InspireVariant
 		wantInspireThemes  []string
 		wantHVDCategories  []hvd.HVDCategory
@@ -67,9 +67,11 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 				"Trefwoord zonder thesaurus",
 				"Tweede trefwoord zonder thesaurus",
 			},
-			wantLicenceURL:     "https://creativecommons.org/publicdomain/mark/*/deed.nl",
-			wantUseLimitation:  "Gebruiksbeperkingen (*), Toepassingen waarvoor de data niet geschikt is.",
-			wantThumbnailURL:   "URL naar voorbeeldweergave van de dataset",
+			wantLicenceURL:    "https://creativecommons.org/publicdomain/mark/*/deed.nl",
+			wantUseLimitation: "Gebruiksbeperkingen (*), Toepassingen waarvoor de data niet geschikt is.",
+			wantThumbnail: &metadata.Thumbnail{
+				URL: "URL naar voorbeeldweergave van de dataset",
+			},
 			wantInspireVariant: inspire.AsIs,
 			wantInspireThemes:  []string{"ps", "hb"},
 			wantHVDCategories:  nil,
@@ -126,11 +128,13 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 			args: args{
 				id: "19165027-a13a-4c19-9013-ec1fd191019d",
 			},
-			wantMetadataID:     "19165027-a13a-4c19-9013-ec1fd191019d",
-			wantSourceID:       "84487381-957b-4bd6-a9c9-47c6b6037223",
-			wantTitle:          "Wetlands (INSPIRE Geharmoniseerd)",
-			wantUseLimitation:  "Geen gebruiksbeperkingen",
-			wantThumbnailURL:   "https://geodata.nationaalgeoregister.nl/wetlands/ows?LAYERS=wetlands&TRANSPARENT=true&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A28992&BBOX=-42621.76,303655.36,446379.2,686856.64&WIDTH=284&HEIGHT=223",
+			wantMetadataID:    "19165027-a13a-4c19-9013-ec1fd191019d",
+			wantSourceID:      "84487381-957b-4bd6-a9c9-47c6b6037223",
+			wantTitle:         "Wetlands (INSPIRE Geharmoniseerd)",
+			wantUseLimitation: "Geen gebruiksbeperkingen",
+			wantThumbnail: &metadata.Thumbnail{
+				URL: "https://geodata.nationaalgeoregister.nl/wetlands/ows?LAYERS=wetlands&TRANSPARENT=true&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A28992&BBOX=-42621.76,303655.36,446379.2,686856.64&WIDTH=284&HEIGHT=223",
+			},
 			wantInspireVariant: inspire.Harmonised,
 			wantInspireThemes:  []string{"ps"},
 			wantHVDCategories: []hvd.HVDCategory{
@@ -181,7 +185,7 @@ func TestMetadataRepository_GetDatasetMetadataById(t *testing.T) {
 				assert.Equal(t, tt.wantUseLimitation, metadataRecord.UseLimitation)
 			}
 
-			assert.Equal(t, tt.wantThumbnailURL, metadataRecord.ThumbnailURL)
+			assert.Equal(t, tt.wantThumbnail, metadataRecord.Thumbnail)
 			assert.Equal(t, tt.wantInspireVariant, metadataRecord.InspireVariant)
 			assert.Equal(t, tt.wantInspireThemes, metadataRecord.InspireThemes)
 			assert.Equal(t, tt.wantHVDCategories, metadataRecord.HVDCategories)
