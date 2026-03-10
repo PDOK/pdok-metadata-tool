@@ -48,7 +48,7 @@ func NewNLDatasetMetadataFromMDMetadataWithHVDRepo(
 			m.IdentificationInfo.MDDataIdentification.Abstract,
 		),
 		ContactName: iso1911x.NormalizeXMLText(
-			m.IdentificationInfo.MDDataIdentification.ContactName,
+			m.GetContactName(),
 		),
 		ContactEmail: iso1911x.NormalizeXMLText(
 			m.IdentificationInfo.MDDataIdentification.ContactEmail,

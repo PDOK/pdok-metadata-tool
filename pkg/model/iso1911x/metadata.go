@@ -74,19 +74,23 @@ type MDMetadata struct {
 			} `xml:"operatesOn"`
 		} `xml:"SV_ServiceIdentification"`
 		MDDataIdentification *struct {
-			Title               string                  `xml:"citation>CI_Citation>title>CharacterString"`
-			Source              Source                  `xml:"citation>CI_Citation>identifier>MD_Identifier>code"`
-			Abstract            string                  `xml:"abstract>CharacterString"`
-			GraphicOverview     *CSWGraphicOverview     `xml:"graphicOverview"`
-			DescriptiveKeywords []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
-			ContactName         string                  `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
-			ContactEmail        string                  `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>address>CI_Address>electronicMailAddress>CharacterString"`
-			ContactURL          string                  `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>onlineResource>CI_OnlineResource>linkage>URL"`
-			LicenseAnchors      []CSWAnchor             `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
-			UseLimitation       string                  `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
-			Dates               []CSWDate               `xml:"citation>CI_Citation>date"`
-			ResponsibleParty    *CSWResponsibleParty    `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
-			Extent              struct {
+			Title                   string                  `xml:"citation>CI_Citation>title>CharacterString"`
+			Source                  Source                  `xml:"citation>CI_Citation>identifier>MD_Identifier>code"`
+			Abstract                string                  `xml:"abstract>CharacterString"`
+			GraphicOverview         *CSWGraphicOverview     `xml:"graphicOverview"`
+			DescriptiveKeywords     []CSWDescriptiveKeyword `xml:"descriptiveKeywords"`
+			ContactIndividualName   string                  `xml:"pointOfContact>CI_ResponsibleParty>individualName>CharacterString"`
+			ContactOrganisationName struct {
+				CharacterString string    `xml:"CharacterString"`
+				Anchor          CSWAnchor `xml:"Anchor"`
+			} `xml:"pointOfContact>CI_ResponsibleParty>organisationName"`
+			ContactEmail     string               `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>address>CI_Address>electronicMailAddress>CharacterString"`
+			ContactURL       string               `xml:"pointOfContact>CI_ResponsibleParty>contactInfo>CI_Contact>onlineResource>CI_OnlineResource>linkage>URL"`
+			LicenseAnchors   []CSWAnchor          `xml:"resourceConstraints>MD_LegalConstraints>otherConstraints>Anchor"`
+			UseLimitation    string               `xml:"resourceConstraints>MD_Constraints>useLimitation>CharacterString"`
+			Dates            []CSWDate            `xml:"citation>CI_Citation>date"`
+			ResponsibleParty *CSWResponsibleParty `xml:"pointOfContact>CI_ResponsibleParty>OrganisationName"`
+			Extent           struct {
 				WestBoundLongitude string `xml:"westBoundLongitude>Decimal"`
 				EastBoundLongitude string `xml:"eastBoundLongitude>Decimal"`
 				SouthBoundLatitude string `xml:"southBoundLatitude>Decimal"`
@@ -593,6 +597,27 @@ func (m *MDMetadata) GetCreationDate() string {
 
 func (m *MDMetadata) GetRevisionDate() string {
 	return m.getDateByType("revision")
+}
+
+func (m *MDMetadata) GetContactName() string {
+	if m == nil || m.IdentificationInfo.MDDataIdentification == nil {
+		return ""
+	}
+
+	mdi := m.IdentificationInfo.MDDataIdentification
+	if name := mdi.ContactIndividualName; name != "" {
+		return name
+	}
+
+	if name := mdi.ContactOrganisationName.CharacterString; name != "" {
+		return name
+	}
+
+	if name := mdi.ContactOrganisationName.Anchor.Text; name != "" {
+		return name
+	}
+
+	return ""
 }
 
 func (m *MDMetadata) isInspireGroup(dk CSWDescriptiveKeyword) bool {
