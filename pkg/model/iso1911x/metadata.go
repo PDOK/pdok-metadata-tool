@@ -20,6 +20,7 @@ type MetadataType string
 const (
 	Service MetadataType = "service"
 	Dataset MetadataType = "dataset"
+	Series               = "series"
 )
 
 const (

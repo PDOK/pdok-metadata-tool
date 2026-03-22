@@ -65,6 +65,22 @@ func (mr *MetadataRepository) SearchDatasetMetadata(
 	return
 }
 
+// SearchSeriesMetadata searches for series metadata by title or id.
+func (mr *MetadataRepository) SearchSeriesMetadata(
+	title *string,
+	id *string,
+) (records []csw.SummaryRecord, err error) {
+	filter := csw.GetRecordsOgcFilter{
+		MetadataType: iso1911x.Series,
+		Title:        title,
+		Identifier:   id,
+	}
+
+	records, err = mr.CswClient.GetRecordsWithOGCFilter(&filter)
+
+	return
+}
+
 // SetCache enables caching on the underlying CSW client.
 func (mr *MetadataRepository) SetCache(cacheDir string, ttlHours int) {
 	if mr != nil && mr.CswClient != nil {
