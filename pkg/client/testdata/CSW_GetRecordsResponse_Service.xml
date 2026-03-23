@@ -126,7 +126,7 @@
 		<csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/"
 						   xmlns:dct="http://purl.org/dc/terms/"
 						   xmlns:geonet="http://www.fao.org/geonetwork">
-			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a810</dc:identifier>
+			<dc:identifier>986c3c11-35ba-4a40-a84f-77a3e690a840</dc:identifier>
 			<dc:title>Service title 10</dc:title>
 			<dc:type>service</dc:type>
 			<dc:subject>Service subject 10.1</dc:subject>

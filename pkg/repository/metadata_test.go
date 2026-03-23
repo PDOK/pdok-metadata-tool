@@ -217,6 +217,29 @@ func TestMetadataRepository_SearchDatasetMetadata(t *testing.T) {
 		assert.Equal(t, "dataset", summaryRecord.Type)
 	}
 }
+func TestMetadataRepository_SearchSeriesMetadata(t *testing.T) {
+	mockedNGRServer := preTestSetup()
+
+	mr, _ := NewMetadataRepository("")
+	if mr == nil {
+		assert.FailNow(t, "NewMetadataRepository is nil")
+
+		return
+	}
+
+	mr.CswClient = getCswClient(t, mockedNGRServer)
+
+	title := "eries titl"
+	summaryRecords, err := mr.SearchSeriesMetadata(&title, nil)
+
+	require.NoError(t, err)
+	assert.NotNil(t, summaryRecords)
+
+	for _, summaryRecord := range summaryRecords {
+		assert.Contains(t, summaryRecord.Title, title)
+		assert.Equal(t, "series", summaryRecord.Type)
+	}
+}
 
 func getCswClient(t *testing.T, mockedNGRServer *httptest.Server) *client.CswClient {
 	t.Helper()

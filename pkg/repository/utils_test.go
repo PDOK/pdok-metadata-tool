@@ -74,6 +74,19 @@ func buildMockWebserverNgr() *httptest.Server {
 				rw.WriteHeader(http.StatusOK)
 
 				_, _ = fmt.Fprint(rw, metadataResponse)
+			} else if strings.Contains(requestBody, "<ogc:PropertyName>dc:type</ogc:PropertyName>") &&
+				strings.Contains(requestBody, "<ogc:Literal>series</ogc:Literal>") {
+				responsePath := "../client/testdata/CSW_GetRecordsResponse_Series.xml"
+
+				metadataResponse, err := readFileToString(responsePath)
+				if err != nil {
+					slog.Error("error reading file", "err", err)
+				}
+
+				rw.Header().Set("Content-Type", "application/xml")
+				rw.WriteHeader(http.StatusOK)
+
+				_, _ = fmt.Fprint(rw, metadataResponse)
 			}
 		default:
 			slog.Info("no handler for request in test setup", "url", req.URL.String())
