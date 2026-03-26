@@ -21,16 +21,24 @@ func TestGetReferenceSystemByEPSGCode(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func TestGetINSPIREThemeLabelByURI(t *testing.T) {
+func TestGetINSPIREThemeURIAndLabelByCode(t *testing.T) {
 	codelistLookupService, err := NewCodelist()
 	require.NoError(t, err)
 
-	themeLabel, ok := codelistLookupService.GetINSPIREThemeLabelByURI(
+	for _, code := range []string{
+		"hy",
+		"http://inspire.ec.europa.eu/theme/hy",
 		"https://www.eionet.europa.eu/gemet/nl/inspire-theme/hy",
-	)
-	assert.True(t, ok)
-	assert.NotNil(t, themeLabel)
-	assert.Equal(t, "Hydrografie", *themeLabel)
+	} {
+		uri, label, ok := codelistLookupService.GetINSPIREThemeURIAndLabelByCode(code)
+
+		assert.True(t, ok)
+		assert.NotNil(t, uri)
+		assert.Equal(t, "http://www.eionet.europa.eu/gemet/nl/inspire-theme/hy", *uri)
+
+		assert.NotNil(t, label)
+		assert.Equal(t, "Hydrografie", *label)
+	}
 }
 
 func TestGetProtocolDetailsByProtocol(t *testing.T) {

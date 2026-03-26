@@ -15,12 +15,12 @@ globals:
     - "BBBB"
     - "CCCC"
   inspireThemes:
-    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/hy"
-    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/bu"
-    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/tn"
-    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/lc"
-    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/sr"
-    - "http://www.eionet.europa.eu/gemet/nl/inspire-theme/gn"
+    - "hy"
+    - "bu"
+    - "tn"
+    - "lc"
+    - "sr"
+    - "gn"
   hvdCategories:
     - "c_ac64a52d"
   serviceLicense: "http://creativecommons.org/licenses/by/4.0/deed.nl"

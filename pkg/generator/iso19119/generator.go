@@ -493,7 +493,7 @@ func (g *Generator) setIdentificationInfo() error {
 		}
 
 		for _, inspireTheme := range config.GetInspireThemes() {
-			inspireThemeLabel, ok := g.Codelist.GetINSPIREThemeLabelByURI(inspireTheme)
+			uri, label, ok := g.Codelist.GetINSPIREThemeURIAndLabelByCode(inspireTheme)
 			if !ok {
 				return fmt.Errorf("no INSPIRE theme found for code: %s", inspireTheme)
 			}
@@ -504,9 +504,8 @@ func (g *Generator) setIdentificationInfo() error {
 				// in which the INSPIRE theme as defined in the GEMET Thesaurus is included
 				// Name of the INSPIRE theme as defined in the GEMET Thesaurus and written in the language of this metadata document
 				Anchor: &iso1911x.AnchorTag{
-					// Current NGR validation expects http
-					Href:  strings.Replace(inspireTheme, "https://", "http://", 1),
-					Value: *inspireThemeLabel,
+					Href:  *uri,
+					Value: *label,
 				},
 			}
 			inspireDescriptiveKeyword.Keywords.Keyword = append(
