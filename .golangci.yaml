@@ -60,7 +60,6 @@ linters:
     - maintidx                  # Maintidx measures the maintainability index of each function.
     - makezero                  # Find slice declarations with non-zero initial length.
     - mirror                    # Reports wrong mirror patterns of bytes/strings usage.
-    - mnd                       # An analyzer to detect magic numbers.
     - musttag                   # Enforce field tags in (un)marshaled structs.
     - nakedret                  # Checks that functions with naked returns are not longer than a maximum size (can be zero).
     - nestif                    # Reports deeply nested if statements.
