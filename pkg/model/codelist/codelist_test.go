@@ -27,6 +27,7 @@ func TestGetINSPIREThemeURIAndLabelByCode(t *testing.T) {
 
 	for _, code := range []string{
 		"hy",
+		"HY",
 		"http://inspire.ec.europa.eu/theme/hy",
 		"https://www.eionet.europa.eu/gemet/nl/inspire-theme/hy",
 	} {

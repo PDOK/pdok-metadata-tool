@@ -87,6 +87,8 @@ func (cs *Codelist) GetReferenceSystemByEPSGCode(epsgCode string) (*ReferenceSys
 
 // GetINSPIREThemeURIAndLabelByCode returns INSPIRE Theme URI and label string for a given theme code.
 func (cs *Codelist) GetINSPIREThemeURIAndLabelByCode(code string) (*string, *string, bool) {
+	code = strings.ToLower(code)
+
 	// INSPIRE theme code should be exactly 2 characters
 	// If needed, try to take the last part of a URI to stay backwards compatible
 	if len(code) > 2 && strings.Contains(code, "/") {
