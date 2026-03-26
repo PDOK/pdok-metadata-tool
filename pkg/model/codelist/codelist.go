@@ -85,17 +85,31 @@ func (cs *Codelist) GetReferenceSystemByEPSGCode(epsgCode string) (*ReferenceSys
 	return &rs, ok
 }
 
-// GetINSPIREThemeLabelByURI returns INSPIRE Theme label string for a given URI.
-func (cs *Codelist) GetINSPIREThemeLabelByURI(uri string) (*string, bool) {
-	uri = strings.ToLower(uri)
+// GetINSPIREThemeURIAndLabelByCode returns INSPIRE Theme URI and label string for a given theme code.
+func (cs *Codelist) GetINSPIREThemeURIAndLabelByCode(code string) (*string, *string, bool) {
+	code = strings.ToLower(code)
 
-	if strings.HasPrefix(uri, "http://") {
-		uri = strings.Replace(uri, "http://", "https://", 1)
+	// INSPIRE theme code should be exactly 2 characters
+	// If needed, try to take the last part of a URI to stay backwards compatible
+	if len(code) > 2 && strings.Contains(code, "/") {
+		parts := strings.Split(code, "/")
+		if len(parts) > 0 {
+			code = parts[len(parts)-1]
+		}
 	}
 
-	it, ok := cs.InspireThemes[uri]
+	if len(code) != 2 {
+		return nil, nil, false
+	}
 
-	return &it, ok
+	// Current NGR validation expects http
+	const inspireUrlPrefix = "http://www.eionet.europa.eu/gemet/nl/inspire-theme/"
+
+	uri := inspireUrlPrefix + code
+
+	label, ok := cs.InspireThemes[code]
+
+	return &uri, &label, ok
 }
 
 // GetProtocolDetailsByProtocol returns ProtocolDetails for a given protocol.

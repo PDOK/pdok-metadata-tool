@@ -15,7 +15,7 @@ globals:
     - "B"
     - "C"
   inspireThemes:
-    - "https://www.eionet.europa.eu/gemet/nl/inspire-theme/ps"
+    - "ps"
   serviceLicense: "https://creativecommons.org/licenses/by/4.0/deed.nl"
   useLimitation: "Geen beperkingen"
   boundingBox:
