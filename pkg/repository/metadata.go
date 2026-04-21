@@ -31,6 +31,13 @@ func NewMetadataRepository(cswEndpoint string) (*MetadataRepository, error) {
 	}, nil
 }
 
+// WithBasicAuth enables basic authentication on the underlying CSW client.
+func (mr *MetadataRepository) WithBasicAuth(auth *client.BasicAuthConfig) {
+	if mr.CswClient != nil {
+		mr.CswClient.WithBasicAuth(auth)
+	}
+}
+
 // GetDatasetMetadataByID retrieves dataset metadata by id.
 func (mr *MetadataRepository) GetDatasetMetadataByID(
 	id string,

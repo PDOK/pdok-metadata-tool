@@ -44,7 +44,7 @@ func (c *NgrClient) GetRecordTags(uuid string) (ngr.RecordTagsResponse, error) {
 
 	recordTagsResponse := ngr.RecordTagsResponse{}
 
-	err := getUnmarshalledJSONResponse(&recordTagsResponse, mdTagUrl, *c.NgrClient)
+	err := getUnmarshalledJSONResponse(&recordTagsResponse, mdTagUrl, *c.NgrClient, nil)
 	if err != nil {
 		return nil, err
 	}

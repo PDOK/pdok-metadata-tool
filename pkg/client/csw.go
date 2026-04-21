@@ -19,10 +19,16 @@ import (
 
 // CswClient is used as a client for doing CSW requests.
 type CswClient struct {
-	endpoint *url.URL
-	client   *http.Client
-	cacheDir *string
-	cacheTTL time.Duration
+	endpoint        *url.URL
+	client          *http.Client
+	cacheDir        *string
+	cacheTTL        time.Duration
+	BasicAuthConfig *BasicAuthConfig
+}
+
+type BasicAuthConfig struct {
+	UserName string
+	Password string
 }
 
 const (
@@ -30,7 +36,7 @@ const (
 	permFile0600 = 0o600
 )
 
-// NewCswClient creates a new instance of NgrClient.
+// NewCswClient creates a new instance of CswClient.
 func NewCswClient(endpoint *url.URL) CswClient {
 	const defaultTimeoutSeconds = 20
 
@@ -43,6 +49,11 @@ func NewCswClient(endpoint *url.URL) CswClient {
 		client:   client,
 		cacheDir: nil,
 	}
+}
+
+// WithBasicAuth enables basic authentication on the CSW client.
+func (c *CswClient) WithBasicAuth(auth *BasicAuthConfig) {
+	c.BasicAuthConfig = auth
 }
 
 // SetCache enables on-disk caching of raw CSW records.
@@ -89,7 +100,7 @@ func (c *CswClient) GetRawRecordByID(uuid string) (rawRecord []byte, err error) 
 	cswURL := c.getRecordByIDUrl(uuid)
 	slog.Debug("Harvesting record from", "url", cswURL)
 
-	rawRecord, err = getResponseBody(cswURL, "GET", nil, *c.client)
+	rawRecord, err = getResponseBody(cswURL, "GET", nil, *c.client, c.BasicAuthConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +139,14 @@ func (c *CswClient) GetRecordPage(
 
 	var cswResponse = csw.GetRecordsResponse{}
 
-	err := getUnmarshalledXMLResponse(&cswResponse, cswURL, "GET", nil, *c.client)
+	err := getUnmarshalledXMLResponse(
+		&cswResponse,
+		cswURL,
+		"GET",
+		nil,
+		*c.client,
+		c.BasicAuthConfig,
+	)
 	if err != nil {
 		return csw.GetRecordsResponse{}, err
 	}
@@ -210,6 +228,7 @@ func (c *CswClient) GetRecordsWithOGCFilter(
 		"POST",
 		&requestBody,
 		*c.client,
+		c.BasicAuthConfig,
 	)
 	if err != nil {
 		return nil, err
@@ -217,8 +236,6 @@ func (c *CswClient) GetRecordsWithOGCFilter(
 
 	return cswResponse.SearchResults.SummaryRecords, nil
 }
-
-// --- Helper and unexported methods must be placed after exported methods (funcorder) ---
 
 // --- Helper and unexported methods must be placed after exported methods (funcorder) ---
 

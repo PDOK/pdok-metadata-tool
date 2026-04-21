@@ -24,8 +24,9 @@ func getUnmarshalledXMLResponse(
 	method string,
 	requestBody *string,
 	client http.Client,
+	basicAuthConf *BasicAuthConfig,
 ) error {
-	responseBody, err := getResponseBody(url, method, requestBody, client)
+	responseBody, err := getResponseBody(url, method, requestBody, client, basicAuthConf)
 	if err != nil {
 		return err
 	}
@@ -38,8 +39,13 @@ func getUnmarshalledXMLResponse(
 	return nil
 }
 
-func getUnmarshalledJSONResponse(resultStruct any, url string, client http.Client) error {
-	responseBody, err := getResponseBody(url, "GET", nil, client)
+func getUnmarshalledJSONResponse(
+	resultStruct any,
+	url string,
+	client http.Client,
+	basicAuthConf *BasicAuthConfig,
+) error {
+	responseBody, err := getResponseBody(url, "GET", nil, client, basicAuthConf)
 	if err != nil {
 		return err
 	}
@@ -57,6 +63,7 @@ func getResponseBody(
 	method string,
 	requestBody *string,
 	client http.Client,
+	basicAuthConf *BasicAuthConfig,
 ) ([]byte, error) {
 	var body io.Reader
 	if method == "POST" && requestBody != nil {
@@ -68,6 +75,10 @@ func getResponseBody(
 	req.Header.Set("User-Agent", "pdok.nl (pdok-metadata-tool)")
 	req.Header.Set("Accept", "*/*;q=0.8,application/signed-exchange")
 	req.Header.Set("Content-Type", "application/xml")
+
+	if basicAuthConf != nil {
+		req.SetBasicAuth(basicAuthConf.UserName, basicAuthConf.Password)
+	}
 
 	//nolint:bodyclose // We use common.SafeClose to handle closing the response body
 	resp, err := client.Do(req)
