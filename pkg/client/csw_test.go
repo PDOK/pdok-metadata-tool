@@ -194,6 +194,50 @@ func TestCswClient_GetRecordById(t *testing.T) {
 	}
 }
 
+func TestCswClient_WithBasicAuth(t *testing.T) {
+	mockedNGRServer := preTestSetup()
+	cswClient := getCswClient(t, mockedNGRServer)
+
+	assert.Nil(t, cswClient.BasicAuthConfig)
+
+	auth := &BasicAuthConfig{
+		UserName: "testuser",
+		Password: "testpass",
+	}
+	cswClient.WithBasicAuth(auth)
+
+	assert.NotNil(t, cswClient.BasicAuthConfig)
+	assert.Equal(t, "testuser", cswClient.BasicAuthConfig.UserName)
+	assert.Equal(t, "testpass", cswClient.BasicAuthConfig.Password)
+}
+
+func TestCswClient_GetRecordByID_WithBasicAuth(t *testing.T) {
+	mockedAuthServer := buildMockWebserverNgrWithAuth()
+	defer mockedAuthServer.Close()
+
+	hostURL, err := url.Parse(mockedAuthServer.URL)
+	require.NoError(t, err)
+
+	cswClient := NewCswClient(hostURL)
+
+	const recordId = "C2DFBDBC-5092-11E0-BA8E-B62DE0D72086"
+
+	// Request without auth
+	_, err = cswClient.GetRecordByID(recordId)
+	assert.Error(t, err)
+
+	// Request with auth
+	auth := &BasicAuthConfig{
+		UserName: "validuser",
+		Password: "validpass",
+	}
+	cswClient.WithBasicAuth(auth)
+
+	resp, err := cswClient.GetRecordByID(recordId)
+	require.NoError(t, err)
+	assert.Equal(t, recordId, resp.UUID)
+}
+
 func getCswClient(t *testing.T, mockedNGRServer *httptest.Server) *CswClient {
 	t.Helper()
 

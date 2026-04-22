@@ -241,6 +241,24 @@ func TestMetadataRepository_SearchSeriesMetadata(t *testing.T) {
 	}
 }
 
+func TestMetadataRepository_WithBasicAuth(t *testing.T) {
+	mr, err := NewMetadataRepository("")
+	require.NoError(t, err)
+	require.NotNil(t, mr)
+
+	assert.Nil(t, mr.CswClient.BasicAuthConfig)
+
+	auth := &client.BasicAuthConfig{
+		UserName: "testuser",
+		Password: "testpass",
+	}
+	mr.WithBasicAuth(auth)
+
+	assert.NotNil(t, mr.CswClient.BasicAuthConfig)
+	assert.Equal(t, "testuser", mr.CswClient.BasicAuthConfig.UserName)
+	assert.Equal(t, "testpass", mr.CswClient.BasicAuthConfig.Password)
+}
+
 func getCswClient(t *testing.T, mockedNGRServer *httptest.Server) *client.CswClient {
 	t.Helper()
 
