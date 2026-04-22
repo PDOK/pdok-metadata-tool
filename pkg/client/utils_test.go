@@ -140,6 +140,49 @@ func buildMockWebserverNgr() *httptest.Server {
 	}))
 }
 
+func buildMockWebserverNgrWithAuth() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		username, password, ok := req.BasicAuth()
+
+		if !ok || username != "validuser" || password != "validpass" {
+			rw.Header().Set("WWW-Authenticate", `Basic realm="test"`)
+			rw.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprint(rw, "Unauthorized")
+
+			return
+		}
+
+		switch url := req.URL.String(); {
+		case strings.HasPrefix(url, GetRecordByID):
+			var responsePath string
+
+			switch path := strings.TrimPrefix(url, GetRecordByID); path {
+			case "&version=2.0.2&outputSchema=http://www.isotc211.org/2005/gmd&elementSetName=full&id=C2DFBDBC-5092-11E0-BA8E-B62DE0D72086":
+				responsePath = "../../examples/ISO19119/Voorbeeld_Metadata_Services_2019_max.xml"
+			default:
+				slog.Info("no handler for request in test setup", "url", req.URL.String())
+				rw.WriteHeader(http.StatusNotFound)
+
+				return
+			}
+
+			metadataResponse, err := readFileToString(responsePath)
+			if err != nil {
+				slog.Error("error reading file", "err", err)
+			}
+
+			rw.Header().Set("Content-Type", "application/xml")
+			rw.WriteHeader(http.StatusOK)
+
+			getRecordByIDResponse := wrapAsGetRecordByIDResponse(metadataResponse)
+
+			_, _ = fmt.Fprint(rw, getRecordByIDResponse)
+		default:
+			rw.WriteHeader(http.StatusNotFound)
+		}
+	}))
+}
+
 func readFileToString(filePath string) (string, error) {
 	bytes, err := os.ReadFile(filePath)
 	if err != nil {

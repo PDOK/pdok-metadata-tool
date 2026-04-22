@@ -80,12 +80,6 @@ func getResponseBody(
 		req.SetBasicAuth(basicAuthConf.UserName, basicAuthConf.Password)
 	}
 
-	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
-		fmt.Println("Redirected to:", req.URL.String())
-		fmt.Println("Auth header:", req.Header.Get("Authorization"))
-		return nil
-	}
-
 	//nolint:bodyclose // We use common.SafeClose to handle closing the response body
 	resp, err := client.Do(req)
 	if err != nil {
