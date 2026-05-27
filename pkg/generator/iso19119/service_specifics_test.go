@@ -222,5 +222,4 @@ func TestGetInspireDatasetTypeForInspireVariant(t *testing.T) {
 		datasetType := GetInspireDatasetTypeForInspireVariant(test.inspireVariant)
 		assert.Equal(t, test.expectedInspireDatasetType, datasetType)
 	}
-
 }
