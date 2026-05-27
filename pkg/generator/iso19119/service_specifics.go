@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/inspire"
 	"gopkg.in/yaml.v3"
 
 	"github.com/google/uuid"
@@ -74,6 +75,21 @@ func (st *InspireDatasetType) UnmarshalYAML(unmarshal func(any) error) error {
 	}
 
 	return fmt.Errorf("invalid InspireDatasetType: %s", s)
+}
+
+func GetInspireDatasetTypeForInspireVariant(variant *inspire.InspireVariant) *InspireDatasetType {
+	if variant == nil {
+		return nil
+	}
+
+	switch *variant {
+	case inspire.AsIs:
+		return common.Ptr(AsIs)
+	case inspire.Harmonised:
+		return common.Ptr(Harmonised)
+	default:
+		return nil
+	}
 }
 
 // InspireServiceType struct for unmarshalling service specifics input.

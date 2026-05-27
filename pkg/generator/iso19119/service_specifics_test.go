@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
+	"github.com/pdok/pdok-metadata-tool/v2/pkg/model/inspire"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -190,5 +191,35 @@ func TestGetTitle(t *testing.T) {
 	for _, test := range tests {
 		title := test.serviceConfig.GetTitle()
 		assert.Equal(t, test.expectedTitle, title)
+	}
+}
+
+func TestGetInspireDatasetTypeForInspireVariant(t *testing.T) {
+	var tests = []struct {
+		description                string
+		inspireVariant             *inspire.InspireVariant
+		expectedInspireDatasetType *InspireDatasetType
+	}{
+
+		{
+			description:                "Convert ASIS",
+			inspireVariant:             common.Ptr(inspire.AsIs),
+			expectedInspireDatasetType: common.Ptr(AsIs),
+		},
+		{
+			description:                "Convert Harmonised",
+			inspireVariant:             common.Ptr(inspire.Harmonised),
+			expectedInspireDatasetType: common.Ptr(Harmonised),
+		},
+		{
+			description:                "Convert other",
+			inspireVariant:             nil,
+			expectedInspireDatasetType: nil,
+		},
+	}
+
+	for _, test := range tests {
+		datasetType := GetInspireDatasetTypeForInspireVariant(test.inspireVariant)
+		assert.Equal(t, test.expectedInspireDatasetType, datasetType)
 	}
 }
