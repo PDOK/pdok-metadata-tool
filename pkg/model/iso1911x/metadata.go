@@ -36,10 +36,13 @@ const (
 	inspireSpatialDataServiceCategoryCodelist      = "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory"
 	inspireSpatialDataServiceCategoryCodelistHttps = "https://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory"
 
-	hvdConceptVocabulary             = "http://data.europa.eu/bna/"
-	hvdConceptVocabularyHttps        = "https://data.europa.eu/bna/"
-	hvdThesaurusTitleAnchor          = "http://publications.europa.eu/resource/dataset/high-value-dataset-category"
-	hvdThesaurusTitleAnchorHttps     = "https://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	hvdConceptVocabulary            = "http://data.europa.eu/bna/"
+	hvdConceptVocabularyHttps       = "https://data.europa.eu/bna/"
+	hvdThesaurusTitleAnchor         = "http://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	hvdThesaurusTitleAnchorHttps    = "https://publications.europa.eu/resource/dataset/high-value-dataset-category"
+	hvdThesaurusUriTitleAnchor      = "http://data.europa.eu/bna/asd487ae75" // This is the correct URI
+	hvdThesaurusUriTitleAnchorHttps = "https://data.europa.eu/bna/asd487ae75"
+
 	hvdRegulationImplementation      = "http://data.europa.eu/eli/reg_impl/2023/138/oj"
 	hvdRegulationImplementationHttps = "https://data.europa.eu/eli/reg_impl/2023/138/oj"
 )
@@ -653,8 +656,12 @@ func (m *MDMetadata) isInspireSpatialDataServiceCategory(kw CSWKeywordEntry) boo
 
 func (m *MDMetadata) isHVDGroup(dk CSWDescriptiveKeyword) bool {
 	th := dk.MDKeywords.Thesaurus
-	if th.Anchor.Href != "" && (strings.Contains(th.Anchor.Href, hvdThesaurusTitleAnchor) ||
-		strings.Contains(th.Anchor.Href, hvdThesaurusTitleAnchorHttps)) {
+	// The correct URI is http://data.europa.eu/bna/asd487ae75
+	// However, we still want to detect HVD info for slightly deviating URIs
+	if strings.Contains(th.Anchor.Href, hvdThesaurusTitleAnchor) ||
+		strings.Contains(th.Anchor.Href, hvdThesaurusTitleAnchorHttps) ||
+		strings.Contains(th.Anchor.Href, hvdThesaurusUriTitleAnchor) ||
+		strings.Contains(th.Anchor.Href, hvdThesaurusUriTitleAnchorHttps) {
 		return true
 	}
 
