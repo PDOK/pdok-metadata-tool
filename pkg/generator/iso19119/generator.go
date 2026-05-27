@@ -560,7 +560,7 @@ func (g *Generator) setIdentificationInfo() error {
 					CICitation: iso1911x.CICitation{
 						Title: iso1911x.TitleTag{
 							Anchor: &iso1911x.AnchorTag{
-								Href:  "http://publications.europa.eu/resource/dataset/high-value-dataset-category",
+								Href:  "http://data.europa.eu/bna/asd487ae75",
 								Value: "High-value dataset categories",
 							},
 						},
