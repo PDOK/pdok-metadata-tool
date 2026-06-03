@@ -248,7 +248,7 @@ func (g *Generator) setGeneralInfo() error { //nolint:funlen
 		},
 	}
 
-	if config.isInspireSDS() {
+	if config.IsInspireSDS() {
 		entry.Metadata.ReferenceSystemInfos = []iso1911x.ReferenceSystemInfo{}
 
 		for _, rsIdentifier := range config.ReferenceSystemIdentifiers {
@@ -740,7 +740,7 @@ func (g *Generator) setIdentificationInfo() error {
 	}
 
 	serviceType := inspireServiceType.InspireServiceType
-	if config.isInspireSDS() {
+	if config.IsInspireSDS() {
 		serviceType = "other"
 	}
 
@@ -1016,7 +1016,7 @@ func (g *Generator) setDataQualityInfo() error {
 
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-invocable-sds-metadata
 	// https://docs.geostandaarden.nl/eu/INSPIRE-handreiking/#invulinstructie-interoperable-sds-metadata
-	if config.isInspireSDS() {
+	if config.IsInspireSDS() {
 		SDSServiceCategory, ok := g.Codelist.GetSDSServiceCategoryBySDSCategory(
 			string(*config.ServiceInspireType),
 		)
