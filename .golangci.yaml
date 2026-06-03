@@ -46,7 +46,7 @@ linters:
     - gocritic                  # Provides diagnostics that check for bugs, performance and style issues.
     - goheader                  # Check if file header matches to pattern.
     - gomoddirectives           # Manage the use of 'replace', 'retract', and 'excludes' directives in go.mod.
-    - gomodguard                # Allow and blocklist linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations.
+    - gomodguard_v2             # Allow and blocklist linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations.
     - goprintffuncname          # Checks that printf-like functions are named with `f` at the end.
     - gosec                     # Inspects source code for security problems.
     - gosmopolitan              # Report certain i18n/l10n anti-patterns in your Go codebase.
@@ -105,6 +105,7 @@ linters:
           - dupl          # Detects duplicate fragments of code.
           - funlen        # Checks for long functions.
           - gosec         # Inspects source code for security problems.
+          - goconst       # Finds repeated strings that could be replaced by a constant.
           - nestif        # Reports deeply nested if statements.
           - paralleltest  # Detects missing usage of t.Parallel() method in your Go test.
           - testpackage   # Linter that makes you use a separate _test package.

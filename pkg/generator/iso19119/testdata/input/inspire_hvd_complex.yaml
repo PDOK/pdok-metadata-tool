@@ -50,11 +50,26 @@ services:
     id: "00000000-0000-0000-0000-000000000014"
     accessPoint: "https://test.nl/test-invocable/wfs?request=GetCapabilities&service=WFS"
     serviceInspireType: "invocable"
+    referenceSystemIdentifiers:
+      - "EPSG:4326"
+      - "EPSG:28992"
+      - "EPSG:3857"
+      - "EPSG:4258"
   - type: wfs
     id: "00000000-0000-0000-0000-000000000015"
     accessPoint: "https://test.nl/test-interoperable/wfs?request=GetCapabilities&service=WFS"
     serviceInspireType: "interoperable"
+    referenceSystemIdentifiers:
+      - "EPSG:4326"
+      - "EPSG:28992"
+      - "EPSG:3857"
+      - "EPSG:4258"
   - type: oaf
     id: "00000000-0000-0000-0000-000000000016"
     accessPoint: "https://test.nl/test-interoperable/ogc/v1"
     serviceInspireType: "interoperable"
+    referenceSystemIdentifiers:
+      - "EPSG:4326"
+      - "EPSG:28992"
+      - "EPSG:3857"
+      - "EPSG:4258"

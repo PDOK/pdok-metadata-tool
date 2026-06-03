@@ -26,9 +26,10 @@ type ISO19119 struct {
 	HierarchyLevelName CharacterStringTag `xml:"gmd:hierarchyLevelName"`
 	Contact            ContactTag         `xml:"gmd:contact"`
 
-	DateStamp               DateTag            `xml:"gmd:dateStamp"`
-	MetadataStandardName    CharacterStringTag `xml:"gmd:metadataStandardName"`
-	MetadataStandardVersion CharacterStringTag `xml:"gmd:metadataStandardVersion"`
+	DateStamp               DateTag               `xml:"gmd:dateStamp"`
+	MetadataStandardName    CharacterStringTag    `xml:"gmd:metadataStandardName"`
+	MetadataStandardVersion CharacterStringTag    `xml:"gmd:metadataStandardVersion"`
+	ReferenceSystemInfos    []ReferenceSystemInfo `xml:"gmd:referenceSystemInfo"`
 
 	IdentificationInfo IdentificationInfo `xml:"gmd:identificationInfo"`
 	DistributionInfo   DistributionInfo   `xml:"gmd:distributionInfo"`
@@ -143,6 +144,31 @@ type KeywordTag struct {
 // KeywordTypeTag struct for XML marshalling.
 type KeywordTypeTag struct {
 	Code CodeListValueTag `xml:"gmd:MD_KeywordTypeCode"`
+}
+
+// ReferenceSystemInfo struct for XML marshalling.
+type ReferenceSystemInfo struct {
+	MDReferenceSystem MDReferenceSystem `xml:"gmd:MD_ReferenceSystem"`
+}
+
+// MDReferenceSystem struct for XML marshalling.
+type MDReferenceSystem struct {
+	ReferenceSystemIdentifier ReferenceSystemIdentifier `xml:"gmd:referenceSystemIdentifier"`
+}
+
+// ReferenceSystemIdentifier struct for XML marshalling.
+type ReferenceSystemIdentifier struct {
+	RSIdentifier RSIdentifier `xml:"gmd:RS_Identifier"`
+}
+
+// RSIdentifier struct for XML marshalling.
+type RSIdentifier struct {
+	Code Code `xml:"gmd:code"`
+}
+
+// Code struct for XML marshalling.
+type Code struct {
+	Anchor AnchorTag `xml:"gmx:Anchor"`
 }
 
 // IdentificationInfo struct for XML marshalling.

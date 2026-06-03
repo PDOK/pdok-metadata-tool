@@ -34,6 +34,11 @@ services:
   - type: wfs
     id: "00000000-0000-0000-0000-000000000011"
     accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
+    referenceSystemIdentifiers:
+      - "EPSG:4326"
+      - "EPSG:28992"
+      - "EPSG:3857"
+      - "EPSG:4258"
   - type: atom
     id: "00000000-0000-0000-0000-000000000012"
     accessPoint: "https://test.nl/test/atom/index.xml"

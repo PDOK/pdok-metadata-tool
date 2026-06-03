@@ -6,16 +6,13 @@ globals:
   qosAvailability: 99.999
   qosPerformance: 1
   qosCapacity: 100
-  title: "Test inspire"
-  creationDate: "2018-08-16"
+  title: "Test regular"
+  creationDate: "2019-09-26"
   revisionDate: "2025-01-09"
-  abstract: "Unit test inspire"
+  abstract: "Unit test regular"
   keywords:
-    - "A"
-    - "B"
-    - "C"
-  inspireThemes:
-    - "ps"
+    - "AA"
+    - "BB"
   serviceLicense: "https://creativecommons.org/licenses/by/4.0/deed.nl"
   useLimitation: "Geen beperkingen"
   boundingBox:
@@ -24,21 +21,20 @@ globals:
     minY: "50.733607"
     maxY: "53.582979"
   linkedDatasets:
-    - "40000000-0000-0000-0000-000000000000"
+    - "00000000-0000-0000-0000-000000000003"
   coordinateReferenceSystem: "EPSG:28992"
-  inspireDatasetType: "asis"
+  thumbnails:
+    - file: "https://test.nl/thumb.png"
+      description: "thumbnail"
+      filetype: "png"
+  inspireDatasetType: "harmonised"
+  inspireThemes:
+    - "ps"
 services:
-  - type: wms
-    id: "00000000-0000-0000-0000-000000000007"
-    accessPoint: "https://test.nl/test/wms?request=GetCapabilities&service=WMS"
   - type: wfs
-    id: "00000000-0000-0000-0000-000000000008"
+    id: "00000000-0000-0000-0000-000000000001"
     accessPoint: "https://test.nl/test/wfs?request=GetCapabilities&service=WFS"
-    referenceSystemIdentifiers:
-      - "EPSG:4326"
-      - "EPSG:28992"
-      - "EPSG:3857"
-      - "EPSG:4258"
-  - type: atom
-    id: "00000000-0000-0000-0000-000000000009"
-    accessPoint: "https://test.nl/test/atom/index.xml"
+    keywords:
+      - "AA"
+      - "BB"
+      - "CCC"

@@ -3,6 +3,7 @@ package iso19119
 
 import (
 	"fmt"
+	"log/slog"
 	"net/url"
 	"strings"
 
@@ -142,7 +143,7 @@ func (g *Generator) generateMetadataEntries() error {
 	return nil
 }
 
-func (g *Generator) setGeneralInfo() error {
+func (g *Generator) setGeneralInfo() error { //nolint:funlen
 	entry, err := g.CurrentEntry()
 	if err != nil {
 		return err
@@ -245,6 +246,39 @@ func (g *Generator) setGeneralInfo() error {
 			// https://docs.geostandaarden.nl/md/mdprofiel-iso19119/#metadatastandaard-versie
 			CharacterString: "Nederlands metadata profiel op ISO 19119 voor services 2.1.0",
 		},
+	}
+
+	if config.isInspireSDS() {
+		entry.Metadata.ReferenceSystemInfos = []iso1911x.ReferenceSystemInfo{}
+
+		for _, rsIdentifier := range config.ReferenceSystemIdentifiers {
+			referenceSystem, ok := g.Codelist.GetReferenceSystemByEPSGCode(rsIdentifier)
+			if !ok {
+				slog.Warn("no reference system found for EPSG code", "rsIdentifier", rsIdentifier)
+				// TODO Add missing reference systems to codelist
+				continue
+			}
+
+			referenceSystemInfo := iso1911x.ReferenceSystemInfo{
+				MDReferenceSystem: iso1911x.MDReferenceSystem{
+					ReferenceSystemIdentifier: iso1911x.ReferenceSystemIdentifier{
+						RSIdentifier: iso1911x.RSIdentifier{
+							Code: iso1911x.Code{
+								Anchor: iso1911x.AnchorTag{
+									Href:  referenceSystem.URI,
+									Value: referenceSystem.Name,
+								},
+							},
+						},
+					},
+				},
+			}
+
+			entry.Metadata.ReferenceSystemInfos = append(
+				entry.Metadata.ReferenceSystemInfos,
+				referenceSystemInfo,
+			)
+		}
 	}
 
 	return nil

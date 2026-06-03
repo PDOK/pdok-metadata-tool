@@ -31,10 +31,11 @@ type GlobalConfig struct {
 type ServiceConfig struct {
 	OverrideableFields `json:",inline,omitempty" yaml:",inline,omitempty"`
 
-	Type               string              `json:"type,omitempty"               yaml:"type,omitempty"`
-	ID                 string              `json:"id,omitempty"                 yaml:"id,omitempty"`
-	AccessPoint        string              `json:"accessPoint,omitempty"        yaml:"accessPoint,omitempty"`
-	ServiceInspireType *InspireServiceType `json:"serviceInspireType,omitempty" yaml:"serviceInspireType,omitempty"`
+	Type                       string              `json:"type,omitempty"                       yaml:"type,omitempty"`
+	ID                         string              `json:"id,omitempty"                         yaml:"id,omitempty"`
+	AccessPoint                string              `json:"accessPoint,omitempty"                yaml:"accessPoint,omitempty"`
+	ServiceInspireType         *InspireServiceType `json:"serviceInspireType,omitempty"         yaml:"serviceInspireType,omitempty"`
+	ReferenceSystemIdentifiers []string            `json:"referenceSystemIdentifiers,omitempty" yaml:"referenceSystemIdentifiers,omitempty"`
 
 	// Pointer to globals
 	Globals *GlobalConfig `json:"globals,omitempty" yaml:"globals,omitempty"`
@@ -326,6 +327,10 @@ func (sc ServiceConfig) Validate() error {
 		len(sc.GetInspireThemes()) != 1 {
 		errors = append(errors,
 			"exactly 1 inspireTheme must be set if InspireDatasetType is 'harmonised'")
+	}
+
+	if sc.isInspireSDS() && len(sc.ReferenceSystemIdentifiers) == 0 {
+		errors = append(errors, "SDS services must have at least one referenceSystemIdentifier")
 	}
 
 	if len(errors) > 0 {
