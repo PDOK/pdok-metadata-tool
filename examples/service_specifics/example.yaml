@@ -35,6 +35,11 @@ services:
       - "AA"
       - "BB"
       - "CCC"
+    referenceSystemIdentifiers:
+      - "EPSG:4326"
+      - "EPSG:28992"
+      - "EPSG:3857"
+      - "EPSG:4258"
   - type: wms
     id: "00000000-0000-0000-0000-000000000002"
     accessPoint: "https://example.nl/example/wms?request=GetCapabilities&service=WMS"

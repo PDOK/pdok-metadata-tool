@@ -105,6 +105,7 @@ linters:
           - dupl          # Detects duplicate fragments of code.
           - funlen        # Checks for long functions.
           - gosec         # Inspects source code for security problems.
+          - goconst       # Finds repeated strings that could be replaced by a constant.
           - nestif        # Reports deeply nested if statements.
           - paralleltest  # Detects missing usage of t.Parallel() method in your Go test.
           - testpackage   # Linter that makes you use a separate _test package.

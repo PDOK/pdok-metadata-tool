@@ -59,6 +59,13 @@ func TestServiceSpecificsLoadFromYAMLAndValidate(t *testing.T) {
 				"inspireThemes are required when inspireType is set",
 			},
 		},
+		{
+			filename:      "invalid_inspire_sds_without_referencesystem.yaml",
+			expectedValid: false,
+			expectedValidationErrors: []string{
+				"SDS services must have at least one referenceSystemIdentifier",
+			},
+		},
 	}
 
 	for _, test := range tests {

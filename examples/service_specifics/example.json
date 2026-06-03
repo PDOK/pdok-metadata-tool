@@ -44,6 +44,12 @@
         "AA",
         "BB",
         "CCC"
+      ],
+      "referenceSystemIdentifiers": [
+        "EPSG:4326",
+        "EPSG:28992",
+        "EPSG:3857",
+        "EPSG:4258"
       ]
     },
     {
