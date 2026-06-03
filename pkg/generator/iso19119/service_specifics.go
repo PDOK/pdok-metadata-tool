@@ -232,7 +232,7 @@ func (s *ServiceSpecifics) Validate() error {
 
 // Validate the ServiceSpecifics on service level.
 //
-//nolint:cyclop
+//nolint:cyclop,gocognit
 func (sc ServiceConfig) Validate() error {
 	var errors []string
 
