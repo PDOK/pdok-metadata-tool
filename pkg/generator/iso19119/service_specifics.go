@@ -329,7 +329,7 @@ func (sc ServiceConfig) Validate() error {
 			"exactly 1 inspireTheme must be set if InspireDatasetType is 'harmonised'")
 	}
 
-	if sc.isInspireSDS() && len(sc.ReferenceSystemIdentifiers) == 0 {
+	if sc.IsInspireSDS() && len(sc.ReferenceSystemIdentifiers) == 0 {
 		errors = append(errors, "SDS services must have at least one referenceSystemIdentifier")
 	}
 
@@ -597,6 +597,15 @@ func (sc ServiceConfig) GetQosCapacity() string {
 	return strconv.Itoa(value)
 }
 
+// IsInspireSDS returns true if the service is an INSPIRE SDS service
+func (sc ServiceConfig) IsInspireSDS() bool {
+	if sc.ServiceInspireType == nil {
+		return false
+	}
+
+	return *sc.ServiceInspireType == Interoperable || *sc.ServiceInspireType == Invocable
+}
+
 // setInspireTypes sets INSPIRE Service types based on INSPIRE Dataset type
 func (s *ServiceSpecifics) setInspireTypes() {
 	inspireDatasetType := s.Globals.InspireDatasetType
@@ -639,14 +648,6 @@ func (s *ServiceSpecifics) setInspireTypes() {
 			service.ServiceInspireType = common.Ptr(inspireType)
 		}
 	}
-}
-
-func (sc ServiceConfig) isInspireSDS() bool {
-	if sc.ServiceInspireType == nil {
-		return false
-	}
-
-	return *sc.ServiceInspireType == Interoperable || *sc.ServiceInspireType == Invocable
 }
 
 func (sc ServiceConfig) isInspireNetworkService() bool {
