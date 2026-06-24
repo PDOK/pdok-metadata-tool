@@ -61,7 +61,7 @@ Used to retrieve and inspect high value dataset categories from the HVD Thesauru
 
 **--local-path**="": Local path where the HVD Thesaurus is cached. (default: cache/high-value-dataset-category.rdf)
 
-**--url**="": HVD Thesaurus endpoint which should contain the HVD categories as RDF format. (default: https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Fhigh-value-dataset-category%2F20241002-0%2Frdf%2Fskos_core%2Fhigh-value-dataset-category.rdf&fileName=high-value-dataset-category.rdf)
+**--url**="": HVD Thesaurus endpoint which should contain the HVD categories as RDF format. (default: https://publications.europa.eu/resource/distribution/high-value-dataset-category/20241002-0/rdf/skos_core/high-value-dataset-category.rdf)
 
 ### download
 
@@ -123,7 +123,7 @@ Harvest service metadata (flat model) as JSON. Supports optional organisation fi
 
 **--hvd-local-path**="": Local cache path for the HVD Thesaurus RDF. (default: cache/high-value-dataset-category.rdf)
 
-**--hvd-url**="": HVD Thesaurus endpoint (RDF). Used to enrich HVD categories. (default: https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Fhigh-value-dataset-category%2F20241002-0%2Frdf%2Fskos_core%2Fhigh-value-dataset-category.rdf&fileName=high-value-dataset-category.rdf)
+**--hvd-url**="": HVD Thesaurus endpoint (RDF). Used to enrich HVD categories. (default: https://publications.europa.eu/resource/distribution/high-value-dataset-category/20241002-0/rdf/skos_core/high-value-dataset-category.rdf)
 
 ### harvest-dataset
 
@@ -139,4 +139,4 @@ Harvest dataset metadata (flat model) as JSON. Supports optional organisation fi
 
 **--hvd-local-path**="": Local cache path for the HVD Thesaurus RDF. (default: cache/high-value-dataset-category.rdf)
 
-**--hvd-url**="": HVD Thesaurus endpoint (RDF). Used to enrich HVD categories. (default: https://op.europa.eu/o/opportal-service/euvoc-download-handler?cellarURI=http%3A%2F%2Fpublications.europa.eu%2Fresource%2Fdistribution%2Fhigh-value-dataset-category%2F20241002-0%2Frdf%2Fskos_core%2Fhigh-value-dataset-category.rdf&fileName=high-value-dataset-category.rdf)
+**--hvd-url**="": HVD Thesaurus endpoint (RDF). Used to enrich HVD categories. (default: https://publications.europa.eu/resource/distribution/high-value-dataset-category/20241002-0/rdf/skos_core/high-value-dataset-category.rdf)
