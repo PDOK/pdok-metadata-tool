@@ -85,7 +85,7 @@ func TestGenerateMetadataISO19119(t *testing.T) {
 			},
 		},
 		{
-			configFileName: filepath.Join(inputPath, "inspire_hvd_complex.yaml"),
+			configFileName: filepath.Join(inputPath, "oam.yaml"),
 			fileOutput: map[string]string{
 				"00000000-0000-0000-0000-000000000019.xml": "oam_oam.xml",
 			},
