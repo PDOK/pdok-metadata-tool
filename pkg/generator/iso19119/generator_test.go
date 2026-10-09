@@ -84,6 +84,40 @@ func TestGenerateMetadataISO19119(t *testing.T) {
 				"00000000-0000-0000-0000-000000000018.xml": "geo_gedeeld_wfs.xml",
 			},
 		},
+		{
+			configFileName: filepath.Join(inputPath, "oaf.yaml"),
+			fileOutput: map[string]string{
+				"00000000-0000-0000-0000-000000000005.xml": "oaf_oaf.xml",
+			},
+		},
+		{
+			configFileName: filepath.Join(inputPath, "oat.yaml"),
+			fileOutput: map[string]string{
+				"00000000-0000-0000-0000-000000000006.xml": "oat_oat.xml",
+			},
+		},
+		{
+			configFileName: filepath.Join(inputPath, "inspire_asis.yaml"),
+			fileOutput: map[string]string{
+				"00000000-0000-0000-0000-000000000007.xml": "inspire_asis_wms.xml",
+				"00000000-0000-0000-0000-000000000008.xml": "inspire_asis_wfs.xml",
+				"00000000-0000-0000-0000-000000000009.xml": "inspire_asis_atom.xml",
+			},
+		},
+		{
+			configFileName: filepath.Join(inputPath, "inspire_harmonised.yaml"),
+			fileOutput: map[string]string{
+				"00000000-0000-0000-0000-000000000010.xml": "inspire_harmonised_wms.xml",
+				"00000000-0000-0000-0000-000000000011.xml": "inspire_harmonised_wfs.xml",
+				"00000000-0000-0000-0000-000000000012.xml": "inspire_harmonised_atom.xml",
+			},
+		},
+		{
+			configFileName: filepath.Join(inputPath, "inspire_hvd_complex.yaml"),
+			fileOutput: map[string]string{
+				"00000000-0000-0000-0000-000000000019.xml": "oam_oam.xml",
+			},
+		},
 	}
 
 	hvdCachePath := path.Join(common.GetProjectRoot(), common.HvdLocalRDFPath)

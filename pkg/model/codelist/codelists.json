@@ -157,6 +157,16 @@
       "spatialDataserviceCategoryLabel": "Dienst kaarttoegang",
       "serviceAccessPointOperation": "HTTPGet"
     },
+    "oam": {
+      "serviceProtocolUrl": "http://www.opengis.net/def/interface/ogcapi-maps",
+      "serviceProtocol": "OGC:API maps",
+      "protocolReleaseDate": "2024-08-09",
+      "serviceProtocolName": "OGC API maps",
+      "spatialDataserviceCategory": "infoMapAccessService",
+      "spatialDataserviceCategoryUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceCategory/infoMapAccessService",
+      "spatialDataserviceCategoryLabel": "Dienst kaarttoegang",
+      "serviceAccessPointOperation": "HTTPGet"
+  },
     "oas": {
       "serviceProtocolUrl": "https://github.com/OAI/OpenAPI-Specification/",
       "serviceProtocol": "OAS",
@@ -206,7 +216,7 @@
       "inspireTechnicalGuidanceDate": "2011-11-07"
     },
     {
-      "ogcServiceTypes": ["wms", "wmts", "tms", "oat"],
+      "ogcServiceTypes": ["wms", "wmts", "tms", "oat", "oam"],
       "inspireUri": "http://inspire.ec.europa.eu/metadata-codelist/SpatialDataServiceType/view",
       "inspireServiceType": "view",
       "inspireTechnicalGuidance": "https://inspire.ec.europa.eu/documents/technical-guidance-implementation-inspire-view-services-1",

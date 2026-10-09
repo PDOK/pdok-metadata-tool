@@ -358,6 +358,8 @@ func (sc ServiceConfig) GetTitle() string {
 			postfix = " ATOM"
 		case "oaf":
 			postfix = " OGC API Features"
+		case "oam":
+			postfix = " OGC API Maps"
 		case "oat":
 			postfix = " OGC API (Vector) Tiles"
 		}
@@ -624,6 +626,7 @@ func (s *ServiceSpecifics) setInspireTypes() {
 			"wfs":  Invocable,
 			"oaf":  Invocable,
 			"oat":  Invocable,
+			"oam":  Invocable,
 		}
 	case Harmonised:
 		typeMap = map[string]InspireServiceType{
@@ -632,6 +635,7 @@ func (s *ServiceSpecifics) setInspireTypes() {
 			"wfs":  Interoperable,
 			"oaf":  Interoperable,
 			"oat":  Interoperable,
+			"oam":  Invocable,
 		}
 	}
 
