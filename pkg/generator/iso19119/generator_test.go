@@ -84,6 +84,12 @@ func TestGenerateMetadataISO19119(t *testing.T) {
 				"00000000-0000-0000-0000-000000000018.xml": "geo_gedeeld_wfs.xml",
 			},
 		},
+		{
+			configFileName: filepath.Join(inputPath, "oam.yaml"),
+			fileOutput: map[string]string{
+				"00000000-0000-0000-0000-000000000019.xml": "oam_oam.xml",
+			},
+		},
 	}
 
 	hvdCachePath := path.Join(common.GetProjectRoot(), common.HvdLocalRDFPath)

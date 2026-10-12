@@ -30,6 +30,7 @@ func TestServiceSpecificsLoadFromYAMLAndValidate(t *testing.T) {
 		},
 		{filename: "oaf.yaml", expectedValid: true, expectedValidationErrors: nil},
 		{filename: "oat.yaml", expectedValid: true, expectedValidationErrors: nil},
+		{filename: "oam.yaml", expectedValid: true, expectedValidationErrors: nil},
 		{filename: "regular.json", expectedValid: true, expectedValidationErrors: nil},
 
 		// Invalid specifics
@@ -166,6 +167,14 @@ func TestGetTitle(t *testing.T) {
 				Globals: &globalConfig,
 			},
 			expectedTitle: "Title OGC API (Vector) Tiles",
+		},
+		{
+			description: "Global title with OGC API Maps postfix",
+			serviceConfig: ServiceConfig{
+				Type:    "OAM",
+				Globals: &globalConfig,
+			},
+			expectedTitle: "Title OGC API Maps",
 		},
 		{
 			description: "Specific title on service level without postfix",
