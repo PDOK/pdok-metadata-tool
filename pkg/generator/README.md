@@ -142,7 +142,7 @@ For INSPIRE compliant services there are several additional INSPIRE requirements
 These requirements depend on the kind of service and the corresponding Implementing Rule.
 
 In the context of PDOK, the WMS and Atom are implementations for the INSPIRE Network Services.
-Other services such as the WFS and OGC API Feature are implementations for the Interoperability rule. 
+Other services such as the WFS and OGC API Features are implementations for the Interoperability rule. 
 
 The following table shows the relation between INSPIRE Dataset type, the type of OGC Webservice and the corresponding implementing rule,  
 according to the PDOK context:
@@ -152,12 +152,12 @@ according to the PDOK context:
 | Harmonised           | 1             | WMS               | Network Services  | View                 | NetworkService             |
 |                      |               | Atom              |                   | Download             | NetworkService             |
 |                      |               | WFS               | Interoperability  | Other                | Interoperable              |
-|                      |               | OGC API Feature   |                   | Other                | Interoperable              |
+|                      |               | OGC API Features  |                   | Other                | Interoperable              |
 |                      |               | OGC API Maps      |                   | Other                | Interoperable              |
 | as-is                | 1+            | WMS               | Network Services  | View                 | NetworkService             |
 |                      |               | Atom              |                   | Download             | NetworkService             |
 |                      |               | WFS               | Interoperability  | Other                | Invocable                  |
-|                      |               | OGC API Feature   |                   | Other                | Invocable                  |
+|                      |               | OGC API Features  |                   | Other                | Invocable                  |
 |                      |               | OGC API Maps      |                   | Other                | Invocable                  |
 
 For usage in PDOK context, this means that setting the global level field `InspireDatasetType` should be sufficient!  
