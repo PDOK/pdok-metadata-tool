@@ -153,10 +153,12 @@ according to the PDOK context:
 |                      |               | Atom              |                   | Download             | NetworkService             |
 |                      |               | WFS               | Interoperability  | Other                | Interoperable              |
 |                      |               | OGC API Feature   |                   | Other                | Interoperable              |
+|                      |               | OGC API Maps      |                   | Other                | Interoperable              |
 | as-is                | 1+            | WMS               | Network Services  | View                 | NetworkService             |
 |                      |               | Atom              |                   | Download             | NetworkService             |
 |                      |               | WFS               | Interoperability  | Other                | Invocable                  |
 |                      |               | OGC API Feature   |                   | Other                | Invocable                  |
+|                      |               | OGC API Maps      |                   | Other                | Invocable                  |
 
 For usage in PDOK context, this means that setting the global level field `InspireDatasetType` should be sufficient!  
 In the case of non-INSPIRE metadata, this field can be omitted.  
@@ -199,4 +201,3 @@ An overview of the available categories van be viewed through the CLI using:
 ```
 pmt hvd list
 ```
-
