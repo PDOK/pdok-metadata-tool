@@ -224,7 +224,7 @@ func TestExecuteWritesReport(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	for _, name := range []string{"results.jsonl", "summary.json", "report.html"} {
+	for _, name := range []string{"results.jsonl", "summary.json", "report.html", "failures.csv"} {
 		assert.FileExists(t, filepath.Join(out.Dir, name))
 	}
 

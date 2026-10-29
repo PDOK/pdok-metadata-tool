@@ -3,6 +3,7 @@ package loadtest
 import (
 	"bufio"
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -155,7 +157,7 @@ func Execute(ctx context.Context, opts Options) (Outcome, error) {
 	}
 	summary := Summarize(results, info, opts.Config.Hosts)
 
-	if err := writeOutputs(dir, meta, summary); err != nil {
+	if err := writeOutputs(dir, meta, summary, results); err != nil {
 		return Outcome{}, err
 	}
 
@@ -167,7 +169,11 @@ type summaryFile struct {
 	Summary Summary `json:"summary"`
 }
 
-func writeOutputs(dir string, meta RunMeta, summary Summary) error {
+func writeOutputs(dir string, meta RunMeta, summary Summary, results []Result) error {
+	if err := writeFailuresCSV(filepath.Join(dir, "failures.csv"), results); err != nil {
+		return err
+	}
+
 	raw, err := json.MarshalIndent(summaryFile{meta, summary}, "", "  ")
 	if err != nil {
 		return err
@@ -222,4 +228,55 @@ func sanitize(label string) string {
 	}
 
 	return label
+}
+
+// writeFailuresCSV writes every failed request, uncapped, as CSV.
+func writeFailuresCSV(path string, results []Result) error {
+	file, err := os.OpenFile( //nolint:gosec // path is built from the user supplied output dir
+		path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, outFilePerm,
+	)
+	if err != nil {
+		return err
+	}
+
+	defer func() { _ = file.Close() }()
+
+	w := csv.NewWriter(file)
+
+	_ = w.Write([]string{
+		"time", "iteration", "host", "kind", "service_id", "dataset_id", "url", "duration_ms",
+		"status", "error_category", "error_phase", "error", "dns_ms", "connect_ms", "tls_ms",
+		"ttfb_ms", "remote_ip", "conn_reused",
+	})
+
+	for _, r := range results {
+		if r.OK {
+			continue
+		}
+
+		_ = w.Write([]string{
+			r.Time.Format(time.RFC3339Nano),
+			strconv.Itoa(r.Iteration),
+			r.Host,
+			r.Kind,
+			r.ServiceID,
+			r.DatasetID,
+			r.URL,
+			strconv.FormatFloat(r.DurationMs, 'f', 1, 64),
+			strconv.Itoa(r.Status),
+			r.ErrorCategory,
+			r.ErrorPhase,
+			r.Error,
+			strconv.FormatFloat(r.DNSMs, 'f', 1, 64),
+			strconv.FormatFloat(r.ConnectMs, 'f', 1, 64),
+			strconv.FormatFloat(r.TLSMs, 'f', 1, 64),
+			strconv.FormatFloat(r.TTFBMs, 'f', 1, 64),
+			r.RemoteIP,
+			strconv.FormatBool(r.ConnReused),
+		})
+	}
+
+	w.Flush()
+
+	return w.Error()
 }

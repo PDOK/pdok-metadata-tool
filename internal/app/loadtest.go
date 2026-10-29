@@ -39,7 +39,7 @@ func init() {
 					"service sends the requests the INSPIRE validator sends: GetRecordById for the service " +
 					"and, for each dataset it operates on, the tags request and GetRecordById for INSPIRE " +
 					"datasets. All hosts are tested alternately, never using a cache. Repeat with " +
-					"--iterations and/or --duration. Writes results.jsonl, summary.json and report.html.",
+					"--iterations and/or --duration. Writes results.jsonl, failures.csv, summary.json and report.html.",
 				Flags:  loadTestFlags(),
 				Action: runLoadTest,
 			},
