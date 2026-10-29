@@ -5,3 +5,4 @@ pmt
 cache/
 pkg/generator/testdata/output/
 .output.txt
+output/

@@ -91,6 +91,52 @@ Exports inspire themes or layers to a CSV file. Usage: pmt inspire csv <theme|la
 
 **-o**="": Output file path for the CSV file.
 
+## csw
+
+Tools to test CSW endpoints.
+
+### load-test
+
+Load/stress test the NGR CSW by mimicking the INSPIRE validator, with a self-contained HTML report.
+
+**--duration**="": Stop starting new work after this time (excluding the ID scrape), e.g. 30m. 0 means no limit. (default: 0s)
+
+**--hosts**="": Base URLs to test, requests alternate between them. The default compares with and without 'www.'. (default: [https://nationaalgeoregister.nl https://www.nationaalgeoregister.nl])
+
+**--ids-cache-path**="": File in which the scraped service IDs are cached. (default: cache/load-test/service-ids.json)
+
+**--ids-cache-ttl**="": TTL of the service ID cache in hours. (default: 24)
+
+**--include-datasets**: Also request tags and records of linked datasets, like the dataset validation does.
+
+**--iterations**="": How many times all services are processed. 0 means until --duration is reached. (default: 1)
+
+**--label**="": Label for this run in the report, e.g. 'laptop' or 'cluster'. (default: local)
+
+**--limit-services**="": Only test the first N services (handy for a smoke test). (default: 0)
+
+**--max-datasets-per-service**="": Maximum datasets requested per service. 0 means all. (default: 2)
+
+**--no-keep-alive**: Use a new connection for every request, to measure DNS/connect/TLS on each request.
+
+**--no-wan-ip-lookup**: Do not look up the WAN IP.
+
+**--output-dir**="": Directory in which a new run directory with the results is created. (default: output/load-test)
+
+**--refresh-ids**: Ignore the service ID cache and scrape again.
+
+**--requests-per-minute**="": Maximum total requests per minute, spread over all hosts. 0 means unlimited (stress). (default: 0)
+
+**--shuffle**: Randomise the service order in every iteration.
+
+**--timeout**="": Timeout per request, including reading the response body. (default: 45s)
+
+**--wan-ip**="": Report this WAN IP instead of looking it up.
+
+**--wan-ip-url**="": Service that returns the WAN IP of this machine as plain text. (default: https://api.ipify.org)
+
+**--workers**="": Number of services processed in parallel. (default: 2)
+
 ## store
 
 The store is used to interact with metadata CSW store service.
