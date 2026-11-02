@@ -154,6 +154,8 @@ func Execute(ctx context.Context, opts Options) (Outcome, error) {
 		ServiceCount: len(services),
 		IDsFromCache: fromCache,
 		IDsFetchTime: idsTook,
+		Type:         TypeLoadTest,
+		Origin:       opts.Label,
 	}
 	summary := Summarize(results, info, opts.Config.Hosts)
 

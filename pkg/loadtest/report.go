@@ -28,7 +28,9 @@ const (
 //go:embed report.html.tmpl
 var reportTemplate string
 
-var hostColors = []string{"#4f9dff", "#ff8a4c", "#43d19e", "#c792ea", "#ffd166"}
+var hostColors = []string{
+	"#4f9dff", "#ff8a4c", "#43d19e", "#c792ea", "#ffd166", "#ff6fa5", "#5ad1e6", "#a3d65c",
+}
 
 // RunMeta describes the environment and configuration of a run, shown in the report.
 type RunMeta struct {
@@ -42,7 +44,24 @@ type RunMeta struct {
 	ServiceCount int           `json:"serviceCount"`
 	IDsFromCache bool          `json:"idsFromCache"`
 	IDsFetchTime time.Duration `json:"idsFetchTimeNs"`
+	// Type is TypeLoadTest or TypeConnectionTest; empty means TypeLoadTest.
+	Type string `json:"type,omitempty"`
+	// Origin is where the run was executed from, e.g. "laptop" or "test-cluster".
+	Origin string `json:"origin,omitempty"`
+	// Suite, Target and Control are only set for connection tests.
+	Suite   string `json:"suite,omitempty"`
+	Target  string `json:"target,omitempty"`
+	Control bool   `json:"control,omitempty"`
 }
+
+// Run types.
+const (
+	TypeLoadTest       = "csw-load-test"
+	TypeConnectionTest = "connection-test"
+)
+
+// IsConnTest reports whether this is a connection test instead of a CSW load test.
+func (m RunMeta) IsConnTest() bool { return m.Type == TypeConnectionTest }
 
 // LookupWANIP asks a public "what is my IP" service for the WAN address of this machine.
 func LookupWANIP(ctx context.Context, lookupURL string) string {
@@ -95,6 +114,8 @@ type reportData struct {
 	BucketSize string
 	Hist       []histView
 	FailedNote string
+	Verdict    Verdict
+	Describe   string
 }
 
 type histView struct {
@@ -151,6 +172,8 @@ func buildReportData(meta RunMeta, sum Summary, colors map[string]string) report
 		LatencySVG: lineChart(sum, colors, func(b Bucket) float64 { return b.AvgMs }, "ms"),
 		CountSVG:   barChart(sum, colors),
 		Hist:       histViews(sum, colors),
+		Verdict:    BuildVerdict(sum),
+		Describe:   Describe(meta),
 	}
 
 	if sum.FailedTotal > len(sum.Failed) {

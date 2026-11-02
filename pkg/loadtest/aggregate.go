@@ -37,9 +37,9 @@ func LoadRuns(dir string) ([]RunFile, error) {
 			continue
 		}
 
-		raw, err := os.ReadFile(
-			filepath.Join(dir, entry.Name(), "summary.json"),
-		) //nolint:gosec // user supplied dir
+		summaryPath := filepath.Join(dir, entry.Name(), "summary.json")
+
+		raw, err := os.ReadFile(summaryPath) //nolint:gosec // user supplied dir
 		if err != nil {
 			continue
 		}
@@ -66,6 +66,7 @@ type overviewRow struct {
 	Meta    RunMeta
 	Overall LatencyStats
 	Hosts   []GroupStats
+	Verdict Verdict
 	Detail  template.HTML
 }
 
@@ -84,9 +85,16 @@ type overviewChart struct {
 
 type aggregateData struct {
 	Rows        []overviewRow
+	LoadRows    []overviewRow
+	ConnRows    []overviewRow
+	Findings    []Finding
+	Matrix      matrix
 	Legend      []chartSeries
+	ConnLegend  []chartSeries
 	LatencyBars []overviewChart
 	ErrorBars   []overviewChart
+	ConnLatency []overviewChart
+	ConnErrors  []overviewChart
 	Generated   time.Time
 	TotalReqs   int
 	TotalFailed int
@@ -95,23 +103,8 @@ type aggregateData struct {
 // RenderAggregate renders one self-contained HTML with an overview of all runs and a
 // detail page per run.
 func RenderAggregate(runs []RunFile) (string, error) {
-	var hosts []string
-
-	seen := map[string]bool{}
-
-	for _, run := range runs {
-		for _, host := range run.Summary.Hosts {
-			if !seen[host] {
-				seen[host] = true
-
-				hosts = append(hosts, host)
-			}
-		}
-	}
-
-	sort.Strings(hosts)
-
-	colors := hostColorMap(hosts)
+	loadHosts, connHosts := hostsByType(runs)
+	colors := hostColorMap(uniqueHosts(loadHosts, connHosts))
 
 	tmpl, err := template.New("report").Funcs(reportFuncs(colors)).Parse(reportTemplate)
 	if err != nil {
@@ -122,9 +115,12 @@ func RenderAggregate(runs []RunFile) (string, error) {
 		return "", err
 	}
 
-	data := aggregateData{Generated: time.Now()}
-	for _, host := range hosts {
-		data.Legend = append(data.Legend, chartSeries{Color: colors[host], Name: host})
+	data := aggregateData{
+		Generated:  time.Now(),
+		Findings:   buildFindings(runs),
+		Matrix:     buildMatrix(runs),
+		Legend:     legendFor(loadHosts, colors),
+		ConnLegend: legendFor(connHosts, colors),
 	}
 
 	for i, run := range runs {
@@ -137,32 +133,36 @@ func RenderAggregate(runs []RunFile) (string, error) {
 			return "", err
 		}
 
-		data.Rows = append(data.Rows, overviewRow{
+		row := overviewRow{
 			Index:   i + 1,
 			Dir:     run.Dir,
 			Meta:    run.Meta,
 			Overall: run.Summary.Overall,
 			Hosts:   run.Summary.ByHost,
+			Verdict: BuildVerdict(run.Summary),
 			Detail:  template.HTML(detail.String()), //nolint:gosec // rendered by our own template
-		})
+		}
+
+		data.Rows = append(data.Rows, row)
+
+		if run.Meta.IsConnTest() {
+			data.ConnRows = append(data.ConnRows, row)
+		} else {
+			data.LoadRows = append(data.LoadRows, row)
+		}
+
 		data.TotalReqs += run.Summary.Overall.Count
 		data.TotalFailed += run.Summary.Overall.Errors
 	}
 
-	data.LatencyBars = overviewCharts(
-		data.Rows,
-		hosts,
-		colors,
-		func(s LatencyStats) float64 { return s.AvgMs },
-		formatMs,
-	)
-	data.ErrorBars = overviewCharts(
-		data.Rows,
-		hosts,
-		colors,
-		func(s LatencyStats) float64 { return s.ErrorRate },
-		func(v float64) string { return fmt.Sprintf("%.2f%%", v*100) },
-	) //nolint:mnd // percentage
+	avg := func(s LatencyStats) float64 { return s.AvgMs }
+	errRate := func(s LatencyStats) float64 { return s.ErrorRate }
+	pct := func(v float64) string { return fmt.Sprintf("%.2f%%", v*percent) }
+
+	data.LatencyBars = overviewCharts(data.LoadRows, loadHosts, colors, avg, formatMs)
+	data.ErrorBars = overviewCharts(data.LoadRows, loadHosts, colors, errRate, pct)
+	data.ConnLatency = overviewCharts(data.ConnRows, connHosts, colors, avg, formatMs)
+	data.ConnErrors = overviewCharts(data.ConnRows, connHosts, colors, errRate, pct)
 
 	var buf bytes.Buffer
 	if err := tmpl.ExecuteTemplate(&buf, "aggregate", data); err != nil {
@@ -172,6 +172,54 @@ func RenderAggregate(runs []RunFile) (string, error) {
 	return buf.String(), nil
 }
 
+func hostsByType(runs []RunFile) ([]string, []string) {
+	var load, conn []string
+
+	seenLoad, seenConn := map[string]bool{}, map[string]bool{}
+
+	for _, run := range runs {
+		target, seen := &load, seenLoad
+		if run.Meta.IsConnTest() {
+			target, seen = &conn, seenConn
+		}
+
+		for _, host := range run.Summary.Hosts {
+			if !seen[host] {
+				seen[host] = true
+
+				*target = append(*target, host)
+			}
+		}
+	}
+
+	sort.Strings(load)
+	sort.Strings(conn)
+
+	return load, conn
+}
+
+func legendFor(hosts []string, colors map[string]string) []chartSeries {
+	legend := make([]chartSeries, 0, len(hosts))
+	for _, host := range hosts {
+		legend = append(legend, chartSeries{Color: colors[host], Name: host})
+	}
+
+	return legend
+}
+
+func uniqueHosts(lists ...[]string) []string {
+	var out []string
+
+	for _, list := range lists {
+		for _, host := range list {
+			if !contains(out, host) {
+				out = append(out, host)
+			}
+		}
+	}
+
+	return out
+}
 func overviewCharts(
 	rows []overviewRow,
 	hosts []string,

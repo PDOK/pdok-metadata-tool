@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>CSW load test - {{.Meta.Label}}</title>
+<title>{{if .Meta.IsConnTest}}Connection test{{else}}CSW load test{{end}} - {{.Meta.Label}}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>{{template "css"}}</style>
 </head>
@@ -55,21 +55,51 @@ svg .errbar { fill:var(--bad); }
 .note { color:var(--muted); font-size:12px; margin:6px 0; }
 .mono { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; }
 .banner { padding:10px 14px; border-radius:8px; background:#3a331d; border:1px solid #5a4d2a; color:var(--warn); margin-bottom:14px; }
+.verdict { border-radius:10px; padding:16px 20px; border:1px solid var(--line); border-left-width:8px; background:var(--card); }
+.verdict.good { border-left-color:var(--good); } .verdict.warn { border-left-color:var(--warn); } .verdict.bad { border-left-color:var(--bad); }
+.verdict .title { font-size:20px; font-weight:650; margin:0 0 6px; }
+.verdict ul { margin:6px 0 0; padding-left:20px; color:var(--text); } .verdict li { margin:4px 0; }
+.status { display:inline-block; padding:1px 10px; border-radius:99px; font-size:12px; font-weight:600; border:1px solid var(--line); }
+.status.good { background:#14352b; color:var(--good); border-color:#1f5a47; }
+.status.warn { background:#3a331d; color:var(--warn); border-color:#5a4d2a; }
+.status.bad { background:#3a1d28; color:var(--bad); border-color:#5a2a3a; }
+details.help { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 16px; margin:12px 0; }
+details.help summary { cursor:pointer; color:var(--accent); }
+details.help dt { font-weight:600; margin-top:8px; } details.help dd { margin:2px 0 0 0; color:var(--muted); }
+{{end}}
+{{define "glossary"}}
+<details class="help"><summary>How to read these numbers</summary>
+<dl>
+<dt>Failed / error rate</dt><dd>A request counts as failed when it got no HTTP 200 answer within the timeout, or the answer was an error. Green = none failed, yellow = under 5%, red = 5% or more.</dd>
+<dt>Average, p95, p99</dt><dd>Response time of successful requests. Average is the mean. p95 means 95% of requests were faster than this, p99 means 99% were faster; a high p99 with a low average means a few requests are very slow.</dd>
+<dt>Keep-alive</dt><dd>Reusing one connection for many requests. Without it every request sets up a new connection (DNS lookup, TCP connect, TLS handshake), which is what a fresh container or a client without connection reuse does.</dd>
+<dt>TLS handshake timeout</dt><dd>The connection was opened but the encrypted session was not set up in time. This happens in the network edge (firewall, load balancer) and not in the application.</dd>
+<dt>Control target</dt><dd>A neutral website used as a reference. If it never fails while NGR does, the problem is not in our own network path.</dd>
+</dl></details>
 {{end}}
 {{define "runbody"}}
 <header>
-  <h1>CSW load test &middot; {{.Meta.Label}}</h1>
-  <div class="sub">Mimics the INSPIRE validator towards the NGR metadata service &middot; {{datetime .Meta.Started}} &middot; ran for {{.Duration}}</div>
+  <h1>{{if .Meta.IsConnTest}}Connection test{{else}}CSW load test{{end}} &middot; {{.Meta.Label}}</h1>
+  <div class="sub">{{if .Meta.IsConnTest}}New connection for every request towards {{.Meta.Suite}}{{else}}Mimics the INSPIRE validator towards the NGR metadata service{{end}} &middot; {{datetime .Meta.Started}} &middot; ran for {{.Duration}}</div>
 </header>
 <main>
 {{if .Meta.Aborted}}<div class="banner">This run was interrupted before it completed; the numbers cover what was finished.</div>{{end}}
+
+<div class="verdict {{.Verdict.Level}}">
+  <div class="title"><span class="status {{.Verdict.Level}}">{{.Verdict.Status}}</span> {{.Verdict.Title}}</div>
+  {{if .Verdict.Points}}<ul>{{range .Verdict.Points}}<li>{{.}}</li>{{end}}</ul>{{end}}
+</div>
+<h2>What was tested</h2>
+<p>{{.Describe}}</p>
+{{template "glossary"}}
 
 <h2>Run instance</h2>
 <div class="grid">
   <div class="card"><div class="label">WAN IP</div><div class="value">{{.Meta.WANIP}}</div></div>
   <div class="card"><div class="label">Hostname</div><div class="value small">{{.Meta.Hostname}}</div></div>
   <div class="card"><div class="label">Run label</div><div class="value small">{{.Meta.Label}}</div></div>
-  <div class="card"><div class="label">Services tested</div><div class="value">{{.Summary.ServicesSeen}} <span class="note">of {{.Meta.ServiceCount}}</span></div></div>
+  {{if .Meta.IsConnTest}}<div class="card"><div class="label">Target</div><div class="value small mono">{{.Meta.Target}}</div></div>
+  {{else}}<div class="card"><div class="label">Services tested</div><div class="value">{{.Summary.ServicesSeen}} <span class="note">of {{.Meta.ServiceCount}}</span></div></div>{{end}}
 </div>
 
 <h2>Result</h2>
@@ -86,12 +116,12 @@ svg .errbar { fill:var(--bad); }
 <h2>Per host</h2>
 {{template "stats" .Summary.ByHost}}
 
-<h2>Per request type</h2>
+{{if not .Meta.IsConnTest}}<h2>Per request type</h2>
 {{template "stats" .Summary.ByKind}}
 
 <h2>Per host and request type</h2>
 {{template "stats" .Summary.ByHostKind}}
-
+{{end}}
 <h2>Where the time goes</h2>
 <div class="scroll"><table>
 <thead><tr><th>Host</th><th>DNS</th><th>TCP connect</th><th>TLS</th><th>Wait for first byte</th><th>Total</th><th>Avg body</th></tr></thead>
@@ -151,15 +181,18 @@ svg .errbar { fill:var(--bad); }
 <div class="scroll"><table>
 <tbody>
 <tr><td>Hosts</td><td class="l">{{range .Meta.Config.Hosts}}{{.}} {{end}}</td></tr>
+{{if .Meta.IsConnTest}}<tr><td>Target URL</td><td class="l mono">{{.Meta.Target}}</td></tr>
+<tr><td>Role</td><td class="l">{{if .Meta.Control}}control (neutral target){{else}}system under test (NGR){{end}}</td></tr>
+<tr><td>New connections</td><td class="l">{{.Meta.Config.Requests}}</td></tr>{{end}}
 <tr><td>Workers</td><td class="l">{{.Meta.Config.Workers}}</td></tr>
 <tr><td>Requests per minute (total)</td><td class="l">{{if .Meta.Config.RequestsPerMinute}}{{.Meta.Config.RequestsPerMinute}}{{else}}unlimited{{end}}</td></tr>
 <tr><td>Request timeout</td><td class="l">{{.Meta.Config.Timeout}}</td></tr>
-<tr><td>Iterations</td><td class="l">{{if .Meta.Config.Iterations}}{{.Meta.Config.Iterations}}{{else}}until duration{{end}}</td></tr>
+{{if not .Meta.IsConnTest}}<tr><td>Iterations</td><td class="l">{{if .Meta.Config.Iterations}}{{.Meta.Config.Iterations}}{{else}}until duration{{end}}</td></tr>
 <tr><td>Max duration</td><td class="l">{{if .Meta.Config.Duration}}{{.Meta.Config.Duration}}{{else}}none{{end}}</td></tr>
 <tr><td>Dataset requests</td><td class="l">{{.Meta.Config.IncludeDatasets}}{{if .Meta.Config.IncludeDatasets}} (max {{if .Meta.Config.MaxDatasetsPerService}}{{.Meta.Config.MaxDatasetsPerService}}{{else}}all{{end}} per service){{end}}</td></tr>
 <tr><td>Keep-alive</td><td class="l">{{.Meta.Config.KeepAlive}}</td></tr>
 <tr><td>Shuffle</td><td class="l">{{.Meta.Config.Shuffle}}</td></tr>
-<tr><td>Service IDs</td><td class="l">{{.Meta.ServiceCount}} ({{if .Meta.IDsFromCache}}from cache{{else}}scraped from CSW{{end}})</td></tr>
+<tr><td>Service IDs</td><td class="l">{{.Meta.ServiceCount}} ({{if .Meta.IDsFromCache}}from cache{{else}}scraped from CSW{{end}})</td></tr>{{end}}
 <tr><td>Started</td><td class="l">{{datetime .Meta.Started}}</td></tr>
 <tr><td>Finished</td><td class="l">{{datetime .Meta.Finished}}</td></tr>
 </tbody></table></div>

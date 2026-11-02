@@ -137,6 +137,30 @@ Load/stress test the NGR CSW by mimicking the INSPIRE validator, with a self-con
 
 **--workers**="": Number of services processed in parallel. (default: 2)
 
+### connection-test
+
+Open many new connections to NGR and to neutral control targets, with a report per target.
+
+**--label**="": Where this runs from, e.g. 'laptop' or 'test-cluster'. Shown in the reports. (default: local)
+
+**--no-wan-ip-lookup**: Do not look up the WAN IP.
+
+**--output-dir**="": Directory in which a run directory per suite is created. (default: output/load-test)
+
+**--requests**="": Number of new connections per suite. (default: 200)
+
+**--requests-per-minute**="": Maximum connections per minute per suite. 0 means unlimited. (default: 0)
+
+**--suite**="": Target as name=https://host/path; repeat for more. Names starting with 'control-' are neutral control targets. Replaces the default suites (NGR with/without www and 3 control sites). (default: [])
+
+**--timeout**="": Timeout per request, including reading the response body. (default: 45s)
+
+**--wan-ip**="": Report this WAN IP instead of looking it up.
+
+**--wan-ip-url**="": Service that returns the WAN IP of this machine as plain text. (default: https://api.ipify.org)
+
+**--workers**="": Connections opened in parallel. (default: 6)
+
 ### load-test-aggregate
 
 Combine all load test runs in a directory into one HTML with an overview page and a detail page per run.

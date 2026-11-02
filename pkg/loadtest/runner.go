@@ -80,6 +80,8 @@ type Config struct {
 	KeepAlive bool `json:"keepAlive"`
 	// Shuffle randomises the service order for every iteration.
 	Shuffle bool `json:"shuffle"`
+	// Requests is the number of connections per suite in a connection test.
+	Requests int `json:"requests,omitempty"`
 }
 
 // Result is the outcome of a single request.
@@ -547,11 +549,11 @@ func classify(err error, timedOut bool, phase string) string {
 		return ErrTimeout
 	case errors.As(err, &dnsErr):
 		return ErrDNS
-	case errors.As(err, &certErr), phase == "tls":
+	case errors.As(err, &certErr), phase == ErrTLS:
 		return ErrTLS
 	case errors.Is(err, io.ErrUnexpectedEOF) || strings.Contains(err.Error(), "connection reset"):
 		return ErrConnReset
-	case errors.As(err, &opErr) && opErr.Op == "dial", phase == "connect":
+	case errors.As(err, &opErr) && opErr.Op == "dial", phase == ErrConnect:
 		return ErrConnect
 	case phase == "read body":
 		return ErrBodyRead

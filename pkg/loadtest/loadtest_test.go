@@ -274,3 +274,62 @@ func TestAggregateRendersOverviewAndDetails(t *testing.T) {
 		assert.Contains(t, html, want)
 	}
 }
+
+func TestConnectionTestsAndAggregate(t *testing.T) {
+	t.Parallel()
+
+	good := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		fmt.Fprint(w, "ok")
+	}))
+	defer good.Close()
+
+	bad := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}))
+	defer bad.Close()
+
+	outDir := t.TempDir()
+
+	outcomes, err := loadtest.ExecuteConnectionTests(context.Background(), loadtest.ConnOptions{
+		Suites: []loadtest.ConnSuite{
+			{Name: "ngr-fake", URL: bad.URL + "/csw"},
+			{Name: "control-fake", URL: good.URL + "/", Control: true},
+		},
+		Requests:  6,
+		Workers:   2,
+		Timeout:   5 * time.Second,
+		Label:     "unit",
+		OutputDir: outDir,
+		WANIP:     "203.0.113.7",
+	})
+	require.NoError(t, err)
+	require.Len(t, outcomes, 2)
+	assert.Equal(t, 6, outcomes[0].Summary.Overall.Errors)
+	assert.Equal(t, 0, outcomes[1].Summary.Overall.Errors)
+
+	runs, err := loadtest.LoadRuns(outDir)
+	require.NoError(t, err)
+	require.Len(t, runs, 2)
+
+	html, err := loadtest.RenderAggregate(runs)
+	require.NoError(t, err)
+
+	for _, want := range []string{
+		"Connection tests: new connections per target", "From unit", "ngr-fake", "control-fake",
+		"the problem is specific to NGR", "6 of 6 requests failed",
+	} {
+		assert.Contains(t, html, want)
+	}
+}
+
+func TestParseConnSuite(t *testing.T) {
+	t.Parallel()
+
+	suite, err := loadtest.ParseConnSuite("control-x=https://example.org/a")
+	require.NoError(t, err)
+	assert.True(t, suite.Control)
+	assert.Equal(t, "https://example.org/a", suite.URL)
+
+	_, err = loadtest.ParseConnSuite("not a url")
+	require.Error(t, err)
+}

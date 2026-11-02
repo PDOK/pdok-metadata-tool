@@ -22,6 +22,8 @@ const (
 	defaultDatasetsPerSvc    = 2
 	defaultWANIPLookupURL    = "https://api.ipify.org"
 	defaultLoadTestOutDir    = "output/load-test"
+	defaultConnRequests      = 200
+	defaultConnWorkers       = 6
 	defaultLoadTestHostPlain = "https://nationaalgeoregister.nl"
 	defaultLoadTestHostWWW   = "https://www.nationaalgeoregister.nl"
 )
@@ -42,6 +44,18 @@ func init() {
 					"--iterations and/or --duration. Writes results.jsonl, failures.csv, summary.json and report.html.",
 				Flags:  loadTestFlags(),
 				Action: runLoadTest,
+			},
+			{
+				Name: "connection-test",
+				Usage: "Open many new connections to NGR and to neutral control targets, " +
+					"with a report per target.",
+				Description: "Every request uses a brand new connection (DNS, TCP, TLS), which shows whether " +
+					"a server accepts new connections reliably. By default NGR (with and without www) is " +
+					"tested next to neutral control targets, so you can tell whether failures are specific " +
+					"to NGR or caused by the network path. Run it from several places (e.g. laptop and " +
+					"cluster) with a different --label. Writes a run directory with report.html per target.",
+				Flags:  connectionTestFlags(),
+				Action: runConnectionTest,
 			},
 			{
 				Name: "load-test-aggregate",
@@ -146,6 +160,97 @@ func loadTestFlags() []cli.Flag {
 		},
 		&cli.BoolFlag{Name: "no-wan-ip-lookup", Usage: "Do not look up the WAN IP."},
 	}
+}
+
+func connectionTestFlags() []cli.Flag {
+	return []cli.Flag{
+		&cli.StringSliceFlag{
+			Name: "suite",
+			Usage: "Target as name=https://host/path; repeat for more. Names starting with 'control-' are " +
+				"neutral control targets. Replaces the default suites (NGR with/without www and 3 control sites).",
+		},
+		&cli.IntFlag{
+			Name:  "requests",
+			Value: defaultConnRequests,
+			Usage: "Number of new connections per suite.",
+		},
+		&cli.IntFlag{
+			Name:  "workers",
+			Value: defaultConnWorkers,
+			Usage: "Connections opened in parallel.",
+		},
+		&cli.IntFlag{
+			Name:  "requests-per-minute",
+			Usage: "Maximum connections per minute per suite. 0 means unlimited.",
+		},
+		&cli.DurationFlag{
+			Name:  "timeout",
+			Value: defaultLoadTestTimeout,
+			Usage: "Timeout per request, including reading the response body.",
+		},
+		&cli.StringFlag{
+			Name:  "label",
+			Value: "local",
+			Usage: "Where this runs from, e.g. 'laptop' or 'test-cluster'. Shown in the reports.",
+		},
+		&cli.StringFlag{
+			Name:  "output-dir",
+			Value: defaultLoadTestOutDir,
+			Usage: "Directory in which a run directory per suite is created.",
+		},
+		&cli.StringFlag{Name: "wan-ip", Usage: "Report this WAN IP instead of looking it up."},
+		&cli.StringFlag{
+			Name:  "wan-ip-url",
+			Value: defaultWANIPLookupURL,
+			Usage: "Service that returns the WAN IP of this machine as plain text.",
+		},
+		&cli.BoolFlag{Name: "no-wan-ip-lookup", Usage: "Do not look up the WAN IP."},
+	}
+}
+
+func runConnectionTest(ctx context.Context, cmd *cli.Command) error {
+	suites := loadtest.DefaultConnSuites()
+
+	if specs := cmd.StringSlice("suite"); len(specs) > 0 {
+		suites = suites[:0]
+
+		for _, spec := range specs {
+			suite, err := loadtest.ParseConnSuite(spec)
+			if err != nil {
+				return err
+			}
+
+			suites = append(suites, suite)
+		}
+	}
+
+	lookupURL := cmd.String("wan-ip-url")
+	if cmd.Bool("no-wan-ip-lookup") {
+		lookupURL = ""
+	}
+
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
+	defer stop()
+
+	outcomes, err := loadtest.ExecuteConnectionTests(ctx, loadtest.ConnOptions{
+		Suites:            suites,
+		Requests:          cmd.Int("requests"),
+		Workers:           cmd.Int("workers"),
+		RequestsPerMinute: cmd.Int("requests-per-minute"),
+		Timeout:           cmd.Duration("timeout"),
+		Label:             cmd.String("label"),
+		OutputDir:         cmd.String("output-dir"),
+		WANIP:             cmd.String("wan-ip"),
+		WANIPLookupURL:    lookupURL,
+		Progress:          os.Stderr,
+	})
+
+	for _, outcome := range outcomes {
+		fmt.Print(loadtest.TextSummary(outcome))
+		fmt.Printf("Report: %s\n\n", filepath.Join(outcome.Dir, "report.html"))
+	}
+
+	return err
 }
 
 func runLoadTest(ctx context.Context, cmd *cli.Command) error {
