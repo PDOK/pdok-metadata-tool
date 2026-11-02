@@ -4,7 +4,20 @@
 <meta charset="utf-8">
 <title>CSW load test - {{.Meta.Label}}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
+<style>{{template "css"}}</style>
+</head>
+<body>
+{{template "runbody" .}}
+</body>
+</html>
+{{define "stats"}}
+<div class="scroll"><table>
+<thead><tr><th>Name</th><th>Requests</th><th>Failed</th><th>Error rate</th><th>Avg</th><th>p50</th><th>p90</th><th>p95</th><th>p99</th><th>Max</th><th>Req/s</th></tr></thead>
+<tbody>{{range .}}<tr><td><span class="dot" style="background:{{color .Name}}"></span>{{.Name}}</td><td>{{.Count}}</td><td>{{.Errors}}</td>
+<td class="{{rateClass .ErrorRate}}">{{pct .ErrorRate}}</td><td>{{ms .AvgMs}}</td><td>{{ms .P50Ms}}</td><td>{{ms .P90Ms}}</td><td>{{ms .P95Ms}}</td><td>{{ms .P99Ms}}</td><td>{{ms .MaxMs}}</td><td>{{f2 .RequestsPS}}</td></tr>{{end}}</tbody>
+</table></div>
+{{end}}
+{{define "css"}}
 :root { --bg:#0f1420; --card:#171e2e; --card2:#1d2639; --text:#e6ebf5; --muted:#8c98b3; --line:#2a3550;
         --good:#43d19e; --warn:#ffd166; --bad:#ff5c6c; --accent:#4f9dff; }
 * { box-sizing: border-box; }
@@ -42,9 +55,8 @@ svg .errbar { fill:var(--bad); }
 .note { color:var(--muted); font-size:12px; margin:6px 0; }
 .mono { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; }
 .banner { padding:10px 14px; border-radius:8px; background:#3a331d; border:1px solid #5a4d2a; color:var(--warn); margin-bottom:14px; }
-</style>
-</head>
-<body>
+{{end}}
+{{define "runbody"}}
 <header>
   <h1>CSW load test &middot; {{.Meta.Label}}</h1>
   <div class="sub">Mimics the INSPIRE validator towards the NGR metadata service &middot; {{datetime .Meta.Started}} &middot; ran for {{.Duration}}</div>
@@ -152,12 +164,4 @@ svg .errbar { fill:var(--bad); }
 <tr><td>Finished</td><td class="l">{{datetime .Meta.Finished}}</td></tr>
 </tbody></table></div>
 </main>
-</body>
-</html>
-{{define "stats"}}
-<div class="scroll"><table>
-<thead><tr><th>Name</th><th>Requests</th><th>Failed</th><th>Error rate</th><th>Avg</th><th>p50</th><th>p90</th><th>p95</th><th>p99</th><th>Max</th><th>Req/s</th></tr></thead>
-<tbody>{{range .}}<tr><td><span class="dot" style="background:{{color .Name}}"></span>{{.Name}}</td><td>{{.Count}}</td><td>{{.Errors}}</td>
-<td class="{{rateClass .ErrorRate}}">{{pct .ErrorRate}}</td><td>{{ms .AvgMs}}</td><td>{{ms .P50Ms}}</td><td>{{ms .P90Ms}}</td><td>{{ms .P95Ms}}</td><td>{{ms .P99Ms}}</td><td>{{ms .MaxMs}}</td><td>{{f2 .RequestsPS}}</td></tr>{{end}}</tbody>
-</table></div>
 {{end}}

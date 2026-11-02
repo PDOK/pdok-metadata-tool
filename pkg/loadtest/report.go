@@ -111,11 +111,33 @@ type histBar struct {
 
 // RenderReport renders the self-contained HTML report.
 func RenderReport(meta RunMeta, sum Summary) (string, error) {
-	colors := map[string]string{}
-	legend := make([]chartSeries, 0, len(sum.Hosts))
+	colors := hostColorMap(sum.Hosts)
 
-	for i, host := range sum.Hosts {
+	tmpl, err := template.New("report").Funcs(reportFuncs(colors)).Parse(reportTemplate)
+	if err != nil {
+		return "", err
+	}
+
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, buildReportData(meta, sum, colors)); err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
+}
+
+func hostColorMap(hosts []string) map[string]string {
+	colors := make(map[string]string, len(hosts))
+	for i, host := range hosts {
 		colors[host] = hostColors[i%len(hostColors)]
+	}
+
+	return colors
+}
+
+func buildReportData(meta RunMeta, sum Summary, colors map[string]string) reportData {
+	legend := make([]chartSeries, 0, len(sum.Hosts))
+	for _, host := range sum.Hosts {
 		legend = append(legend, chartSeries{Color: colors[host], Name: host})
 	}
 
@@ -138,7 +160,11 @@ func RenderReport(meta RunMeta, sum Summary) (string, error) {
 		)
 	}
 
-	tmpl, err := template.New("report").Funcs(template.FuncMap{
+	return data
+}
+
+func reportFuncs(colors map[string]string) template.FuncMap {
+	return template.FuncMap{
 		"ms":       formatMs,
 		"pct":      func(f float64) string { return fmt.Sprintf("%.2f%%", f*100) },
 		"f1":       func(f float64) string { return fmt.Sprintf("%.1f", f) },
@@ -163,17 +189,7 @@ func RenderReport(meta RunMeta, sum Summary) (string, error) {
 				return "bad"
 			}
 		},
-	}).Parse(reportTemplate)
-	if err != nil {
-		return "", err
 	}
-
-	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, data); err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
 }
 
 func formatMs(v float64) string {

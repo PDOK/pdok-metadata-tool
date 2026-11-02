@@ -137,6 +137,14 @@ Load/stress test the NGR CSW by mimicking the INSPIRE validator, with a self-con
 
 **--workers**="": Number of services processed in parallel. (default: 2)
 
+### load-test-aggregate
+
+Combine all load test runs in a directory into one HTML with an overview page and a detail page per run.
+
+**--input-dir**="": Directory containing the run directories (each with a summary.json). (default: output/load-test)
+
+**--output**="": HTML file to write. Defaults to <input-dir>/overview.html.
+
 ## store
 
 The store is used to interact with metadata CSW store service.

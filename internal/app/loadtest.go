@@ -43,6 +43,23 @@ func init() {
 				Flags:  loadTestFlags(),
 				Action: runLoadTest,
 			},
+			{
+				Name: "load-test-aggregate",
+				Usage: "Combine all load test runs in a directory into one HTML with an overview " +
+					"page and a detail page per run.",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "input-dir",
+						Value: defaultLoadTestOutDir,
+						Usage: "Directory containing the run directories (each with a summary.json).",
+					},
+					&cli.StringFlag{
+						Name:  "output",
+						Usage: "HTML file to write. Defaults to <input-dir>/overview.html.",
+					},
+				},
+				Action: runLoadTestAggregate,
+			},
 		},
 	}
 	PDOKMetadataToolCLI.Commands = append(PDOKMetadataToolCLI.Commands, command)
@@ -195,4 +212,39 @@ func normalizeHosts(hosts []string) []string {
 	}
 
 	return out
+}
+
+func runLoadTestAggregate(_ context.Context, cmd *cli.Command) error {
+	inputDir := cmd.String("input-dir")
+
+	runs, err := loadtest.LoadRuns(inputDir)
+	if err != nil {
+		return err
+	}
+
+	if len(runs) == 0 {
+		return fmt.Errorf("no runs with a summary.json found in %s", inputDir)
+	}
+
+	html, err := loadtest.RenderAggregate(runs)
+	if err != nil {
+		return err
+	}
+
+	output := cmd.String("output")
+	if output == "" {
+		output = filepath.Join(inputDir, "overview.html")
+	}
+
+	if err := os.WriteFile(
+		output,
+		[]byte(html),
+		0o600,
+	); err != nil { //nolint:mnd // owner read/write
+		return err
+	}
+
+	fmt.Printf("Aggregated %d runs into %s\n", len(runs), output)
+
+	return nil
 }

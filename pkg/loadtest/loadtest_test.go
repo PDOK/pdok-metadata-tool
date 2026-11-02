@@ -235,3 +235,42 @@ func TestExecuteWritesReport(t *testing.T) {
 	assert.Contains(t, string(html), "<svg")
 	assert.Contains(t, loadtest.TextSummary(out), "TOTAL")
 }
+
+func TestAggregateRendersOverviewAndDetails(t *testing.T) {
+	t.Parallel()
+
+	var scrapes atomic.Int32
+
+	srv := fakeNGR(t, &scrapes)
+	defer srv.Close()
+
+	outDir := t.TempDir()
+
+	for _, label := range []string{"first", "second"} {
+		_, err := loadtest.Execute(context.Background(), loadtest.Options{
+			Config: loadtest.Config{
+				Hosts: []string{srv.URL}, Workers: 1, Timeout: 5 * time.Second, Iterations: 1,
+				IncludeDatasets: true, KeepAlive: true,
+			},
+			IDCache: loadtest.IDCacheOptions{
+				Path: filepath.Join(t.TempDir(), "ids.json"),
+				TTL:  time.Hour,
+			},
+			Label:     label,
+			OutputDir: outDir,
+			WANIP:     "203.0.113.7",
+		})
+		require.NoError(t, err)
+	}
+
+	runs, err := loadtest.LoadRuns(outDir)
+	require.NoError(t, err)
+	require.Len(t, runs, 2)
+
+	html, err := loadtest.RenderAggregate(runs)
+	require.NoError(t, err)
+
+	for _, want := range []string{`id="overview"`, `id="run-1"`, `id="run-2"`, "first", "second", "HTTP 503"} {
+		assert.Contains(t, html, want)
+	}
+}

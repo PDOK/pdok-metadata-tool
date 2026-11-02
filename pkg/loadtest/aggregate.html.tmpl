@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CSW load test - overview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>{{template "css"}}
+.page[hidden] { display:none; }
+.back { display:inline-block; margin:16px 40px 0; color:var(--accent); text-decoration:none; }
+a { color:var(--accent); text-decoration:none; } a:hover { text-decoration:underline; }
+.bars2 { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 16px; }
+.bars2 .row { display:grid; grid-template-columns:300px 1fr; gap:10px; align-items:center; margin:6px 0; }
+.bars2 .bar { height:12px; border-radius:3px; margin:2px 0; min-width:2px; position:relative; }
+.bars2 .bar span { position:absolute; left:calc(100% + 6px); top:-3px; font-size:11px; color:var(--muted); white-space:nowrap; }
+</style>
+</head>
+<body>
+<section class="page" id="overview">
+<header>
+  <h1>CSW load test &middot; overview</h1>
+  <div class="sub">{{len .Rows}} runs &middot; {{.TotalReqs}} requests in total &middot; {{.TotalFailed}} failed &middot; generated {{datetime .Generated}}</div>
+</header>
+<main>
+<h2>All runs</h2>
+<div class="scroll"><table>
+<thead><tr><th>#</th><th class="l">Run</th><th class="l">Started</th><th class="l">WAN IP</th><th>Workers</th><th>Iterations</th><th>Keep-alive</th><th>Requests</th><th>Failed</th><th>Error rate</th><th>Avg</th><th>p95</th><th>p99</th><th>Req/s</th></tr></thead>
+<tbody>{{range .Rows}}<tr>
+<td>{{.Index}}</td><td class="l"><a href="#run-{{.Index}}">{{.Meta.Label}}</a></td><td class="l">{{datetime .Meta.Started}}</td><td class="l mono">{{.Meta.WANIP}}</td>
+<td>{{.Meta.Config.Workers}}</td><td>{{.Meta.Config.Iterations}}</td><td>{{if .Meta.Config.KeepAlive}}on{{else}}off{{end}}</td>
+<td>{{.Overall.Count}}</td><td>{{.Overall.Errors}}</td><td class="{{rateClass .Overall.ErrorRate}}">{{pct .Overall.ErrorRate}}</td>
+<td>{{ms .Overall.AvgMs}}</td><td>{{ms .Overall.P95Ms}}</td><td>{{ms .Overall.P99Ms}}</td><td>{{f2 .Overall.RequestsPS}}</td></tr>{{end}}</tbody>
+</table></div>
+<p class="note">Latency is computed over successful requests only. Click a run to see its detail page.</p>
+
+<h2>Per host</h2>
+<div class="scroll"><table>
+<thead><tr><th>#</th><th class="l">Run</th><th class="l">Host</th><th>Requests</th><th>Failed</th><th>Error rate</th><th>Avg</th><th>p95</th><th>p99</th><th>Max</th></tr></thead>
+<tbody>{{range $r := .Rows}}{{range $r.Hosts}}<tr><td>{{$r.Index}}</td><td class="l"><a href="#run-{{$r.Index}}">{{$r.Meta.Label}}</a></td>
+<td class="l"><span class="dot" style="background:{{color .Name}}"></span>{{.Name}}</td><td>{{.Count}}</td><td>{{.Errors}}</td>
+<td class="{{rateClass .ErrorRate}}">{{pct .ErrorRate}}</td><td>{{ms .AvgMs}}</td><td>{{ms .P95Ms}}</td><td>{{ms .P99Ms}}</td><td>{{ms .MaxMs}}</td></tr>{{end}}{{end}}</tbody>
+</table></div>
+
+<h2>Average response time per run</h2>
+<div class="legend">{{range .Legend}}<span><span class="dot" style="background:{{.Color}}"></span>{{.Name}}</span>{{end}}</div>
+<div class="bars2">{{range .LatencyBars}}<div class="row"><div>{{.Label}}</div><div>
+{{range .Bars}}<div class="bar" style="width:calc({{f1 .Pct}}% * 0.8);background:{{.Color}}"><span>{{.Format}}</span></div>{{end}}</div></div>{{end}}</div>
+
+<h2>Error rate per run</h2>
+<div class="legend">{{range .Legend}}<span><span class="dot" style="background:{{.Color}}"></span>{{.Name}}</span>{{end}}</div>
+<div class="bars2">{{range .ErrorBars}}<div class="row"><div>{{.Label}}</div><div>
+{{range .Bars}}<div class="bar" style="width:calc({{f1 .Pct}}% * 0.8);background:{{.Color}}"><span>{{.Format}}</span></div>{{end}}</div></div>{{end}}</div>
+</main>
+</section>
+{{range .Rows}}
+<section class="page" id="run-{{.Index}}" hidden>
+<a class="back" href="#overview">&larr; Overview</a>
+{{.Detail}}
+</section>
+{{end}}
+<script>
+(function () {
+  var pages = document.querySelectorAll('.page');
+  function show() {
+    var id = location.hash.replace('#', '') || 'overview', found = false;
+    pages.forEach(function (p) { if (p.id === id) { found = true; } });
+    if (!found) { id = 'overview'; }
+    pages.forEach(function (p) { p.hidden = p.id !== id; });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', show);
+  show();
+})();
+</script>
+</body>
+</html>
