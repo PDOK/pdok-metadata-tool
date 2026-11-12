@@ -3,6 +3,7 @@ package iso19119
 import (
 	"path"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/pdok/pdok-metadata-tool/v2/internal/common"
@@ -132,5 +133,42 @@ func TestGenerateMetadataISO19119(t *testing.T) {
 			_, ok := test.fileOutput[id+".xml"]
 			assert.True(t, ok)
 		}
+	}
+}
+
+func TestGenerateMetadataISO19119DeduplicatesKeywords(t *testing.T) {
+	tests := []struct {
+		configFileName string
+		id             string
+		reserved       string
+	}{
+		{filepath.Join(inputPath, "keywords_dedupe_hvd.yaml"), "00000000-0000-0000-0000-000000000020", "Mobiliteit"},
+		{filepath.Join(inputPath, "keywords_dedupe_inspire.yaml"), "00000000-0000-0000-0000-000000000021", "Beschermde gebieden"},
+	}
+
+	hvdCachePath := path.Join(common.GetProjectRoot(), common.HvdLocalRDFPath)
+
+	for _, test := range tests {
+		var serviceSpecifics ServiceSpecifics
+
+		require.NoError(t, serviceSpecifics.LoadFromYamlOrJson(test.configFileName))
+		require.NoError(t, serviceSpecifics.Validate())
+
+		generator, err := NewGenerator(serviceSpecifics, outputFolder, nil, &hvdCachePath)
+		require.NoError(t, err)
+
+		generated, err := generator.GenerateAsStrings()
+		require.NoError(t, err)
+
+		xml := generated[test.id]
+		require.NotEmpty(t, xml)
+
+		// Plain keywords are CharacterStrings, INSPIRE/HVD keywords are Anchors
+		assert.Equal(t, 1, strings.Count(xml, "<gco:CharacterString>A</gco:CharacterString>"), "plain keyword A once")
+		assert.Equal(t, 1, strings.Count(xml, "<gco:CharacterString>B</gco:CharacterString>"), "plain keyword B once")
+		assert.NotContains(t, xml, "<gco:CharacterString>"+test.reserved+"</gco:CharacterString>")
+		assert.NotContains(t, xml, "<gco:CharacterString>ps</gco:CharacterString>")
+		assert.NotContains(t, xml, "<gco:CharacterString>HVD</gco:CharacterString>")
+		assert.Equal(t, 1, strings.Count(xml, ">"+test.reserved+"</gmx:Anchor>"), "category keyword still present once")
 	}
 }

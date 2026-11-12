@@ -455,7 +455,39 @@ func (g *Generator) setIdentificationInfo() error {
 		)
 	}
 
+	// Plain keywords must not repeat themselves or the INSPIRE/HVD keywords, which are added as separate keyword blocks below.
+	reserved := map[string]struct{}{}
+
+	for _, inspireTheme := range config.GetInspireThemes() {
+		reserved[normalizeKeyword(inspireTheme)] = struct{}{}
+		if _, label, ok := g.Codelist.GetINSPIREThemeURIAndLabelByCode(inspireTheme); ok && label != nil {
+			reserved[normalizeKeyword(*label)] = struct{}{}
+		}
+	}
+
+	if len(config.GetHvdCategories()) > 0 {
+		reserved[normalizeKeyword("HVD")] = struct{}{}
+
+		hvdForKeywords, err := g.HVDRepository.GetFilteredHvdCategories(config.GetHvdCategories())
+		if err != nil {
+			return err
+		}
+
+		for _, hvdCategory := range hvdForKeywords {
+			reserved[normalizeKeyword(hvdCategory.ID)] = struct{}{}
+			reserved[normalizeKeyword(hvdCategory.LabelDutch)] = struct{}{}
+		}
+	}
+
 	for _, keyword := range keywords {
+		normalized := normalizeKeyword(keyword)
+		if _, skip := reserved[normalized]; skip {
+			continue
+		}
+
+		reserved[normalized] = struct{}{}
+
+		keyword := keyword
 		keywordTag := iso1911x.KeywordTag{
 			CharacterString: &keyword,
 		}
@@ -1270,4 +1302,8 @@ func isValidHTTPURL(s string) bool {
 	}
 
 	return true
+}
+
+func normalizeKeyword(keyword string) string {
+	return strings.ToLower(strings.TrimSpace(keyword))
 }
