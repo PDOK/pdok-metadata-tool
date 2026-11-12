@@ -1305,7 +1305,7 @@ func (g *Generator) dedupePlainKeywords(config ServiceConfig, keywords []string)
 		}
 	}
 
-	var result []string
+	result := make([]string, 0, len(keywords))
 
 	for _, keyword := range keywords {
 		normalized := normalizeKeyword(keyword)
