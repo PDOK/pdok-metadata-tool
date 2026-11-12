@@ -455,7 +455,12 @@ func (g *Generator) setIdentificationInfo() error {
 		)
 	}
 
-	for _, keyword := range keywords {
+	plainKeywords, err := g.dedupePlainKeywords(config, keywords)
+	if err != nil {
+		return err
+	}
+
+	for _, keyword := range plainKeywords {
 		keywordTag := iso1911x.KeywordTag{
 			CharacterString: &keyword,
 		}
@@ -1270,4 +1275,52 @@ func isValidHTTPURL(s string) bool {
 	}
 
 	return true
+}
+
+// dedupePlainKeywords drops plain keywords that repeat themselves or the INSPIRE/HVD keywords,
+// which are added as separate keyword blocks.
+func (g *Generator) dedupePlainKeywords(config ServiceConfig, keywords []string) ([]string, error) {
+	reserved := map[string]struct{}{}
+
+	for _, inspireTheme := range config.GetInspireThemes() {
+		reserved[normalizeKeyword(inspireTheme)] = struct{}{}
+
+		if _, label, ok := g.Codelist.GetINSPIREThemeURIAndLabelByCode(inspireTheme); ok &&
+			label != nil {
+			reserved[normalizeKeyword(*label)] = struct{}{}
+		}
+	}
+
+	if len(config.GetHvdCategories()) > 0 {
+		reserved[normalizeKeyword("HVD")] = struct{}{}
+
+		hvdCategories, err := g.HVDRepository.GetFilteredHvdCategories(config.GetHvdCategories())
+		if err != nil {
+			return nil, err
+		}
+
+		for _, hvdCategory := range hvdCategories {
+			reserved[normalizeKeyword(hvdCategory.ID)] = struct{}{}
+			reserved[normalizeKeyword(hvdCategory.LabelDutch)] = struct{}{}
+		}
+	}
+
+	result := make([]string, 0, len(keywords))
+
+	for _, keyword := range keywords {
+		normalized := normalizeKeyword(keyword)
+		if _, skip := reserved[normalized]; skip {
+			continue
+		}
+
+		reserved[normalized] = struct{}{}
+
+		result = append(result, keyword)
+	}
+
+	return result, nil
+}
+
+func normalizeKeyword(keyword string) string {
+	return strings.ToLower(strings.TrimSpace(keyword))
 }
