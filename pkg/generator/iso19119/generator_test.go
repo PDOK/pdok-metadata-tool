@@ -142,8 +142,16 @@ func TestGenerateMetadataISO19119DeduplicatesKeywords(t *testing.T) {
 		id             string
 		reserved       string
 	}{
-		{filepath.Join(inputPath, "keywords_dedupe_hvd.yaml"), "00000000-0000-0000-0000-000000000020", "Mobiliteit"},
-		{filepath.Join(inputPath, "keywords_dedupe_inspire.yaml"), "00000000-0000-0000-0000-000000000021", "Beschermde gebieden"},
+		{
+			filepath.Join(inputPath, "keywords_dedupe_hvd.yaml"),
+			"00000000-0000-0000-0000-000000000020",
+			"Mobiliteit",
+		},
+		{
+			filepath.Join(inputPath, "keywords_dedupe_inspire.yaml"),
+			"00000000-0000-0000-0000-000000000021",
+			"Beschermde gebieden",
+		},
 	}
 
 	hvdCachePath := path.Join(common.GetProjectRoot(), common.HvdLocalRDFPath)
@@ -164,11 +172,26 @@ func TestGenerateMetadataISO19119DeduplicatesKeywords(t *testing.T) {
 		require.NotEmpty(t, xml)
 
 		// Plain keywords are CharacterStrings, INSPIRE/HVD keywords are Anchors
-		assert.Equal(t, 1, strings.Count(xml, "<gco:CharacterString>A</gco:CharacterString>"), "plain keyword A once")
-		assert.Equal(t, 1, strings.Count(xml, "<gco:CharacterString>B</gco:CharacterString>"), "plain keyword B once")
+		assert.Equal(
+			t,
+			1,
+			strings.Count(xml, "<gco:CharacterString>A</gco:CharacterString>"),
+			"plain keyword A once",
+		)
+		assert.Equal(
+			t,
+			1,
+			strings.Count(xml, "<gco:CharacterString>B</gco:CharacterString>"),
+			"plain keyword B once",
+		)
 		assert.NotContains(t, xml, "<gco:CharacterString>"+test.reserved+"</gco:CharacterString>")
 		assert.NotContains(t, xml, "<gco:CharacterString>ps</gco:CharacterString>")
 		assert.NotContains(t, xml, "<gco:CharacterString>HVD</gco:CharacterString>")
-		assert.Equal(t, 1, strings.Count(xml, ">"+test.reserved+"</gmx:Anchor>"), "category keyword still present once")
+		assert.Equal(
+			t,
+			1,
+			strings.Count(xml, ">"+test.reserved+"</gmx:Anchor>"),
+			"category keyword still present once",
+		)
 	}
 }

@@ -460,7 +460,10 @@ func (g *Generator) setIdentificationInfo() error {
 
 	for _, inspireTheme := range config.GetInspireThemes() {
 		reserved[normalizeKeyword(inspireTheme)] = struct{}{}
-		if _, label, ok := g.Codelist.GetINSPIREThemeURIAndLabelByCode(inspireTheme); ok && label != nil {
+		if _, label, ok := g.Codelist.GetINSPIREThemeURIAndLabelByCode(
+			inspireTheme,
+		); ok &&
+			label != nil {
 			reserved[normalizeKeyword(*label)] = struct{}{}
 		}
 	}
@@ -487,7 +490,6 @@ func (g *Generator) setIdentificationInfo() error {
 
 		reserved[normalized] = struct{}{}
 
-		keyword := keyword
 		keywordTag := iso1911x.KeywordTag{
 			CharacterString: &keyword,
 		}
