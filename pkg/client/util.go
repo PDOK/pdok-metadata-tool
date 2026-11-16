@@ -103,6 +103,28 @@ func getResponseBody(
 	return io.ReadAll(resp.Body)
 }
 
+// ErrNgrNotFound can be matched with errors.Is for NGR responses with http status 404.
+var ErrNgrNotFound = errors.New("not found in NGR")
+
+// NgrStatusError is returned when NGR responds with an unexpected http status.
+type NgrStatusError struct {
+	Url        string
+	StatusCode int
+}
+
+func (e *NgrStatusError) Error() string {
+	return fmt.Sprintf(
+		"error while calling NGR using url %s\nhttp status is %d",
+		e.Url,
+		e.StatusCode,
+	)
+}
+
+// Is makes a 404 match ErrNgrNotFound.
+func (e *NgrStatusError) Is(target error) bool {
+	return target == ErrNgrNotFound && e.StatusCode == http.StatusNotFound
+}
+
 func getNgrResponseBody(
 	ngrConfig *NgrConfig,
 	url string,
@@ -142,11 +164,7 @@ func getNgrResponseBody(
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated &&
 		resp.StatusCode != http.StatusNoContent {
-		return nil, fmt.Errorf(
-			"error while calling NGR using url %s\nhttp status is %d",
-			url,
-			resp.StatusCode,
-		)
+		return nil, &NgrStatusError{Url: url, StatusCode: resp.StatusCode}
 	}
 
 	return io.ReadAll(resp.Body)
